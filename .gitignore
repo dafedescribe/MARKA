@@ -1,0 +1,12 @@
+venv/
+__pycache__/
+*.pyc
+omr_output/
+output_packages/
+outputs/
+inputs/
+*.doc
+*.pdf
+.DS_Store
+demo_site/node_modules/
+demo_site/dist/

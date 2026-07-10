@@ -1,0 +1,8547 @@
+{
+  "exam_code": "KCL-2T-2026",
+  "school": "Kings College Lagos",
+  "term": "Second Term Examination 2026",
+  "num_questions": 60,
+  "num_choices": 5,
+  "sheets_per_page": 4,
+  "page_size_mm": [
+    297.0,
+    210.0
+  ],
+  "answers": {},
+  "sheets": [
+    {
+      "sheet_id": "KCL-2T-2026-0001",
+      "page": 1,
+      "origin_on_page_mm": [
+        4.0,
+        107.0
+      ],
+      "sheet_size_mm": [
+        142.5,
+        100.0
+      ],
+      "fiducial_centers_mm": {
+        "top_left": [
+          14.740157480314963,
+          268.72440944881885
+        ],
+        "top_right": [
+          389.1968503937008,
+          268.72440944881885
+        ],
+        "bottom_left": [
+          14.740157480314963,
+          14.740157480314984
+        ],
+        "bottom_right": [
+          389.1968503937008,
+          14.740157480314984
+        ]
+      },
+      "fiducial_size_mm": 5.0,
+      "bubbles": [
+        {
+          "question": 1,
+          "option": "A",
+          "x_mm": 13.7,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 1,
+          "option": "B",
+          "x_mm": 18.2,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 1,
+          "option": "C",
+          "x_mm": 22.7,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 1,
+          "option": "D",
+          "x_mm": 27.2,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 1,
+          "option": "E",
+          "x_mm": 31.7,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 2,
+          "option": "A",
+          "x_mm": 13.7,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 2,
+          "option": "B",
+          "x_mm": 18.2,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 2,
+          "option": "C",
+          "x_mm": 22.7,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 2,
+          "option": "D",
+          "x_mm": 27.2,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 2,
+          "option": "E",
+          "x_mm": 31.7,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 3,
+          "option": "A",
+          "x_mm": 13.7,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 3,
+          "option": "B",
+          "x_mm": 18.2,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 3,
+          "option": "C",
+          "x_mm": 22.7,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 3,
+          "option": "D",
+          "x_mm": 27.2,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 3,
+          "option": "E",
+          "x_mm": 31.7,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 4,
+          "option": "A",
+          "x_mm": 13.7,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 4,
+          "option": "B",
+          "x_mm": 18.2,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 4,
+          "option": "C",
+          "x_mm": 22.7,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 4,
+          "option": "D",
+          "x_mm": 27.2,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 4,
+          "option": "E",
+          "x_mm": 31.7,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 5,
+          "option": "A",
+          "x_mm": 13.7,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 5,
+          "option": "B",
+          "x_mm": 18.2,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 5,
+          "option": "C",
+          "x_mm": 22.7,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 5,
+          "option": "D",
+          "x_mm": 27.2,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 5,
+          "option": "E",
+          "x_mm": 31.7,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 6,
+          "option": "A",
+          "x_mm": 13.7,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 6,
+          "option": "B",
+          "x_mm": 18.2,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 6,
+          "option": "C",
+          "x_mm": 22.7,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 6,
+          "option": "D",
+          "x_mm": 27.2,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 6,
+          "option": "E",
+          "x_mm": 31.7,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 7,
+          "option": "A",
+          "x_mm": 13.7,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 7,
+          "option": "B",
+          "x_mm": 18.2,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 7,
+          "option": "C",
+          "x_mm": 22.7,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 7,
+          "option": "D",
+          "x_mm": 27.2,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 7,
+          "option": "E",
+          "x_mm": 31.7,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 8,
+          "option": "A",
+          "x_mm": 13.7,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 8,
+          "option": "B",
+          "x_mm": 18.2,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 8,
+          "option": "C",
+          "x_mm": 22.7,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 8,
+          "option": "D",
+          "x_mm": 27.2,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 8,
+          "option": "E",
+          "x_mm": 31.7,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 9,
+          "option": "A",
+          "x_mm": 13.7,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 9,
+          "option": "B",
+          "x_mm": 18.2,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 9,
+          "option": "C",
+          "x_mm": 22.7,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 9,
+          "option": "D",
+          "x_mm": 27.2,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 9,
+          "option": "E",
+          "x_mm": 31.7,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 10,
+          "option": "A",
+          "x_mm": 13.7,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 10,
+          "option": "B",
+          "x_mm": 18.2,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 10,
+          "option": "C",
+          "x_mm": 22.7,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 10,
+          "option": "D",
+          "x_mm": 27.2,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 10,
+          "option": "E",
+          "x_mm": 31.7,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 11,
+          "option": "A",
+          "x_mm": 13.7,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 11,
+          "option": "B",
+          "x_mm": 18.2,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 11,
+          "option": "C",
+          "x_mm": 22.7,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 11,
+          "option": "D",
+          "x_mm": 27.2,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 11,
+          "option": "E",
+          "x_mm": 31.7,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 12,
+          "option": "A",
+          "x_mm": 13.7,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 12,
+          "option": "B",
+          "x_mm": 18.2,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 12,
+          "option": "C",
+          "x_mm": 22.7,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 12,
+          "option": "D",
+          "x_mm": 27.2,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 12,
+          "option": "E",
+          "x_mm": 31.7,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 13,
+          "option": "A",
+          "x_mm": 13.7,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 13,
+          "option": "B",
+          "x_mm": 18.2,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 13,
+          "option": "C",
+          "x_mm": 22.7,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 13,
+          "option": "D",
+          "x_mm": 27.2,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 13,
+          "option": "E",
+          "x_mm": 31.7,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 14,
+          "option": "A",
+          "x_mm": 13.7,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 14,
+          "option": "B",
+          "x_mm": 18.2,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 14,
+          "option": "C",
+          "x_mm": 22.7,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 14,
+          "option": "D",
+          "x_mm": 27.2,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 14,
+          "option": "E",
+          "x_mm": 31.7,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 15,
+          "option": "A",
+          "x_mm": 13.7,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 15,
+          "option": "B",
+          "x_mm": 18.2,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 15,
+          "option": "C",
+          "x_mm": 22.7,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 15,
+          "option": "D",
+          "x_mm": 27.2,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 15,
+          "option": "E",
+          "x_mm": 31.7,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 16,
+          "option": "A",
+          "x_mm": 45.2,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 16,
+          "option": "B",
+          "x_mm": 49.7,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 16,
+          "option": "C",
+          "x_mm": 54.2,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 16,
+          "option": "D",
+          "x_mm": 58.7,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 16,
+          "option": "E",
+          "x_mm": 63.2,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 17,
+          "option": "A",
+          "x_mm": 45.2,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 17,
+          "option": "B",
+          "x_mm": 49.7,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 17,
+          "option": "C",
+          "x_mm": 54.2,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 17,
+          "option": "D",
+          "x_mm": 58.7,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 17,
+          "option": "E",
+          "x_mm": 63.2,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 18,
+          "option": "A",
+          "x_mm": 45.2,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 18,
+          "option": "B",
+          "x_mm": 49.7,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 18,
+          "option": "C",
+          "x_mm": 54.2,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 18,
+          "option": "D",
+          "x_mm": 58.7,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 18,
+          "option": "E",
+          "x_mm": 63.2,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 19,
+          "option": "A",
+          "x_mm": 45.2,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 19,
+          "option": "B",
+          "x_mm": 49.7,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 19,
+          "option": "C",
+          "x_mm": 54.2,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 19,
+          "option": "D",
+          "x_mm": 58.7,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 19,
+          "option": "E",
+          "x_mm": 63.2,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 20,
+          "option": "A",
+          "x_mm": 45.2,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 20,
+          "option": "B",
+          "x_mm": 49.7,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 20,
+          "option": "C",
+          "x_mm": 54.2,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 20,
+          "option": "D",
+          "x_mm": 58.7,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 20,
+          "option": "E",
+          "x_mm": 63.2,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 21,
+          "option": "A",
+          "x_mm": 45.2,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 21,
+          "option": "B",
+          "x_mm": 49.7,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 21,
+          "option": "C",
+          "x_mm": 54.2,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 21,
+          "option": "D",
+          "x_mm": 58.7,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 21,
+          "option": "E",
+          "x_mm": 63.2,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 22,
+          "option": "A",
+          "x_mm": 45.2,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 22,
+          "option": "B",
+          "x_mm": 49.7,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 22,
+          "option": "C",
+          "x_mm": 54.2,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 22,
+          "option": "D",
+          "x_mm": 58.7,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 22,
+          "option": "E",
+          "x_mm": 63.2,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 23,
+          "option": "A",
+          "x_mm": 45.2,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 23,
+          "option": "B",
+          "x_mm": 49.7,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 23,
+          "option": "C",
+          "x_mm": 54.2,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 23,
+          "option": "D",
+          "x_mm": 58.7,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 23,
+          "option": "E",
+          "x_mm": 63.2,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 24,
+          "option": "A",
+          "x_mm": 45.2,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 24,
+          "option": "B",
+          "x_mm": 49.7,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 24,
+          "option": "C",
+          "x_mm": 54.2,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 24,
+          "option": "D",
+          "x_mm": 58.7,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 24,
+          "option": "E",
+          "x_mm": 63.2,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 25,
+          "option": "A",
+          "x_mm": 45.2,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 25,
+          "option": "B",
+          "x_mm": 49.7,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 25,
+          "option": "C",
+          "x_mm": 54.2,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 25,
+          "option": "D",
+          "x_mm": 58.7,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 25,
+          "option": "E",
+          "x_mm": 63.2,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 26,
+          "option": "A",
+          "x_mm": 45.2,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 26,
+          "option": "B",
+          "x_mm": 49.7,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 26,
+          "option": "C",
+          "x_mm": 54.2,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 26,
+          "option": "D",
+          "x_mm": 58.7,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 26,
+          "option": "E",
+          "x_mm": 63.2,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 27,
+          "option": "A",
+          "x_mm": 45.2,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 27,
+          "option": "B",
+          "x_mm": 49.7,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 27,
+          "option": "C",
+          "x_mm": 54.2,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 27,
+          "option": "D",
+          "x_mm": 58.7,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 27,
+          "option": "E",
+          "x_mm": 63.2,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 28,
+          "option": "A",
+          "x_mm": 45.2,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 28,
+          "option": "B",
+          "x_mm": 49.7,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 28,
+          "option": "C",
+          "x_mm": 54.2,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 28,
+          "option": "D",
+          "x_mm": 58.7,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 28,
+          "option": "E",
+          "x_mm": 63.2,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 29,
+          "option": "A",
+          "x_mm": 45.2,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 29,
+          "option": "B",
+          "x_mm": 49.7,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 29,
+          "option": "C",
+          "x_mm": 54.2,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 29,
+          "option": "D",
+          "x_mm": 58.7,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 29,
+          "option": "E",
+          "x_mm": 63.2,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 30,
+          "option": "A",
+          "x_mm": 45.2,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 30,
+          "option": "B",
+          "x_mm": 49.7,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 30,
+          "option": "C",
+          "x_mm": 54.2,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 30,
+          "option": "D",
+          "x_mm": 58.7,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 30,
+          "option": "E",
+          "x_mm": 63.2,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 31,
+          "option": "A",
+          "x_mm": 76.7,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 31,
+          "option": "B",
+          "x_mm": 81.2,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 31,
+          "option": "C",
+          "x_mm": 85.7,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 31,
+          "option": "D",
+          "x_mm": 90.2,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 31,
+          "option": "E",
+          "x_mm": 94.7,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 32,
+          "option": "A",
+          "x_mm": 76.7,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 32,
+          "option": "B",
+          "x_mm": 81.2,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 32,
+          "option": "C",
+          "x_mm": 85.7,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 32,
+          "option": "D",
+          "x_mm": 90.2,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 32,
+          "option": "E",
+          "x_mm": 94.7,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 33,
+          "option": "A",
+          "x_mm": 76.7,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 33,
+          "option": "B",
+          "x_mm": 81.2,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 33,
+          "option": "C",
+          "x_mm": 85.7,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 33,
+          "option": "D",
+          "x_mm": 90.2,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 33,
+          "option": "E",
+          "x_mm": 94.7,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 34,
+          "option": "A",
+          "x_mm": 76.7,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 34,
+          "option": "B",
+          "x_mm": 81.2,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 34,
+          "option": "C",
+          "x_mm": 85.7,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 34,
+          "option": "D",
+          "x_mm": 90.2,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 34,
+          "option": "E",
+          "x_mm": 94.7,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 35,
+          "option": "A",
+          "x_mm": 76.7,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 35,
+          "option": "B",
+          "x_mm": 81.2,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 35,
+          "option": "C",
+          "x_mm": 85.7,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 35,
+          "option": "D",
+          "x_mm": 90.2,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 35,
+          "option": "E",
+          "x_mm": 94.7,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 36,
+          "option": "A",
+          "x_mm": 76.7,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 36,
+          "option": "B",
+          "x_mm": 81.2,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 36,
+          "option": "C",
+          "x_mm": 85.7,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 36,
+          "option": "D",
+          "x_mm": 90.2,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 36,
+          "option": "E",
+          "x_mm": 94.7,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 37,
+          "option": "A",
+          "x_mm": 76.7,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 37,
+          "option": "B",
+          "x_mm": 81.2,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 37,
+          "option": "C",
+          "x_mm": 85.7,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 37,
+          "option": "D",
+          "x_mm": 90.2,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 37,
+          "option": "E",
+          "x_mm": 94.7,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 38,
+          "option": "A",
+          "x_mm": 76.7,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 38,
+          "option": "B",
+          "x_mm": 81.2,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 38,
+          "option": "C",
+          "x_mm": 85.7,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 38,
+          "option": "D",
+          "x_mm": 90.2,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 38,
+          "option": "E",
+          "x_mm": 94.7,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 39,
+          "option": "A",
+          "x_mm": 76.7,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 39,
+          "option": "B",
+          "x_mm": 81.2,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 39,
+          "option": "C",
+          "x_mm": 85.7,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 39,
+          "option": "D",
+          "x_mm": 90.2,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 39,
+          "option": "E",
+          "x_mm": 94.7,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 40,
+          "option": "A",
+          "x_mm": 76.7,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 40,
+          "option": "B",
+          "x_mm": 81.2,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 40,
+          "option": "C",
+          "x_mm": 85.7,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 40,
+          "option": "D",
+          "x_mm": 90.2,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 40,
+          "option": "E",
+          "x_mm": 94.7,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 41,
+          "option": "A",
+          "x_mm": 76.7,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 41,
+          "option": "B",
+          "x_mm": 81.2,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 41,
+          "option": "C",
+          "x_mm": 85.7,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 41,
+          "option": "D",
+          "x_mm": 90.2,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 41,
+          "option": "E",
+          "x_mm": 94.7,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 42,
+          "option": "A",
+          "x_mm": 76.7,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 42,
+          "option": "B",
+          "x_mm": 81.2,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 42,
+          "option": "C",
+          "x_mm": 85.7,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 42,
+          "option": "D",
+          "x_mm": 90.2,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 42,
+          "option": "E",
+          "x_mm": 94.7,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 43,
+          "option": "A",
+          "x_mm": 76.7,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 43,
+          "option": "B",
+          "x_mm": 81.2,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 43,
+          "option": "C",
+          "x_mm": 85.7,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 43,
+          "option": "D",
+          "x_mm": 90.2,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 43,
+          "option": "E",
+          "x_mm": 94.7,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 44,
+          "option": "A",
+          "x_mm": 76.7,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 44,
+          "option": "B",
+          "x_mm": 81.2,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 44,
+          "option": "C",
+          "x_mm": 85.7,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 44,
+          "option": "D",
+          "x_mm": 90.2,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 44,
+          "option": "E",
+          "x_mm": 94.7,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 45,
+          "option": "A",
+          "x_mm": 76.7,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 45,
+          "option": "B",
+          "x_mm": 81.2,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 45,
+          "option": "C",
+          "x_mm": 85.7,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 45,
+          "option": "D",
+          "x_mm": 90.2,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 45,
+          "option": "E",
+          "x_mm": 94.7,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 46,
+          "option": "A",
+          "x_mm": 108.2,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 46,
+          "option": "B",
+          "x_mm": 112.7,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 46,
+          "option": "C",
+          "x_mm": 117.2,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 46,
+          "option": "D",
+          "x_mm": 121.7,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 46,
+          "option": "E",
+          "x_mm": 126.2,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 47,
+          "option": "A",
+          "x_mm": 108.2,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 47,
+          "option": "B",
+          "x_mm": 112.7,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 47,
+          "option": "C",
+          "x_mm": 117.2,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 47,
+          "option": "D",
+          "x_mm": 121.7,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 47,
+          "option": "E",
+          "x_mm": 126.2,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 48,
+          "option": "A",
+          "x_mm": 108.2,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 48,
+          "option": "B",
+          "x_mm": 112.7,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 48,
+          "option": "C",
+          "x_mm": 117.2,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 48,
+          "option": "D",
+          "x_mm": 121.7,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 48,
+          "option": "E",
+          "x_mm": 126.2,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 49,
+          "option": "A",
+          "x_mm": 108.2,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 49,
+          "option": "B",
+          "x_mm": 112.7,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 49,
+          "option": "C",
+          "x_mm": 117.2,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 49,
+          "option": "D",
+          "x_mm": 121.7,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 49,
+          "option": "E",
+          "x_mm": 126.2,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 50,
+          "option": "A",
+          "x_mm": 108.2,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 50,
+          "option": "B",
+          "x_mm": 112.7,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 50,
+          "option": "C",
+          "x_mm": 117.2,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 50,
+          "option": "D",
+          "x_mm": 121.7,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 50,
+          "option": "E",
+          "x_mm": 126.2,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 51,
+          "option": "A",
+          "x_mm": 108.2,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 51,
+          "option": "B",
+          "x_mm": 112.7,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 51,
+          "option": "C",
+          "x_mm": 117.2,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 51,
+          "option": "D",
+          "x_mm": 121.7,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 51,
+          "option": "E",
+          "x_mm": 126.2,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 52,
+          "option": "A",
+          "x_mm": 108.2,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 52,
+          "option": "B",
+          "x_mm": 112.7,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 52,
+          "option": "C",
+          "x_mm": 117.2,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 52,
+          "option": "D",
+          "x_mm": 121.7,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 52,
+          "option": "E",
+          "x_mm": 126.2,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 53,
+          "option": "A",
+          "x_mm": 108.2,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 53,
+          "option": "B",
+          "x_mm": 112.7,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 53,
+          "option": "C",
+          "x_mm": 117.2,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 53,
+          "option": "D",
+          "x_mm": 121.7,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 53,
+          "option": "E",
+          "x_mm": 126.2,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 54,
+          "option": "A",
+          "x_mm": 108.2,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 54,
+          "option": "B",
+          "x_mm": 112.7,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 54,
+          "option": "C",
+          "x_mm": 117.2,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 54,
+          "option": "D",
+          "x_mm": 121.7,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 54,
+          "option": "E",
+          "x_mm": 126.2,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 55,
+          "option": "A",
+          "x_mm": 108.2,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 55,
+          "option": "B",
+          "x_mm": 112.7,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 55,
+          "option": "C",
+          "x_mm": 117.2,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 55,
+          "option": "D",
+          "x_mm": 121.7,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 55,
+          "option": "E",
+          "x_mm": 126.2,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 56,
+          "option": "A",
+          "x_mm": 108.2,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 56,
+          "option": "B",
+          "x_mm": 112.7,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 56,
+          "option": "C",
+          "x_mm": 117.2,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 56,
+          "option": "D",
+          "x_mm": 121.7,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 56,
+          "option": "E",
+          "x_mm": 126.2,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 57,
+          "option": "A",
+          "x_mm": 108.2,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 57,
+          "option": "B",
+          "x_mm": 112.7,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 57,
+          "option": "C",
+          "x_mm": 117.2,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 57,
+          "option": "D",
+          "x_mm": 121.7,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 57,
+          "option": "E",
+          "x_mm": 126.2,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 58,
+          "option": "A",
+          "x_mm": 108.2,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 58,
+          "option": "B",
+          "x_mm": 112.7,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 58,
+          "option": "C",
+          "x_mm": 117.2,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 58,
+          "option": "D",
+          "x_mm": 121.7,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 58,
+          "option": "E",
+          "x_mm": 126.2,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 59,
+          "option": "A",
+          "x_mm": 108.2,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 59,
+          "option": "B",
+          "x_mm": 112.7,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 59,
+          "option": "C",
+          "x_mm": 117.2,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 59,
+          "option": "D",
+          "x_mm": 121.7,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 59,
+          "option": "E",
+          "x_mm": 126.2,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 60,
+          "option": "A",
+          "x_mm": 108.2,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 60,
+          "option": "B",
+          "x_mm": 112.7,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 60,
+          "option": "C",
+          "x_mm": 117.2,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 60,
+          "option": "D",
+          "x_mm": 121.7,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 60,
+          "option": "E",
+          "x_mm": 126.2,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        }
+      ]
+    },
+    {
+      "sheet_id": "KCL-2T-2026-0002",
+      "page": 1,
+      "origin_on_page_mm": [
+        150.5,
+        107.0
+      ],
+      "sheet_size_mm": [
+        142.5,
+        100.0
+      ],
+      "fiducial_centers_mm": {
+        "top_left": [
+          14.740157480314984,
+          268.72440944881885
+        ],
+        "top_right": [
+          389.1968503937008,
+          268.72440944881885
+        ],
+        "bottom_left": [
+          14.740157480314984,
+          14.740157480314984
+        ],
+        "bottom_right": [
+          389.1968503937008,
+          14.740157480314984
+        ]
+      },
+      "fiducial_size_mm": 5.0,
+      "bubbles": [
+        {
+          "question": 1,
+          "option": "A",
+          "x_mm": 13.7,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 1,
+          "option": "B",
+          "x_mm": 18.2,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 1,
+          "option": "C",
+          "x_mm": 22.7,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 1,
+          "option": "D",
+          "x_mm": 27.2,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 1,
+          "option": "E",
+          "x_mm": 31.7,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 2,
+          "option": "A",
+          "x_mm": 13.7,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 2,
+          "option": "B",
+          "x_mm": 18.2,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 2,
+          "option": "C",
+          "x_mm": 22.7,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 2,
+          "option": "D",
+          "x_mm": 27.2,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 2,
+          "option": "E",
+          "x_mm": 31.7,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 3,
+          "option": "A",
+          "x_mm": 13.7,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 3,
+          "option": "B",
+          "x_mm": 18.2,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 3,
+          "option": "C",
+          "x_mm": 22.7,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 3,
+          "option": "D",
+          "x_mm": 27.2,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 3,
+          "option": "E",
+          "x_mm": 31.7,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 4,
+          "option": "A",
+          "x_mm": 13.7,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 4,
+          "option": "B",
+          "x_mm": 18.2,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 4,
+          "option": "C",
+          "x_mm": 22.7,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 4,
+          "option": "D",
+          "x_mm": 27.2,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 4,
+          "option": "E",
+          "x_mm": 31.7,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 5,
+          "option": "A",
+          "x_mm": 13.7,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 5,
+          "option": "B",
+          "x_mm": 18.2,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 5,
+          "option": "C",
+          "x_mm": 22.7,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 5,
+          "option": "D",
+          "x_mm": 27.2,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 5,
+          "option": "E",
+          "x_mm": 31.7,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 6,
+          "option": "A",
+          "x_mm": 13.7,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 6,
+          "option": "B",
+          "x_mm": 18.2,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 6,
+          "option": "C",
+          "x_mm": 22.7,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 6,
+          "option": "D",
+          "x_mm": 27.2,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 6,
+          "option": "E",
+          "x_mm": 31.7,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 7,
+          "option": "A",
+          "x_mm": 13.7,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 7,
+          "option": "B",
+          "x_mm": 18.2,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 7,
+          "option": "C",
+          "x_mm": 22.7,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 7,
+          "option": "D",
+          "x_mm": 27.2,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 7,
+          "option": "E",
+          "x_mm": 31.7,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 8,
+          "option": "A",
+          "x_mm": 13.7,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 8,
+          "option": "B",
+          "x_mm": 18.2,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 8,
+          "option": "C",
+          "x_mm": 22.7,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 8,
+          "option": "D",
+          "x_mm": 27.2,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 8,
+          "option": "E",
+          "x_mm": 31.7,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 9,
+          "option": "A",
+          "x_mm": 13.7,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 9,
+          "option": "B",
+          "x_mm": 18.2,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 9,
+          "option": "C",
+          "x_mm": 22.7,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 9,
+          "option": "D",
+          "x_mm": 27.2,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 9,
+          "option": "E",
+          "x_mm": 31.7,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 10,
+          "option": "A",
+          "x_mm": 13.7,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 10,
+          "option": "B",
+          "x_mm": 18.2,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 10,
+          "option": "C",
+          "x_mm": 22.7,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 10,
+          "option": "D",
+          "x_mm": 27.2,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 10,
+          "option": "E",
+          "x_mm": 31.7,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 11,
+          "option": "A",
+          "x_mm": 13.7,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 11,
+          "option": "B",
+          "x_mm": 18.2,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 11,
+          "option": "C",
+          "x_mm": 22.7,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 11,
+          "option": "D",
+          "x_mm": 27.2,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 11,
+          "option": "E",
+          "x_mm": 31.7,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 12,
+          "option": "A",
+          "x_mm": 13.7,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 12,
+          "option": "B",
+          "x_mm": 18.2,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 12,
+          "option": "C",
+          "x_mm": 22.7,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 12,
+          "option": "D",
+          "x_mm": 27.2,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 12,
+          "option": "E",
+          "x_mm": 31.7,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 13,
+          "option": "A",
+          "x_mm": 13.7,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 13,
+          "option": "B",
+          "x_mm": 18.2,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 13,
+          "option": "C",
+          "x_mm": 22.7,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 13,
+          "option": "D",
+          "x_mm": 27.2,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 13,
+          "option": "E",
+          "x_mm": 31.7,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 14,
+          "option": "A",
+          "x_mm": 13.7,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 14,
+          "option": "B",
+          "x_mm": 18.2,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 14,
+          "option": "C",
+          "x_mm": 22.7,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 14,
+          "option": "D",
+          "x_mm": 27.2,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 14,
+          "option": "E",
+          "x_mm": 31.7,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 15,
+          "option": "A",
+          "x_mm": 13.7,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 15,
+          "option": "B",
+          "x_mm": 18.2,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 15,
+          "option": "C",
+          "x_mm": 22.7,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 15,
+          "option": "D",
+          "x_mm": 27.2,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 15,
+          "option": "E",
+          "x_mm": 31.7,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 16,
+          "option": "A",
+          "x_mm": 45.2,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 16,
+          "option": "B",
+          "x_mm": 49.7,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 16,
+          "option": "C",
+          "x_mm": 54.2,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 16,
+          "option": "D",
+          "x_mm": 58.7,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 16,
+          "option": "E",
+          "x_mm": 63.2,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 17,
+          "option": "A",
+          "x_mm": 45.2,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 17,
+          "option": "B",
+          "x_mm": 49.7,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 17,
+          "option": "C",
+          "x_mm": 54.2,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 17,
+          "option": "D",
+          "x_mm": 58.7,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 17,
+          "option": "E",
+          "x_mm": 63.2,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 18,
+          "option": "A",
+          "x_mm": 45.2,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 18,
+          "option": "B",
+          "x_mm": 49.7,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 18,
+          "option": "C",
+          "x_mm": 54.2,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 18,
+          "option": "D",
+          "x_mm": 58.7,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 18,
+          "option": "E",
+          "x_mm": 63.2,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 19,
+          "option": "A",
+          "x_mm": 45.2,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 19,
+          "option": "B",
+          "x_mm": 49.7,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 19,
+          "option": "C",
+          "x_mm": 54.2,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 19,
+          "option": "D",
+          "x_mm": 58.7,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 19,
+          "option": "E",
+          "x_mm": 63.2,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 20,
+          "option": "A",
+          "x_mm": 45.2,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 20,
+          "option": "B",
+          "x_mm": 49.7,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 20,
+          "option": "C",
+          "x_mm": 54.2,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 20,
+          "option": "D",
+          "x_mm": 58.7,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 20,
+          "option": "E",
+          "x_mm": 63.2,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 21,
+          "option": "A",
+          "x_mm": 45.2,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 21,
+          "option": "B",
+          "x_mm": 49.7,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 21,
+          "option": "C",
+          "x_mm": 54.2,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 21,
+          "option": "D",
+          "x_mm": 58.7,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 21,
+          "option": "E",
+          "x_mm": 63.2,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 22,
+          "option": "A",
+          "x_mm": 45.2,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 22,
+          "option": "B",
+          "x_mm": 49.7,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 22,
+          "option": "C",
+          "x_mm": 54.2,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 22,
+          "option": "D",
+          "x_mm": 58.7,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 22,
+          "option": "E",
+          "x_mm": 63.2,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 23,
+          "option": "A",
+          "x_mm": 45.2,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 23,
+          "option": "B",
+          "x_mm": 49.7,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 23,
+          "option": "C",
+          "x_mm": 54.2,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 23,
+          "option": "D",
+          "x_mm": 58.7,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 23,
+          "option": "E",
+          "x_mm": 63.2,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 24,
+          "option": "A",
+          "x_mm": 45.2,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 24,
+          "option": "B",
+          "x_mm": 49.7,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 24,
+          "option": "C",
+          "x_mm": 54.2,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 24,
+          "option": "D",
+          "x_mm": 58.7,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 24,
+          "option": "E",
+          "x_mm": 63.2,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 25,
+          "option": "A",
+          "x_mm": 45.2,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 25,
+          "option": "B",
+          "x_mm": 49.7,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 25,
+          "option": "C",
+          "x_mm": 54.2,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 25,
+          "option": "D",
+          "x_mm": 58.7,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 25,
+          "option": "E",
+          "x_mm": 63.2,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 26,
+          "option": "A",
+          "x_mm": 45.2,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 26,
+          "option": "B",
+          "x_mm": 49.7,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 26,
+          "option": "C",
+          "x_mm": 54.2,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 26,
+          "option": "D",
+          "x_mm": 58.7,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 26,
+          "option": "E",
+          "x_mm": 63.2,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 27,
+          "option": "A",
+          "x_mm": 45.2,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 27,
+          "option": "B",
+          "x_mm": 49.7,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 27,
+          "option": "C",
+          "x_mm": 54.2,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 27,
+          "option": "D",
+          "x_mm": 58.7,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 27,
+          "option": "E",
+          "x_mm": 63.2,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 28,
+          "option": "A",
+          "x_mm": 45.2,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 28,
+          "option": "B",
+          "x_mm": 49.7,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 28,
+          "option": "C",
+          "x_mm": 54.2,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 28,
+          "option": "D",
+          "x_mm": 58.7,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 28,
+          "option": "E",
+          "x_mm": 63.2,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 29,
+          "option": "A",
+          "x_mm": 45.2,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 29,
+          "option": "B",
+          "x_mm": 49.7,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 29,
+          "option": "C",
+          "x_mm": 54.2,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 29,
+          "option": "D",
+          "x_mm": 58.7,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 29,
+          "option": "E",
+          "x_mm": 63.2,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 30,
+          "option": "A",
+          "x_mm": 45.2,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 30,
+          "option": "B",
+          "x_mm": 49.7,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 30,
+          "option": "C",
+          "x_mm": 54.2,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 30,
+          "option": "D",
+          "x_mm": 58.7,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 30,
+          "option": "E",
+          "x_mm": 63.2,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 31,
+          "option": "A",
+          "x_mm": 76.7,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 31,
+          "option": "B",
+          "x_mm": 81.2,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 31,
+          "option": "C",
+          "x_mm": 85.7,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 31,
+          "option": "D",
+          "x_mm": 90.2,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 31,
+          "option": "E",
+          "x_mm": 94.7,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 32,
+          "option": "A",
+          "x_mm": 76.7,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 32,
+          "option": "B",
+          "x_mm": 81.2,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 32,
+          "option": "C",
+          "x_mm": 85.7,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 32,
+          "option": "D",
+          "x_mm": 90.2,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 32,
+          "option": "E",
+          "x_mm": 94.7,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 33,
+          "option": "A",
+          "x_mm": 76.7,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 33,
+          "option": "B",
+          "x_mm": 81.2,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 33,
+          "option": "C",
+          "x_mm": 85.7,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 33,
+          "option": "D",
+          "x_mm": 90.2,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 33,
+          "option": "E",
+          "x_mm": 94.7,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 34,
+          "option": "A",
+          "x_mm": 76.7,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 34,
+          "option": "B",
+          "x_mm": 81.2,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 34,
+          "option": "C",
+          "x_mm": 85.7,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 34,
+          "option": "D",
+          "x_mm": 90.2,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 34,
+          "option": "E",
+          "x_mm": 94.7,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 35,
+          "option": "A",
+          "x_mm": 76.7,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 35,
+          "option": "B",
+          "x_mm": 81.2,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 35,
+          "option": "C",
+          "x_mm": 85.7,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 35,
+          "option": "D",
+          "x_mm": 90.2,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 35,
+          "option": "E",
+          "x_mm": 94.7,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 36,
+          "option": "A",
+          "x_mm": 76.7,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 36,
+          "option": "B",
+          "x_mm": 81.2,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 36,
+          "option": "C",
+          "x_mm": 85.7,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 36,
+          "option": "D",
+          "x_mm": 90.2,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 36,
+          "option": "E",
+          "x_mm": 94.7,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 37,
+          "option": "A",
+          "x_mm": 76.7,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 37,
+          "option": "B",
+          "x_mm": 81.2,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 37,
+          "option": "C",
+          "x_mm": 85.7,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 37,
+          "option": "D",
+          "x_mm": 90.2,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 37,
+          "option": "E",
+          "x_mm": 94.7,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 38,
+          "option": "A",
+          "x_mm": 76.7,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 38,
+          "option": "B",
+          "x_mm": 81.2,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 38,
+          "option": "C",
+          "x_mm": 85.7,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 38,
+          "option": "D",
+          "x_mm": 90.2,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 38,
+          "option": "E",
+          "x_mm": 94.7,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 39,
+          "option": "A",
+          "x_mm": 76.7,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 39,
+          "option": "B",
+          "x_mm": 81.2,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 39,
+          "option": "C",
+          "x_mm": 85.7,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 39,
+          "option": "D",
+          "x_mm": 90.2,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 39,
+          "option": "E",
+          "x_mm": 94.7,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 40,
+          "option": "A",
+          "x_mm": 76.7,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 40,
+          "option": "B",
+          "x_mm": 81.2,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 40,
+          "option": "C",
+          "x_mm": 85.7,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 40,
+          "option": "D",
+          "x_mm": 90.2,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 40,
+          "option": "E",
+          "x_mm": 94.7,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 41,
+          "option": "A",
+          "x_mm": 76.7,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 41,
+          "option": "B",
+          "x_mm": 81.2,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 41,
+          "option": "C",
+          "x_mm": 85.7,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 41,
+          "option": "D",
+          "x_mm": 90.2,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 41,
+          "option": "E",
+          "x_mm": 94.7,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 42,
+          "option": "A",
+          "x_mm": 76.7,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 42,
+          "option": "B",
+          "x_mm": 81.2,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 42,
+          "option": "C",
+          "x_mm": 85.7,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 42,
+          "option": "D",
+          "x_mm": 90.2,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 42,
+          "option": "E",
+          "x_mm": 94.7,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 43,
+          "option": "A",
+          "x_mm": 76.7,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 43,
+          "option": "B",
+          "x_mm": 81.2,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 43,
+          "option": "C",
+          "x_mm": 85.7,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 43,
+          "option": "D",
+          "x_mm": 90.2,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 43,
+          "option": "E",
+          "x_mm": 94.7,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 44,
+          "option": "A",
+          "x_mm": 76.7,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 44,
+          "option": "B",
+          "x_mm": 81.2,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 44,
+          "option": "C",
+          "x_mm": 85.7,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 44,
+          "option": "D",
+          "x_mm": 90.2,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 44,
+          "option": "E",
+          "x_mm": 94.7,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 45,
+          "option": "A",
+          "x_mm": 76.7,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 45,
+          "option": "B",
+          "x_mm": 81.2,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 45,
+          "option": "C",
+          "x_mm": 85.7,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 45,
+          "option": "D",
+          "x_mm": 90.2,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 45,
+          "option": "E",
+          "x_mm": 94.7,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 46,
+          "option": "A",
+          "x_mm": 108.2,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 46,
+          "option": "B",
+          "x_mm": 112.7,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 46,
+          "option": "C",
+          "x_mm": 117.2,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 46,
+          "option": "D",
+          "x_mm": 121.7,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 46,
+          "option": "E",
+          "x_mm": 126.2,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 47,
+          "option": "A",
+          "x_mm": 108.2,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 47,
+          "option": "B",
+          "x_mm": 112.7,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 47,
+          "option": "C",
+          "x_mm": 117.2,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 47,
+          "option": "D",
+          "x_mm": 121.7,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 47,
+          "option": "E",
+          "x_mm": 126.2,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 48,
+          "option": "A",
+          "x_mm": 108.2,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 48,
+          "option": "B",
+          "x_mm": 112.7,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 48,
+          "option": "C",
+          "x_mm": 117.2,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 48,
+          "option": "D",
+          "x_mm": 121.7,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 48,
+          "option": "E",
+          "x_mm": 126.2,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 49,
+          "option": "A",
+          "x_mm": 108.2,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 49,
+          "option": "B",
+          "x_mm": 112.7,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 49,
+          "option": "C",
+          "x_mm": 117.2,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 49,
+          "option": "D",
+          "x_mm": 121.7,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 49,
+          "option": "E",
+          "x_mm": 126.2,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 50,
+          "option": "A",
+          "x_mm": 108.2,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 50,
+          "option": "B",
+          "x_mm": 112.7,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 50,
+          "option": "C",
+          "x_mm": 117.2,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 50,
+          "option": "D",
+          "x_mm": 121.7,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 50,
+          "option": "E",
+          "x_mm": 126.2,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 51,
+          "option": "A",
+          "x_mm": 108.2,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 51,
+          "option": "B",
+          "x_mm": 112.7,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 51,
+          "option": "C",
+          "x_mm": 117.2,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 51,
+          "option": "D",
+          "x_mm": 121.7,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 51,
+          "option": "E",
+          "x_mm": 126.2,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 52,
+          "option": "A",
+          "x_mm": 108.2,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 52,
+          "option": "B",
+          "x_mm": 112.7,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 52,
+          "option": "C",
+          "x_mm": 117.2,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 52,
+          "option": "D",
+          "x_mm": 121.7,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 52,
+          "option": "E",
+          "x_mm": 126.2,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 53,
+          "option": "A",
+          "x_mm": 108.2,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 53,
+          "option": "B",
+          "x_mm": 112.7,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 53,
+          "option": "C",
+          "x_mm": 117.2,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 53,
+          "option": "D",
+          "x_mm": 121.7,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 53,
+          "option": "E",
+          "x_mm": 126.2,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 54,
+          "option": "A",
+          "x_mm": 108.2,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 54,
+          "option": "B",
+          "x_mm": 112.7,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 54,
+          "option": "C",
+          "x_mm": 117.2,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 54,
+          "option": "D",
+          "x_mm": 121.7,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 54,
+          "option": "E",
+          "x_mm": 126.2,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 55,
+          "option": "A",
+          "x_mm": 108.2,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 55,
+          "option": "B",
+          "x_mm": 112.7,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 55,
+          "option": "C",
+          "x_mm": 117.2,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 55,
+          "option": "D",
+          "x_mm": 121.7,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 55,
+          "option": "E",
+          "x_mm": 126.2,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 56,
+          "option": "A",
+          "x_mm": 108.2,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 56,
+          "option": "B",
+          "x_mm": 112.7,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 56,
+          "option": "C",
+          "x_mm": 117.2,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 56,
+          "option": "D",
+          "x_mm": 121.7,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 56,
+          "option": "E",
+          "x_mm": 126.2,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 57,
+          "option": "A",
+          "x_mm": 108.2,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 57,
+          "option": "B",
+          "x_mm": 112.7,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 57,
+          "option": "C",
+          "x_mm": 117.2,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 57,
+          "option": "D",
+          "x_mm": 121.7,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 57,
+          "option": "E",
+          "x_mm": 126.2,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 58,
+          "option": "A",
+          "x_mm": 108.2,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 58,
+          "option": "B",
+          "x_mm": 112.7,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 58,
+          "option": "C",
+          "x_mm": 117.2,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 58,
+          "option": "D",
+          "x_mm": 121.7,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 58,
+          "option": "E",
+          "x_mm": 126.2,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 59,
+          "option": "A",
+          "x_mm": 108.2,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 59,
+          "option": "B",
+          "x_mm": 112.7,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 59,
+          "option": "C",
+          "x_mm": 117.2,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 59,
+          "option": "D",
+          "x_mm": 121.7,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 59,
+          "option": "E",
+          "x_mm": 126.2,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 60,
+          "option": "A",
+          "x_mm": 108.2,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 60,
+          "option": "B",
+          "x_mm": 112.7,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 60,
+          "option": "C",
+          "x_mm": 117.2,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 60,
+          "option": "D",
+          "x_mm": 121.7,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 60,
+          "option": "E",
+          "x_mm": 126.2,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        }
+      ]
+    },
+    {
+      "sheet_id": "KCL-2T-2026-0003",
+      "page": 1,
+      "origin_on_page_mm": [
+        4.0,
+        3.0
+      ],
+      "sheet_size_mm": [
+        142.5,
+        100.0
+      ],
+      "fiducial_centers_mm": {
+        "top_left": [
+          14.740157480314963,
+          268.72440944881885
+        ],
+        "top_right": [
+          389.1968503937008,
+          268.72440944881885
+        ],
+        "bottom_left": [
+          14.740157480314963,
+          14.740157480314963
+        ],
+        "bottom_right": [
+          389.1968503937008,
+          14.740157480314963
+        ]
+      },
+      "fiducial_size_mm": 5.0,
+      "bubbles": [
+        {
+          "question": 1,
+          "option": "A",
+          "x_mm": 13.7,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 1,
+          "option": "B",
+          "x_mm": 18.2,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 1,
+          "option": "C",
+          "x_mm": 22.7,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 1,
+          "option": "D",
+          "x_mm": 27.2,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 1,
+          "option": "E",
+          "x_mm": 31.7,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 2,
+          "option": "A",
+          "x_mm": 13.7,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 2,
+          "option": "B",
+          "x_mm": 18.2,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 2,
+          "option": "C",
+          "x_mm": 22.7,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 2,
+          "option": "D",
+          "x_mm": 27.2,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 2,
+          "option": "E",
+          "x_mm": 31.7,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 3,
+          "option": "A",
+          "x_mm": 13.7,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 3,
+          "option": "B",
+          "x_mm": 18.2,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 3,
+          "option": "C",
+          "x_mm": 22.7,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 3,
+          "option": "D",
+          "x_mm": 27.2,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 3,
+          "option": "E",
+          "x_mm": 31.7,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 4,
+          "option": "A",
+          "x_mm": 13.7,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 4,
+          "option": "B",
+          "x_mm": 18.2,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 4,
+          "option": "C",
+          "x_mm": 22.7,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 4,
+          "option": "D",
+          "x_mm": 27.2,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 4,
+          "option": "E",
+          "x_mm": 31.7,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 5,
+          "option": "A",
+          "x_mm": 13.7,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 5,
+          "option": "B",
+          "x_mm": 18.2,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 5,
+          "option": "C",
+          "x_mm": 22.7,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 5,
+          "option": "D",
+          "x_mm": 27.2,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 5,
+          "option": "E",
+          "x_mm": 31.7,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 6,
+          "option": "A",
+          "x_mm": 13.7,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 6,
+          "option": "B",
+          "x_mm": 18.2,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 6,
+          "option": "C",
+          "x_mm": 22.7,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 6,
+          "option": "D",
+          "x_mm": 27.2,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 6,
+          "option": "E",
+          "x_mm": 31.7,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 7,
+          "option": "A",
+          "x_mm": 13.7,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 7,
+          "option": "B",
+          "x_mm": 18.2,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 7,
+          "option": "C",
+          "x_mm": 22.7,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 7,
+          "option": "D",
+          "x_mm": 27.2,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 7,
+          "option": "E",
+          "x_mm": 31.7,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 8,
+          "option": "A",
+          "x_mm": 13.7,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 8,
+          "option": "B",
+          "x_mm": 18.2,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 8,
+          "option": "C",
+          "x_mm": 22.7,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 8,
+          "option": "D",
+          "x_mm": 27.2,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 8,
+          "option": "E",
+          "x_mm": 31.7,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 9,
+          "option": "A",
+          "x_mm": 13.7,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 9,
+          "option": "B",
+          "x_mm": 18.2,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 9,
+          "option": "C",
+          "x_mm": 22.7,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 9,
+          "option": "D",
+          "x_mm": 27.2,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 9,
+          "option": "E",
+          "x_mm": 31.7,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 10,
+          "option": "A",
+          "x_mm": 13.7,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 10,
+          "option": "B",
+          "x_mm": 18.2,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 10,
+          "option": "C",
+          "x_mm": 22.7,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 10,
+          "option": "D",
+          "x_mm": 27.2,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 10,
+          "option": "E",
+          "x_mm": 31.7,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 11,
+          "option": "A",
+          "x_mm": 13.7,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 11,
+          "option": "B",
+          "x_mm": 18.2,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 11,
+          "option": "C",
+          "x_mm": 22.7,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 11,
+          "option": "D",
+          "x_mm": 27.2,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 11,
+          "option": "E",
+          "x_mm": 31.7,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 12,
+          "option": "A",
+          "x_mm": 13.7,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 12,
+          "option": "B",
+          "x_mm": 18.2,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 12,
+          "option": "C",
+          "x_mm": 22.7,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 12,
+          "option": "D",
+          "x_mm": 27.2,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 12,
+          "option": "E",
+          "x_mm": 31.7,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 13,
+          "option": "A",
+          "x_mm": 13.7,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 13,
+          "option": "B",
+          "x_mm": 18.2,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 13,
+          "option": "C",
+          "x_mm": 22.7,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 13,
+          "option": "D",
+          "x_mm": 27.2,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 13,
+          "option": "E",
+          "x_mm": 31.7,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 14,
+          "option": "A",
+          "x_mm": 13.7,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 14,
+          "option": "B",
+          "x_mm": 18.2,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 14,
+          "option": "C",
+          "x_mm": 22.7,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 14,
+          "option": "D",
+          "x_mm": 27.2,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 14,
+          "option": "E",
+          "x_mm": 31.7,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 15,
+          "option": "A",
+          "x_mm": 13.7,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 15,
+          "option": "B",
+          "x_mm": 18.2,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 15,
+          "option": "C",
+          "x_mm": 22.7,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 15,
+          "option": "D",
+          "x_mm": 27.2,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 15,
+          "option": "E",
+          "x_mm": 31.7,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 16,
+          "option": "A",
+          "x_mm": 45.2,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 16,
+          "option": "B",
+          "x_mm": 49.7,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 16,
+          "option": "C",
+          "x_mm": 54.2,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 16,
+          "option": "D",
+          "x_mm": 58.7,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 16,
+          "option": "E",
+          "x_mm": 63.2,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 17,
+          "option": "A",
+          "x_mm": 45.2,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 17,
+          "option": "B",
+          "x_mm": 49.7,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 17,
+          "option": "C",
+          "x_mm": 54.2,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 17,
+          "option": "D",
+          "x_mm": 58.7,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 17,
+          "option": "E",
+          "x_mm": 63.2,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 18,
+          "option": "A",
+          "x_mm": 45.2,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 18,
+          "option": "B",
+          "x_mm": 49.7,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 18,
+          "option": "C",
+          "x_mm": 54.2,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 18,
+          "option": "D",
+          "x_mm": 58.7,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 18,
+          "option": "E",
+          "x_mm": 63.2,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 19,
+          "option": "A",
+          "x_mm": 45.2,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 19,
+          "option": "B",
+          "x_mm": 49.7,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 19,
+          "option": "C",
+          "x_mm": 54.2,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 19,
+          "option": "D",
+          "x_mm": 58.7,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 19,
+          "option": "E",
+          "x_mm": 63.2,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 20,
+          "option": "A",
+          "x_mm": 45.2,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 20,
+          "option": "B",
+          "x_mm": 49.7,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 20,
+          "option": "C",
+          "x_mm": 54.2,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 20,
+          "option": "D",
+          "x_mm": 58.7,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 20,
+          "option": "E",
+          "x_mm": 63.2,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 21,
+          "option": "A",
+          "x_mm": 45.2,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 21,
+          "option": "B",
+          "x_mm": 49.7,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 21,
+          "option": "C",
+          "x_mm": 54.2,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 21,
+          "option": "D",
+          "x_mm": 58.7,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 21,
+          "option": "E",
+          "x_mm": 63.2,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 22,
+          "option": "A",
+          "x_mm": 45.2,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 22,
+          "option": "B",
+          "x_mm": 49.7,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 22,
+          "option": "C",
+          "x_mm": 54.2,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 22,
+          "option": "D",
+          "x_mm": 58.7,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 22,
+          "option": "E",
+          "x_mm": 63.2,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 23,
+          "option": "A",
+          "x_mm": 45.2,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 23,
+          "option": "B",
+          "x_mm": 49.7,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 23,
+          "option": "C",
+          "x_mm": 54.2,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 23,
+          "option": "D",
+          "x_mm": 58.7,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 23,
+          "option": "E",
+          "x_mm": 63.2,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 24,
+          "option": "A",
+          "x_mm": 45.2,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 24,
+          "option": "B",
+          "x_mm": 49.7,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 24,
+          "option": "C",
+          "x_mm": 54.2,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 24,
+          "option": "D",
+          "x_mm": 58.7,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 24,
+          "option": "E",
+          "x_mm": 63.2,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 25,
+          "option": "A",
+          "x_mm": 45.2,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 25,
+          "option": "B",
+          "x_mm": 49.7,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 25,
+          "option": "C",
+          "x_mm": 54.2,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 25,
+          "option": "D",
+          "x_mm": 58.7,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 25,
+          "option": "E",
+          "x_mm": 63.2,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 26,
+          "option": "A",
+          "x_mm": 45.2,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 26,
+          "option": "B",
+          "x_mm": 49.7,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 26,
+          "option": "C",
+          "x_mm": 54.2,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 26,
+          "option": "D",
+          "x_mm": 58.7,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 26,
+          "option": "E",
+          "x_mm": 63.2,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 27,
+          "option": "A",
+          "x_mm": 45.2,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 27,
+          "option": "B",
+          "x_mm": 49.7,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 27,
+          "option": "C",
+          "x_mm": 54.2,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 27,
+          "option": "D",
+          "x_mm": 58.7,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 27,
+          "option": "E",
+          "x_mm": 63.2,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 28,
+          "option": "A",
+          "x_mm": 45.2,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 28,
+          "option": "B",
+          "x_mm": 49.7,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 28,
+          "option": "C",
+          "x_mm": 54.2,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 28,
+          "option": "D",
+          "x_mm": 58.7,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 28,
+          "option": "E",
+          "x_mm": 63.2,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 29,
+          "option": "A",
+          "x_mm": 45.2,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 29,
+          "option": "B",
+          "x_mm": 49.7,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 29,
+          "option": "C",
+          "x_mm": 54.2,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 29,
+          "option": "D",
+          "x_mm": 58.7,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 29,
+          "option": "E",
+          "x_mm": 63.2,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 30,
+          "option": "A",
+          "x_mm": 45.2,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 30,
+          "option": "B",
+          "x_mm": 49.7,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 30,
+          "option": "C",
+          "x_mm": 54.2,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 30,
+          "option": "D",
+          "x_mm": 58.7,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 30,
+          "option": "E",
+          "x_mm": 63.2,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 31,
+          "option": "A",
+          "x_mm": 76.7,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 31,
+          "option": "B",
+          "x_mm": 81.2,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 31,
+          "option": "C",
+          "x_mm": 85.7,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 31,
+          "option": "D",
+          "x_mm": 90.2,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 31,
+          "option": "E",
+          "x_mm": 94.7,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 32,
+          "option": "A",
+          "x_mm": 76.7,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 32,
+          "option": "B",
+          "x_mm": 81.2,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 32,
+          "option": "C",
+          "x_mm": 85.7,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 32,
+          "option": "D",
+          "x_mm": 90.2,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 32,
+          "option": "E",
+          "x_mm": 94.7,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 33,
+          "option": "A",
+          "x_mm": 76.7,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 33,
+          "option": "B",
+          "x_mm": 81.2,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 33,
+          "option": "C",
+          "x_mm": 85.7,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 33,
+          "option": "D",
+          "x_mm": 90.2,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 33,
+          "option": "E",
+          "x_mm": 94.7,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 34,
+          "option": "A",
+          "x_mm": 76.7,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 34,
+          "option": "B",
+          "x_mm": 81.2,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 34,
+          "option": "C",
+          "x_mm": 85.7,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 34,
+          "option": "D",
+          "x_mm": 90.2,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 34,
+          "option": "E",
+          "x_mm": 94.7,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 35,
+          "option": "A",
+          "x_mm": 76.7,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 35,
+          "option": "B",
+          "x_mm": 81.2,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 35,
+          "option": "C",
+          "x_mm": 85.7,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 35,
+          "option": "D",
+          "x_mm": 90.2,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 35,
+          "option": "E",
+          "x_mm": 94.7,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 36,
+          "option": "A",
+          "x_mm": 76.7,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 36,
+          "option": "B",
+          "x_mm": 81.2,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 36,
+          "option": "C",
+          "x_mm": 85.7,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 36,
+          "option": "D",
+          "x_mm": 90.2,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 36,
+          "option": "E",
+          "x_mm": 94.7,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 37,
+          "option": "A",
+          "x_mm": 76.7,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 37,
+          "option": "B",
+          "x_mm": 81.2,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 37,
+          "option": "C",
+          "x_mm": 85.7,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 37,
+          "option": "D",
+          "x_mm": 90.2,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 37,
+          "option": "E",
+          "x_mm": 94.7,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 38,
+          "option": "A",
+          "x_mm": 76.7,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 38,
+          "option": "B",
+          "x_mm": 81.2,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 38,
+          "option": "C",
+          "x_mm": 85.7,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 38,
+          "option": "D",
+          "x_mm": 90.2,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 38,
+          "option": "E",
+          "x_mm": 94.7,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 39,
+          "option": "A",
+          "x_mm": 76.7,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 39,
+          "option": "B",
+          "x_mm": 81.2,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 39,
+          "option": "C",
+          "x_mm": 85.7,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 39,
+          "option": "D",
+          "x_mm": 90.2,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 39,
+          "option": "E",
+          "x_mm": 94.7,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 40,
+          "option": "A",
+          "x_mm": 76.7,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 40,
+          "option": "B",
+          "x_mm": 81.2,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 40,
+          "option": "C",
+          "x_mm": 85.7,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 40,
+          "option": "D",
+          "x_mm": 90.2,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 40,
+          "option": "E",
+          "x_mm": 94.7,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 41,
+          "option": "A",
+          "x_mm": 76.7,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 41,
+          "option": "B",
+          "x_mm": 81.2,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 41,
+          "option": "C",
+          "x_mm": 85.7,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 41,
+          "option": "D",
+          "x_mm": 90.2,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 41,
+          "option": "E",
+          "x_mm": 94.7,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 42,
+          "option": "A",
+          "x_mm": 76.7,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 42,
+          "option": "B",
+          "x_mm": 81.2,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 42,
+          "option": "C",
+          "x_mm": 85.7,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 42,
+          "option": "D",
+          "x_mm": 90.2,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 42,
+          "option": "E",
+          "x_mm": 94.7,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 43,
+          "option": "A",
+          "x_mm": 76.7,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 43,
+          "option": "B",
+          "x_mm": 81.2,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 43,
+          "option": "C",
+          "x_mm": 85.7,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 43,
+          "option": "D",
+          "x_mm": 90.2,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 43,
+          "option": "E",
+          "x_mm": 94.7,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 44,
+          "option": "A",
+          "x_mm": 76.7,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 44,
+          "option": "B",
+          "x_mm": 81.2,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 44,
+          "option": "C",
+          "x_mm": 85.7,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 44,
+          "option": "D",
+          "x_mm": 90.2,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 44,
+          "option": "E",
+          "x_mm": 94.7,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 45,
+          "option": "A",
+          "x_mm": 76.7,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 45,
+          "option": "B",
+          "x_mm": 81.2,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 45,
+          "option": "C",
+          "x_mm": 85.7,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 45,
+          "option": "D",
+          "x_mm": 90.2,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 45,
+          "option": "E",
+          "x_mm": 94.7,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 46,
+          "option": "A",
+          "x_mm": 108.2,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 46,
+          "option": "B",
+          "x_mm": 112.7,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 46,
+          "option": "C",
+          "x_mm": 117.2,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 46,
+          "option": "D",
+          "x_mm": 121.7,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 46,
+          "option": "E",
+          "x_mm": 126.2,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 47,
+          "option": "A",
+          "x_mm": 108.2,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 47,
+          "option": "B",
+          "x_mm": 112.7,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 47,
+          "option": "C",
+          "x_mm": 117.2,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 47,
+          "option": "D",
+          "x_mm": 121.7,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 47,
+          "option": "E",
+          "x_mm": 126.2,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 48,
+          "option": "A",
+          "x_mm": 108.2,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 48,
+          "option": "B",
+          "x_mm": 112.7,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 48,
+          "option": "C",
+          "x_mm": 117.2,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 48,
+          "option": "D",
+          "x_mm": 121.7,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 48,
+          "option": "E",
+          "x_mm": 126.2,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 49,
+          "option": "A",
+          "x_mm": 108.2,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 49,
+          "option": "B",
+          "x_mm": 112.7,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 49,
+          "option": "C",
+          "x_mm": 117.2,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 49,
+          "option": "D",
+          "x_mm": 121.7,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 49,
+          "option": "E",
+          "x_mm": 126.2,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 50,
+          "option": "A",
+          "x_mm": 108.2,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 50,
+          "option": "B",
+          "x_mm": 112.7,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 50,
+          "option": "C",
+          "x_mm": 117.2,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 50,
+          "option": "D",
+          "x_mm": 121.7,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 50,
+          "option": "E",
+          "x_mm": 126.2,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 51,
+          "option": "A",
+          "x_mm": 108.2,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 51,
+          "option": "B",
+          "x_mm": 112.7,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 51,
+          "option": "C",
+          "x_mm": 117.2,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 51,
+          "option": "D",
+          "x_mm": 121.7,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 51,
+          "option": "E",
+          "x_mm": 126.2,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 52,
+          "option": "A",
+          "x_mm": 108.2,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 52,
+          "option": "B",
+          "x_mm": 112.7,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 52,
+          "option": "C",
+          "x_mm": 117.2,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 52,
+          "option": "D",
+          "x_mm": 121.7,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 52,
+          "option": "E",
+          "x_mm": 126.2,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 53,
+          "option": "A",
+          "x_mm": 108.2,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 53,
+          "option": "B",
+          "x_mm": 112.7,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 53,
+          "option": "C",
+          "x_mm": 117.2,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 53,
+          "option": "D",
+          "x_mm": 121.7,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 53,
+          "option": "E",
+          "x_mm": 126.2,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 54,
+          "option": "A",
+          "x_mm": 108.2,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 54,
+          "option": "B",
+          "x_mm": 112.7,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 54,
+          "option": "C",
+          "x_mm": 117.2,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 54,
+          "option": "D",
+          "x_mm": 121.7,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 54,
+          "option": "E",
+          "x_mm": 126.2,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 55,
+          "option": "A",
+          "x_mm": 108.2,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 55,
+          "option": "B",
+          "x_mm": 112.7,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 55,
+          "option": "C",
+          "x_mm": 117.2,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 55,
+          "option": "D",
+          "x_mm": 121.7,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 55,
+          "option": "E",
+          "x_mm": 126.2,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 56,
+          "option": "A",
+          "x_mm": 108.2,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 56,
+          "option": "B",
+          "x_mm": 112.7,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 56,
+          "option": "C",
+          "x_mm": 117.2,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 56,
+          "option": "D",
+          "x_mm": 121.7,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 56,
+          "option": "E",
+          "x_mm": 126.2,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 57,
+          "option": "A",
+          "x_mm": 108.2,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 57,
+          "option": "B",
+          "x_mm": 112.7,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 57,
+          "option": "C",
+          "x_mm": 117.2,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 57,
+          "option": "D",
+          "x_mm": 121.7,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 57,
+          "option": "E",
+          "x_mm": 126.2,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 58,
+          "option": "A",
+          "x_mm": 108.2,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 58,
+          "option": "B",
+          "x_mm": 112.7,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 58,
+          "option": "C",
+          "x_mm": 117.2,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 58,
+          "option": "D",
+          "x_mm": 121.7,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 58,
+          "option": "E",
+          "x_mm": 126.2,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 59,
+          "option": "A",
+          "x_mm": 108.2,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 59,
+          "option": "B",
+          "x_mm": 112.7,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 59,
+          "option": "C",
+          "x_mm": 117.2,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 59,
+          "option": "D",
+          "x_mm": 121.7,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 59,
+          "option": "E",
+          "x_mm": 126.2,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 60,
+          "option": "A",
+          "x_mm": 108.2,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 60,
+          "option": "B",
+          "x_mm": 112.7,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 60,
+          "option": "C",
+          "x_mm": 117.2,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 60,
+          "option": "D",
+          "x_mm": 121.7,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 60,
+          "option": "E",
+          "x_mm": 126.2,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        }
+      ]
+    },
+    {
+      "sheet_id": "KCL-2T-2026-0004",
+      "page": 1,
+      "origin_on_page_mm": [
+        150.5,
+        3.0
+      ],
+      "sheet_size_mm": [
+        142.5,
+        100.0
+      ],
+      "fiducial_centers_mm": {
+        "top_left": [
+          14.740157480314984,
+          268.72440944881885
+        ],
+        "top_right": [
+          389.1968503937008,
+          268.72440944881885
+        ],
+        "bottom_left": [
+          14.740157480314984,
+          14.740157480314963
+        ],
+        "bottom_right": [
+          389.1968503937008,
+          14.740157480314963
+        ]
+      },
+      "fiducial_size_mm": 5.0,
+      "bubbles": [
+        {
+          "question": 1,
+          "option": "A",
+          "x_mm": 13.7,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 1,
+          "option": "B",
+          "x_mm": 18.2,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 1,
+          "option": "C",
+          "x_mm": 22.7,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 1,
+          "option": "D",
+          "x_mm": 27.2,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 1,
+          "option": "E",
+          "x_mm": 31.7,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 2,
+          "option": "A",
+          "x_mm": 13.7,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 2,
+          "option": "B",
+          "x_mm": 18.2,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 2,
+          "option": "C",
+          "x_mm": 22.7,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 2,
+          "option": "D",
+          "x_mm": 27.2,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 2,
+          "option": "E",
+          "x_mm": 31.7,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 3,
+          "option": "A",
+          "x_mm": 13.7,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 3,
+          "option": "B",
+          "x_mm": 18.2,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 3,
+          "option": "C",
+          "x_mm": 22.7,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 3,
+          "option": "D",
+          "x_mm": 27.2,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 3,
+          "option": "E",
+          "x_mm": 31.7,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 4,
+          "option": "A",
+          "x_mm": 13.7,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 4,
+          "option": "B",
+          "x_mm": 18.2,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 4,
+          "option": "C",
+          "x_mm": 22.7,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 4,
+          "option": "D",
+          "x_mm": 27.2,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 4,
+          "option": "E",
+          "x_mm": 31.7,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 5,
+          "option": "A",
+          "x_mm": 13.7,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 5,
+          "option": "B",
+          "x_mm": 18.2,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 5,
+          "option": "C",
+          "x_mm": 22.7,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 5,
+          "option": "D",
+          "x_mm": 27.2,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 5,
+          "option": "E",
+          "x_mm": 31.7,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 6,
+          "option": "A",
+          "x_mm": 13.7,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 6,
+          "option": "B",
+          "x_mm": 18.2,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 6,
+          "option": "C",
+          "x_mm": 22.7,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 6,
+          "option": "D",
+          "x_mm": 27.2,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 6,
+          "option": "E",
+          "x_mm": 31.7,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 7,
+          "option": "A",
+          "x_mm": 13.7,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 7,
+          "option": "B",
+          "x_mm": 18.2,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 7,
+          "option": "C",
+          "x_mm": 22.7,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 7,
+          "option": "D",
+          "x_mm": 27.2,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 7,
+          "option": "E",
+          "x_mm": 31.7,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 8,
+          "option": "A",
+          "x_mm": 13.7,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 8,
+          "option": "B",
+          "x_mm": 18.2,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 8,
+          "option": "C",
+          "x_mm": 22.7,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 8,
+          "option": "D",
+          "x_mm": 27.2,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 8,
+          "option": "E",
+          "x_mm": 31.7,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 9,
+          "option": "A",
+          "x_mm": 13.7,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 9,
+          "option": "B",
+          "x_mm": 18.2,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 9,
+          "option": "C",
+          "x_mm": 22.7,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 9,
+          "option": "D",
+          "x_mm": 27.2,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 9,
+          "option": "E",
+          "x_mm": 31.7,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 10,
+          "option": "A",
+          "x_mm": 13.7,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 10,
+          "option": "B",
+          "x_mm": 18.2,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 10,
+          "option": "C",
+          "x_mm": 22.7,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 10,
+          "option": "D",
+          "x_mm": 27.2,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 10,
+          "option": "E",
+          "x_mm": 31.7,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 11,
+          "option": "A",
+          "x_mm": 13.7,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 11,
+          "option": "B",
+          "x_mm": 18.2,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 11,
+          "option": "C",
+          "x_mm": 22.7,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 11,
+          "option": "D",
+          "x_mm": 27.2,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 11,
+          "option": "E",
+          "x_mm": 31.7,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 12,
+          "option": "A",
+          "x_mm": 13.7,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 12,
+          "option": "B",
+          "x_mm": 18.2,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 12,
+          "option": "C",
+          "x_mm": 22.7,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 12,
+          "option": "D",
+          "x_mm": 27.2,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 12,
+          "option": "E",
+          "x_mm": 31.7,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 13,
+          "option": "A",
+          "x_mm": 13.7,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 13,
+          "option": "B",
+          "x_mm": 18.2,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 13,
+          "option": "C",
+          "x_mm": 22.7,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 13,
+          "option": "D",
+          "x_mm": 27.2,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 13,
+          "option": "E",
+          "x_mm": 31.7,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 14,
+          "option": "A",
+          "x_mm": 13.7,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 14,
+          "option": "B",
+          "x_mm": 18.2,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 14,
+          "option": "C",
+          "x_mm": 22.7,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 14,
+          "option": "D",
+          "x_mm": 27.2,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 14,
+          "option": "E",
+          "x_mm": 31.7,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 15,
+          "option": "A",
+          "x_mm": 13.7,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 15,
+          "option": "B",
+          "x_mm": 18.2,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 15,
+          "option": "C",
+          "x_mm": 22.7,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 15,
+          "option": "D",
+          "x_mm": 27.2,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 15,
+          "option": "E",
+          "x_mm": 31.7,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 16,
+          "option": "A",
+          "x_mm": 45.2,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 16,
+          "option": "B",
+          "x_mm": 49.7,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 16,
+          "option": "C",
+          "x_mm": 54.2,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 16,
+          "option": "D",
+          "x_mm": 58.7,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 16,
+          "option": "E",
+          "x_mm": 63.2,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 17,
+          "option": "A",
+          "x_mm": 45.2,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 17,
+          "option": "B",
+          "x_mm": 49.7,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 17,
+          "option": "C",
+          "x_mm": 54.2,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 17,
+          "option": "D",
+          "x_mm": 58.7,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 17,
+          "option": "E",
+          "x_mm": 63.2,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 18,
+          "option": "A",
+          "x_mm": 45.2,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 18,
+          "option": "B",
+          "x_mm": 49.7,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 18,
+          "option": "C",
+          "x_mm": 54.2,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 18,
+          "option": "D",
+          "x_mm": 58.7,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 18,
+          "option": "E",
+          "x_mm": 63.2,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 19,
+          "option": "A",
+          "x_mm": 45.2,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 19,
+          "option": "B",
+          "x_mm": 49.7,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 19,
+          "option": "C",
+          "x_mm": 54.2,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 19,
+          "option": "D",
+          "x_mm": 58.7,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 19,
+          "option": "E",
+          "x_mm": 63.2,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 20,
+          "option": "A",
+          "x_mm": 45.2,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 20,
+          "option": "B",
+          "x_mm": 49.7,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 20,
+          "option": "C",
+          "x_mm": 54.2,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 20,
+          "option": "D",
+          "x_mm": 58.7,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 20,
+          "option": "E",
+          "x_mm": 63.2,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 21,
+          "option": "A",
+          "x_mm": 45.2,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 21,
+          "option": "B",
+          "x_mm": 49.7,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 21,
+          "option": "C",
+          "x_mm": 54.2,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 21,
+          "option": "D",
+          "x_mm": 58.7,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 21,
+          "option": "E",
+          "x_mm": 63.2,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 22,
+          "option": "A",
+          "x_mm": 45.2,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 22,
+          "option": "B",
+          "x_mm": 49.7,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 22,
+          "option": "C",
+          "x_mm": 54.2,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 22,
+          "option": "D",
+          "x_mm": 58.7,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 22,
+          "option": "E",
+          "x_mm": 63.2,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 23,
+          "option": "A",
+          "x_mm": 45.2,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 23,
+          "option": "B",
+          "x_mm": 49.7,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 23,
+          "option": "C",
+          "x_mm": 54.2,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 23,
+          "option": "D",
+          "x_mm": 58.7,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 23,
+          "option": "E",
+          "x_mm": 63.2,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 24,
+          "option": "A",
+          "x_mm": 45.2,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 24,
+          "option": "B",
+          "x_mm": 49.7,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 24,
+          "option": "C",
+          "x_mm": 54.2,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 24,
+          "option": "D",
+          "x_mm": 58.7,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 24,
+          "option": "E",
+          "x_mm": 63.2,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 25,
+          "option": "A",
+          "x_mm": 45.2,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 25,
+          "option": "B",
+          "x_mm": 49.7,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 25,
+          "option": "C",
+          "x_mm": 54.2,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 25,
+          "option": "D",
+          "x_mm": 58.7,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 25,
+          "option": "E",
+          "x_mm": 63.2,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 26,
+          "option": "A",
+          "x_mm": 45.2,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 26,
+          "option": "B",
+          "x_mm": 49.7,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 26,
+          "option": "C",
+          "x_mm": 54.2,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 26,
+          "option": "D",
+          "x_mm": 58.7,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 26,
+          "option": "E",
+          "x_mm": 63.2,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 27,
+          "option": "A",
+          "x_mm": 45.2,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 27,
+          "option": "B",
+          "x_mm": 49.7,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 27,
+          "option": "C",
+          "x_mm": 54.2,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 27,
+          "option": "D",
+          "x_mm": 58.7,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 27,
+          "option": "E",
+          "x_mm": 63.2,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 28,
+          "option": "A",
+          "x_mm": 45.2,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 28,
+          "option": "B",
+          "x_mm": 49.7,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 28,
+          "option": "C",
+          "x_mm": 54.2,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 28,
+          "option": "D",
+          "x_mm": 58.7,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 28,
+          "option": "E",
+          "x_mm": 63.2,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 29,
+          "option": "A",
+          "x_mm": 45.2,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 29,
+          "option": "B",
+          "x_mm": 49.7,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 29,
+          "option": "C",
+          "x_mm": 54.2,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 29,
+          "option": "D",
+          "x_mm": 58.7,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 29,
+          "option": "E",
+          "x_mm": 63.2,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 30,
+          "option": "A",
+          "x_mm": 45.2,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 30,
+          "option": "B",
+          "x_mm": 49.7,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 30,
+          "option": "C",
+          "x_mm": 54.2,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 30,
+          "option": "D",
+          "x_mm": 58.7,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 30,
+          "option": "E",
+          "x_mm": 63.2,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 31,
+          "option": "A",
+          "x_mm": 76.7,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 31,
+          "option": "B",
+          "x_mm": 81.2,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 31,
+          "option": "C",
+          "x_mm": 85.7,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 31,
+          "option": "D",
+          "x_mm": 90.2,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 31,
+          "option": "E",
+          "x_mm": 94.7,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 32,
+          "option": "A",
+          "x_mm": 76.7,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 32,
+          "option": "B",
+          "x_mm": 81.2,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 32,
+          "option": "C",
+          "x_mm": 85.7,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 32,
+          "option": "D",
+          "x_mm": 90.2,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 32,
+          "option": "E",
+          "x_mm": 94.7,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 33,
+          "option": "A",
+          "x_mm": 76.7,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 33,
+          "option": "B",
+          "x_mm": 81.2,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 33,
+          "option": "C",
+          "x_mm": 85.7,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 33,
+          "option": "D",
+          "x_mm": 90.2,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 33,
+          "option": "E",
+          "x_mm": 94.7,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 34,
+          "option": "A",
+          "x_mm": 76.7,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 34,
+          "option": "B",
+          "x_mm": 81.2,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 34,
+          "option": "C",
+          "x_mm": 85.7,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 34,
+          "option": "D",
+          "x_mm": 90.2,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 34,
+          "option": "E",
+          "x_mm": 94.7,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 35,
+          "option": "A",
+          "x_mm": 76.7,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 35,
+          "option": "B",
+          "x_mm": 81.2,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 35,
+          "option": "C",
+          "x_mm": 85.7,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 35,
+          "option": "D",
+          "x_mm": 90.2,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 35,
+          "option": "E",
+          "x_mm": 94.7,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 36,
+          "option": "A",
+          "x_mm": 76.7,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 36,
+          "option": "B",
+          "x_mm": 81.2,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 36,
+          "option": "C",
+          "x_mm": 85.7,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 36,
+          "option": "D",
+          "x_mm": 90.2,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 36,
+          "option": "E",
+          "x_mm": 94.7,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 37,
+          "option": "A",
+          "x_mm": 76.7,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 37,
+          "option": "B",
+          "x_mm": 81.2,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 37,
+          "option": "C",
+          "x_mm": 85.7,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 37,
+          "option": "D",
+          "x_mm": 90.2,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 37,
+          "option": "E",
+          "x_mm": 94.7,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 38,
+          "option": "A",
+          "x_mm": 76.7,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 38,
+          "option": "B",
+          "x_mm": 81.2,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 38,
+          "option": "C",
+          "x_mm": 85.7,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 38,
+          "option": "D",
+          "x_mm": 90.2,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 38,
+          "option": "E",
+          "x_mm": 94.7,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 39,
+          "option": "A",
+          "x_mm": 76.7,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 39,
+          "option": "B",
+          "x_mm": 81.2,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 39,
+          "option": "C",
+          "x_mm": 85.7,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 39,
+          "option": "D",
+          "x_mm": 90.2,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 39,
+          "option": "E",
+          "x_mm": 94.7,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 40,
+          "option": "A",
+          "x_mm": 76.7,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 40,
+          "option": "B",
+          "x_mm": 81.2,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 40,
+          "option": "C",
+          "x_mm": 85.7,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 40,
+          "option": "D",
+          "x_mm": 90.2,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 40,
+          "option": "E",
+          "x_mm": 94.7,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 41,
+          "option": "A",
+          "x_mm": 76.7,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 41,
+          "option": "B",
+          "x_mm": 81.2,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 41,
+          "option": "C",
+          "x_mm": 85.7,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 41,
+          "option": "D",
+          "x_mm": 90.2,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 41,
+          "option": "E",
+          "x_mm": 94.7,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 42,
+          "option": "A",
+          "x_mm": 76.7,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 42,
+          "option": "B",
+          "x_mm": 81.2,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 42,
+          "option": "C",
+          "x_mm": 85.7,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 42,
+          "option": "D",
+          "x_mm": 90.2,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 42,
+          "option": "E",
+          "x_mm": 94.7,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 43,
+          "option": "A",
+          "x_mm": 76.7,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 43,
+          "option": "B",
+          "x_mm": 81.2,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 43,
+          "option": "C",
+          "x_mm": 85.7,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 43,
+          "option": "D",
+          "x_mm": 90.2,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 43,
+          "option": "E",
+          "x_mm": 94.7,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 44,
+          "option": "A",
+          "x_mm": 76.7,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 44,
+          "option": "B",
+          "x_mm": 81.2,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 44,
+          "option": "C",
+          "x_mm": 85.7,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 44,
+          "option": "D",
+          "x_mm": 90.2,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 44,
+          "option": "E",
+          "x_mm": 94.7,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 45,
+          "option": "A",
+          "x_mm": 76.7,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 45,
+          "option": "B",
+          "x_mm": 81.2,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 45,
+          "option": "C",
+          "x_mm": 85.7,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 45,
+          "option": "D",
+          "x_mm": 90.2,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 45,
+          "option": "E",
+          "x_mm": 94.7,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 46,
+          "option": "A",
+          "x_mm": 108.2,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 46,
+          "option": "B",
+          "x_mm": 112.7,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 46,
+          "option": "C",
+          "x_mm": 117.2,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 46,
+          "option": "D",
+          "x_mm": 121.7,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 46,
+          "option": "E",
+          "x_mm": 126.2,
+          "y_mm": 62.14,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 47,
+          "option": "A",
+          "x_mm": 108.2,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 47,
+          "option": "B",
+          "x_mm": 112.7,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 47,
+          "option": "C",
+          "x_mm": 117.2,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 47,
+          "option": "D",
+          "x_mm": 121.7,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 47,
+          "option": "E",
+          "x_mm": 126.2,
+          "y_mm": 58.49,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 48,
+          "option": "A",
+          "x_mm": 108.2,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 48,
+          "option": "B",
+          "x_mm": 112.7,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 48,
+          "option": "C",
+          "x_mm": 117.2,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 48,
+          "option": "D",
+          "x_mm": 121.7,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 48,
+          "option": "E",
+          "x_mm": 126.2,
+          "y_mm": 54.83,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 49,
+          "option": "A",
+          "x_mm": 108.2,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 49,
+          "option": "B",
+          "x_mm": 112.7,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 49,
+          "option": "C",
+          "x_mm": 117.2,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 49,
+          "option": "D",
+          "x_mm": 121.7,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 49,
+          "option": "E",
+          "x_mm": 126.2,
+          "y_mm": 51.17,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 50,
+          "option": "A",
+          "x_mm": 108.2,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 50,
+          "option": "B",
+          "x_mm": 112.7,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 50,
+          "option": "C",
+          "x_mm": 117.2,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 50,
+          "option": "D",
+          "x_mm": 121.7,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 50,
+          "option": "E",
+          "x_mm": 126.2,
+          "y_mm": 47.52,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 51,
+          "option": "A",
+          "x_mm": 108.2,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 51,
+          "option": "B",
+          "x_mm": 112.7,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 51,
+          "option": "C",
+          "x_mm": 117.2,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 51,
+          "option": "D",
+          "x_mm": 121.7,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 51,
+          "option": "E",
+          "x_mm": 126.2,
+          "y_mm": 43.86,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 52,
+          "option": "A",
+          "x_mm": 108.2,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 52,
+          "option": "B",
+          "x_mm": 112.7,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 52,
+          "option": "C",
+          "x_mm": 117.2,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 52,
+          "option": "D",
+          "x_mm": 121.7,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 52,
+          "option": "E",
+          "x_mm": 126.2,
+          "y_mm": 40.2,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 53,
+          "option": "A",
+          "x_mm": 108.2,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 53,
+          "option": "B",
+          "x_mm": 112.7,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 53,
+          "option": "C",
+          "x_mm": 117.2,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 53,
+          "option": "D",
+          "x_mm": 121.7,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 53,
+          "option": "E",
+          "x_mm": 126.2,
+          "y_mm": 36.55,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 54,
+          "option": "A",
+          "x_mm": 108.2,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 54,
+          "option": "B",
+          "x_mm": 112.7,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 54,
+          "option": "C",
+          "x_mm": 117.2,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 54,
+          "option": "D",
+          "x_mm": 121.7,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 54,
+          "option": "E",
+          "x_mm": 126.2,
+          "y_mm": 32.89,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 55,
+          "option": "A",
+          "x_mm": 108.2,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 55,
+          "option": "B",
+          "x_mm": 112.7,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 55,
+          "option": "C",
+          "x_mm": 117.2,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 55,
+          "option": "D",
+          "x_mm": 121.7,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 55,
+          "option": "E",
+          "x_mm": 126.2,
+          "y_mm": 29.23,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 56,
+          "option": "A",
+          "x_mm": 108.2,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 56,
+          "option": "B",
+          "x_mm": 112.7,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 56,
+          "option": "C",
+          "x_mm": 117.2,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 56,
+          "option": "D",
+          "x_mm": 121.7,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 56,
+          "option": "E",
+          "x_mm": 126.2,
+          "y_mm": 25.58,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 57,
+          "option": "A",
+          "x_mm": 108.2,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 57,
+          "option": "B",
+          "x_mm": 112.7,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 57,
+          "option": "C",
+          "x_mm": 117.2,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 57,
+          "option": "D",
+          "x_mm": 121.7,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 57,
+          "option": "E",
+          "x_mm": 126.2,
+          "y_mm": 21.92,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 58,
+          "option": "A",
+          "x_mm": 108.2,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 58,
+          "option": "B",
+          "x_mm": 112.7,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 58,
+          "option": "C",
+          "x_mm": 117.2,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 58,
+          "option": "D",
+          "x_mm": 121.7,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 58,
+          "option": "E",
+          "x_mm": 126.2,
+          "y_mm": 18.26,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 59,
+          "option": "A",
+          "x_mm": 108.2,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 59,
+          "option": "B",
+          "x_mm": 112.7,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 59,
+          "option": "C",
+          "x_mm": 117.2,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 59,
+          "option": "D",
+          "x_mm": 121.7,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 59,
+          "option": "E",
+          "x_mm": 126.2,
+          "y_mm": 14.61,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 60,
+          "option": "A",
+          "x_mm": 108.2,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 60,
+          "option": "B",
+          "x_mm": 112.7,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 60,
+          "option": "C",
+          "x_mm": 117.2,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 60,
+          "option": "D",
+          "x_mm": 121.7,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        },
+        {
+          "question": 60,
+          "option": "E",
+          "x_mm": 126.2,
+          "y_mm": 10.95,
+          "radius_mm": 1.75
+        }
+      ]
+    }
+  ]
+}
