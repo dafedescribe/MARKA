@@ -10,3 +10,6 @@ inputs/
 .DS_Store
 demo_site/node_modules/
 demo_site/dist/
+.env
+api/.env
+demo_site/.env
