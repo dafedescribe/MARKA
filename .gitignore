@@ -10,8 +10,6 @@ inputs/
 .DS_Store
 demo_site/node_modules/
 demo_site/dist/
-
-# Environment files (secrets) — never commit
 .env
-.env.*
-!.env.example
+api/.env
+demo_site/.env
