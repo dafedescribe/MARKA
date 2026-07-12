@@ -1,0 +1,29 @@
+# Render Blueprint for the MARKA backend (FastAPI).
+# Frontend is deployed separately on Vercel — do NOT build it here.
+#
+# Plan note: "free" sleeps after ~15 min idle (~50s cold start). For production
+# switch to "starter" (always-on) — see ROADMAP.md Phase 4.
+services:
+  - type: web
+    name: marka-api
+    runtime: python
+    plan: free
+    region: oregon
+    rootDir: .
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn api.server:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      # Secrets — set these in the Render dashboard / via MCP (sync:false = not stored in git)
+      - key: JWT_SECRET
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: PAYSTACK_SECRET_KEY
+        sync: false
+      # Comma-separated list of allowed browser origins (your Vercel URL).
+      - key: ALLOWED_ORIGINS
+        sync: false

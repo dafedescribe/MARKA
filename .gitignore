@@ -13,3 +13,6 @@ demo_site/dist/
 .env
 api/.env
 demo_site/.env
+
+# MCP config — may contain a Render API key; never commit
+.mcp.json

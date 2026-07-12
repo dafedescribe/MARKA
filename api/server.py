@@ -49,9 +49,18 @@ app = FastAPI(title="MARKA Grading API")
 # Static frontend
 STATIC_DIR = os.path.join(os.path.dirname(__file__), '..', 'demo_site', 'dist')
 
+# Allowed browser origins. Set ALLOWED_ORIGINS in the environment to a
+# comma-separated list of your deployed frontend URLs (e.g. the Vercel domain).
+# Falls back to local dev origins so `npm run dev` keeps working.
+_default_origins = "http://localhost:5173,http://localhost:3000"
+ALLOWED_ORIGINS = [
+    o.strip() for o in os.environ.get("ALLOWED_ORIGINS", _default_origins).split(",")
+    if o.strip()
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

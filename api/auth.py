@@ -8,7 +8,12 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-JWT_SECRET = os.environ.get("JWT_SECRET", "super_secret_jwt_key_replace_me_in_production")
+JWT_SECRET = os.environ.get("JWT_SECRET")
+if not JWT_SECRET:
+    raise RuntimeError(
+        "JWT_SECRET environment variable is not set. "
+        "Set a long random string in your .env (local) or Render env (prod) before starting the server."
+    )
 ALGORITHM = "HS256"
 
 def get_password_hash(password: str) -> str:
