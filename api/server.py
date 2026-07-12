@@ -11,7 +11,11 @@ Endpoints:
 
 import sys
 import os
+# Add repo root (for omr_scanner et al.) AND this api/ dir (for database, auth)
+# so bare imports resolve whether launched as `api.server:app` from the repo
+# root (Render) or `server:app` from inside api/ (local dev).
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+sys.path.insert(0, os.path.dirname(__file__))
 
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException, BackgroundTasks, Request, Header
 

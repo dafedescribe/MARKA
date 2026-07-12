@@ -8,7 +8,7 @@ services:
     name: marka-api
     runtime: python
     plan: free
-    region: oregon
+    region: frankfurt
     rootDir: .
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn api.server:app --host 0.0.0.0 --port $PORT
