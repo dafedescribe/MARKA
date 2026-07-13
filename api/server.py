@@ -53,7 +53,7 @@ import urllib.error
 from omr_scanner import read_bubbles, grade_and_render
 from database import supabase
 from auth import generate_marka_id, generate_pin, get_password_hash, verify_password, create_access_token
-from pydantic import BaseModel
+from pydantic import BaseModel, constr
 
 
 
@@ -203,10 +203,10 @@ class LoginRequest(BaseModel):
 
 class ProcessScanRequest(BaseModel):
     scan_id: str
-    exam_code: str
+    exam_code: constr(max_length=50) = None  # type: ignore
 
 class ExamRequest(BaseModel):
-    exam_code: str
+    exam_code: constr(max_length=50)  # type: ignore
     answers: dict  # {"1": "A", "2": "C", ...}
 
 class TokenRequest(BaseModel):
@@ -363,6 +363,8 @@ def create_or_update_exam(request: Request, req: ExamRequest, user_id: str = Dep
         raise HTTPException(400, "exam_code is required")
     if not req.answers:
         raise HTTPException(400, "answers cannot be empty")
+    if len(req.answers) > 200:
+        raise HTTPException(400, "Maximum of 200 questions allowed per exam.")
 
     # Normalise. A value may be a single option ("A"), a list of accepted
     # options (["A","C"]), or "*" for a bonus (any answer counts).
