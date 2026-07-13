@@ -27,7 +27,7 @@ function App() {
         <div className="relative">
           <button 
             onClick={() => setShowAuth(false)}
-            className="absolute top-4 left-4 z-50 text-gray-500 hover:text-blue-600 font-medium"
+            className="absolute top-8 right-8 z-50 text-gray-400 hover:text-[#3B0042] font-bold text-sm bg-white px-4 py-2 rounded-xl shadow-sm border border-gray-100 transition-colors"
           >
             ← Back to Home
           </button>
