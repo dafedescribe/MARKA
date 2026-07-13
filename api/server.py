@@ -458,20 +458,29 @@ def process_scan_background(scan_id: str, exam_code: str, user_id: str):
             score = grade_result["score"]
             total = grade_result["total"]
             percentage = grade_result["percentage"]
-            
+
+            graded_img = cv2.imread(out_path)
+
             # Apply Heavy Watermark if DEMO-TEST
             if user_data.get("marka_id") == "DEMO-TEST":
-                img = cv2.imread(out_path)
-                h, w = img.shape[:2]
-                cv2.putText(img, "MARKA DEMO", (int(w*0.1), int(h*0.4)), cv2.FONT_HERSHEY_SIMPLEX, 3, (0, 0, 255), 8, cv2.LINE_AA)
-                cv2.putText(img, "NOT FOR PRODUCTION", (int(w*0.05), int(h*0.6)), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 255), 6, cv2.LINE_AA)
-                cv2.imwrite(out_path, img)
+                h, w = graded_img.shape[:2]
+                cv2.putText(graded_img, "MARKA DEMO", (int(w*0.1), int(h*0.4)), cv2.FONT_HERSHEY_SIMPLEX, 3, (0, 0, 255), 8, cv2.LINE_AA)
+                cv2.putText(graded_img, "NOT FOR PRODUCTION", (int(w*0.05), int(h*0.6)), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 255), 6, cv2.LINE_AA)
 
-            # Upload graded image to Supabase
-            with open(out_path, "rb") as f:
-                supabase.storage.from_("graded_images").upload(file_path, f, {"content-type": "image/jpeg"})
-            graded_file_path = file_path
+            # Compress the graded proof to WebP (~60% quality) to protect the 1GB
+            # storage budget — a ~2MB JPEG becomes ~100-150KB, still legible.
+            ok, webp_buf = cv2.imencode(".webp", graded_img, [cv2.IMWRITE_WEBP_QUALITY, 60])
+            graded_file_path = f"{user_id}/{scan_id}.webp"
+            supabase.storage.from_("graded_images").upload(
+                graded_file_path, webp_buf.tobytes(), {"content-type": "image/webp"})
             os.unlink(out_path)
+
+        # Delete the raw upload now that grading is done — it is never reused and
+        # is the biggest storage cost (3-5MB per phone photo).
+        try:
+            supabase.storage.from_("raw_images").remove([file_path])
+        except Exception as e:
+            print(f"Could not delete raw image {file_path}: {e}")
 
 
         # 4. Deduct credit
@@ -488,7 +497,7 @@ def process_scan_background(scan_id: str, exam_code: str, user_id: str):
             "total": total,
             "percentage": percentage,
             "raw_marks": result["marks"],
-            "image_path": file_path,
+            "image_path": None,  # raw wiped immediately post-grade
             "graded_image_path": graded_file_path
         }).eq("scan_id", scan_id).execute()
 
@@ -592,7 +601,7 @@ def export_results(exam_code: str, token: str):
             if img_path:
                 try:
                     img_bytes = supabase.storage.from_("graded_images").download(img_path)
-                    zipf.writestr(f"images/{s['scan_id']}_graded.jpg", img_bytes)
+                    zipf.writestr(f"images/{s['scan_id']}_graded.webp", img_bytes)
                 except Exception as e:
                     print(f"Failed to zip image {img_path}: {e}")
 
@@ -611,6 +620,50 @@ def export_results(exam_code: str, token: str):
     url_res = supabase.storage.from_("exports").create_signed_url(export_path, 3600)
     return {"export_url": url_res['signedURL']}
 
+
+# ── Retention: 7-day image wipe ───────────────────────────────────
+
+def wipe_expired_images(days: int = 7) -> dict:
+    """Delete raw + graded images for scans older than `days`. Scores and the
+    scan records are kept forever — only the image files (and their paths) go."""
+    if not supabase:
+        return {"error": "supabase not configured"}
+    import datetime as _dt
+    cutoff = (_dt.datetime.now(_dt.timezone.utc) - _dt.timedelta(days=days)).isoformat()
+
+    res = supabase.table("scans").select(
+        "id, image_path, graded_image_path").lt("created_at", cutoff).execute()
+    targets = [s for s in (res.data or [])
+               if s.get("image_path") or s.get("graded_image_path")]
+
+    files_deleted = 0
+    for s in targets:
+        for bucket, col in (("raw_images", "image_path"),
+                            ("graded_images", "graded_image_path")):
+            p = s.get(col)
+            if p:
+                try:
+                    supabase.storage.from_(bucket).remove([p])
+                    files_deleted += 1
+                except Exception as e:
+                    print(f"wipe: {bucket}/{p} failed: {e}")
+        try:
+            supabase.table("scans").update(
+                {"image_path": None, "graded_image_path": None}).eq("id", s["id"]).execute()
+        except Exception as e:
+            print(f"wipe: db update failed for scan {s['id']}: {e}")
+
+    return {"scans_affected": len(targets), "files_deleted": files_deleted, "cutoff": cutoff}
+
+
+@app.post("/admin/wipe-expired")
+def admin_wipe_expired(days: int = 7, x_cron_secret: str = Header(None)):
+    """Delete images older than `days` (default 7). Call daily from a cron
+    (e.g. cron-job.org) with the X-Cron-Secret header set to CRON_SECRET."""
+    secret = os.environ.get("CRON_SECRET", "")
+    if not secret or x_cron_secret != secret:
+        raise HTTPException(401, "Invalid or missing cron secret")
+    return wipe_expired_images(days)
 
 
 # ── Webhook Endpoints ─────────────────────────────────────────────
