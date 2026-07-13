@@ -80,28 +80,31 @@ export default function Auth({ onLogin }) {
           }
         ]
       },
-      callback: async (response) => {
-        // Payment successful, now verify and generate ID
-        setLoading(true);
-        try {
-          const res = await fetch(`${API_URL}/auth/purchase-id`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-              reference: response.reference,
-              email: email 
-            }),
-          });
-          const data = await res.json();
-          
-          if (!res.ok) throw new Error(data.detail || 'Failed to verify payment and generate ID');
-          
-          setSuccessData(data);
-        } catch (err) {
-          setError(err.message);
-        } finally {
-          setLoading(false);
-        }
+      // NOTE: Paystack rejects an async callback ("callback must be a valid
+      // function"), so keep this sync and run the async work in an IIFE.
+      callback: (response) => {
+        (async () => {
+          setLoading(true);
+          try {
+            const res = await fetch(`${API_URL}/auth/purchase-id`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                reference: response.reference,
+                email: email
+              }),
+            });
+            const data = await res.json();
+
+            if (!res.ok) throw new Error(data.detail || 'Failed to verify payment and generate ID');
+
+            setSuccessData(data);
+          } catch (err) {
+            setError(err.message);
+          } finally {
+            setLoading(false);
+          }
+        })();
       },
       onClose: () => {
         setLoading(false);
