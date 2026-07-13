@@ -10,8 +10,9 @@ const getSel = (val) => {
   if (val === '*') return { bonus: true, set: new Set() };
   if (Array.isArray(val)) return { bonus: false, set: new Set(val) };
   if (typeof val === 'string' && val) return { bonus: false, set: new Set([val]) };
-  return { bonus: false, set: new Set(['A']) };
+  return { bonus: false, set: new Set() }; // unset — no default answer
 };
+const isAnswered = (v) => v === '*' || (Array.isArray(v) ? v.length > 0 : (typeof v === 'string' && v.length > 0));
 const normalize = (set) => {
   const arr = [...set].sort();
   if (arr.length <= 1) return arr[0] || 'A';
@@ -38,6 +39,9 @@ export default function ExamBuilder({
   const toggleBonus = (qNum) => {
     setAnswerKey((prev) => ({ ...prev, [qNum]: prev[qNum] === '*' ? 'A' : '*' }));
   };
+
+  const answeredCount = Array.from({ length: questionsCount }, (_, i) => answerKey[i + 1]).filter(isAnswered).length;
+  const allAnswered = answeredCount === questionsCount;
 
   return (
     <motion.div
@@ -91,14 +95,23 @@ export default function ExamBuilder({
         </div>
 
         <div className="md:col-span-7 bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-6">
-          <h3 className="text-xs font-extrabold text-gray-400 uppercase tracking-widest">Options Key Builder</h3>
+          <div className="flex items-center justify-between">
+            <h3 className="text-xs font-extrabold text-gray-400 uppercase tracking-widest">Options Key Builder</h3>
+            <span className={`text-[11px] font-bold ${allAnswered ? 'text-emerald-600' : 'text-amber-600'}`}>
+              {answeredCount}/{questionsCount} answered
+            </span>
+          </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[500px] overflow-y-auto pr-2">
             {Array.from({ length: questionsCount }).map((_, idx) => {
               const qNum = idx + 1;
               const { bonus, set } = getSel(answerKey[qNum]);
+              const unset = !bonus && set.size === 0;
               return (
-                <div key={qNum} onClick={() => setActiveBuilderQ(qNum)} className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-all ${activeBuilderQ === qNum ? "border-[#3B0042] bg-purple-50/20 ring-2 ring-[#3B0042]/10" : "border-gray-100"}`}>
-                  <span className="font-mono text-xs font-bold text-gray-400">Q{String(qNum).padStart(2, "0")}</span>
+                <div key={qNum} onClick={() => setActiveBuilderQ(qNum)} className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-all ${activeBuilderQ === qNum ? "border-[#3B0042] bg-purple-50/20 ring-2 ring-[#3B0042]/10" : unset ? "border-amber-200 bg-amber-50/30" : "border-gray-100"}`}>
+                  <span className="font-mono text-xs font-bold text-gray-400 flex items-center gap-1.5">
+                    {unset && <span className="w-1.5 h-1.5 rounded-full bg-amber-400" title="Unanswered"></span>}
+                    Q{String(qNum).padStart(2, "0")}
+                  </span>
                   <div className="flex items-center gap-2">
                     {["A", "B", "C", "D", "E"].slice(0, optionsCount).map((opt) => {
                       const active = !bonus && set.has(opt);

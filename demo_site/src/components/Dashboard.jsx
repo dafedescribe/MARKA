@@ -78,12 +78,16 @@ export default function Dashboard({ token, onLogout }) {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [currentView, activeBuilderQ, questionsCount, optionsCount]);
 
+  // Keep answers within the current question count; do NOT auto-fill untouched
+  // questions (they must be answered explicitly — see the guard in handleCreateExam).
   useEffect(() => {
-    const key = {};
-    for (let i = 1; i <= questionsCount; i++) {
-      key[i] = answerKey[i] || "A";
-    }
-    setAnswerKey(key);
+    setAnswerKey((prev) => {
+      const key = {};
+      for (let i = 1; i <= questionsCount; i++) {
+        if (prev[i] !== undefined) key[i] = prev[i];
+      }
+      return key;
+    });
   }, [questionsCount]);
 
   const refreshCredits = async () => {
@@ -141,7 +145,22 @@ export default function Dashboard({ token, onLogout }) {
   const handleCreateExam = async () => {
     const code = newExamCode.trim().toUpperCase();
     if (!code) { setExamMsg('Enter an exam name/code.'); return; }
-    
+
+    // Guard: every question must be explicitly answered (a letter, several
+    // letters, or ★ bonus). Untouched questions are no longer defaulted to "A".
+    const missing = [];
+    for (let i = 1; i <= questionsCount; i++) {
+      const v = answerKey[i];
+      const isSet = v === '*'
+        || (Array.isArray(v) ? v.length > 0 : (typeof v === 'string' && v.length > 0));
+      if (!isSet) missing.push(i);
+    }
+    if (missing.length) {
+      const preview = missing.slice(0, 6).map((n) => `Q${n}`).join(', ');
+      setExamMsg(`${missing.length} question${missing.length > 1 ? 's' : ''} unanswered (${preview}${missing.length > 6 ? '…' : ''}). Mark every question, or use ★ for bonus.`);
+      return;
+    }
+
     setExamSaving(true);
     setExamMsg('');
     try {
