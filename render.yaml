@@ -27,3 +27,6 @@ services:
       # Comma-separated list of allowed browser origins (your Vercel URL).
       - key: ALLOWED_ORIGINS
         sync: false
+      # Protects POST /admin/wipe-expired (daily 7-day image wipe).
+      - key: CRON_SECRET
+        sync: false
