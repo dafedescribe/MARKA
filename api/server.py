@@ -175,10 +175,15 @@ def purchase_id(req: PurchaseIdRequest):
     req_obj = urllib.request.Request(url, headers=headers)
     
     try:
-        with urllib.request.urlopen(req_obj) as response:
+        with urllib.request.urlopen(req_obj, timeout=30) as response:
             res_data = json.loads(response.read().decode())
+    except urllib.error.HTTPError as e:
+        body = e.read().decode(errors="replace")[:300]
+        print(f"Paystack verify HTTPError {e.code}: {body}")
+        raise HTTPException(400, f"Paystack verify failed ({e.code}): {body}")
     except urllib.error.URLError as e:
-        raise HTTPException(400, "Failed to verify payment with Paystack")
+        print(f"Paystack verify URLError: {e.reason}")
+        raise HTTPException(400, f"Could not reach Paystack: {e.reason}")
 
     if not res_data.get("status") or res_data.get("data", {}).get("status") != "success":
         raise HTTPException(400, "Payment was not successful")
