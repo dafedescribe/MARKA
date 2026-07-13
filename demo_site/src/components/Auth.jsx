@@ -11,6 +11,9 @@ export default function Auth({ onLogin }) {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [successData, setSuccessData] = useState(null);
+  const [showForgotPin, setShowForgotPin] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState('');
+  const [forgotMsg, setForgotMsg] = useState('');
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
   const PAYSTACK_PUBLIC_KEY = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY || 'pk_test_replace_with_your_key_here'; // Replace in .env
@@ -25,6 +28,27 @@ export default function Auth({ onLogin }) {
       document.body.removeChild(script);
     };
   }, []);
+
+  const handleForgotPin = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    setForgotMsg('');
+    try {
+      const res = await fetch(`${API_URL}/auth/forgot-pin`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: forgotEmail }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || 'Request failed');
+      setForgotMsg(data.message);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -166,13 +190,13 @@ export default function Auth({ onLogin }) {
         <div className="auth-tabs">
           <button 
             className={`tab ${isLogin ? 'active' : ''}`}
-            onClick={() => { setIsLogin(true); setError(''); }}
+            onClick={() => { setIsLogin(true); setError(''); setShowForgotPin(false); }}
           >
             Login
           </button>
           <button 
             className={`tab ${!isLogin ? 'active' : ''}`}
-            onClick={() => { setIsLogin(false); setError(''); }}
+            onClick={() => { setIsLogin(false); setError(''); setShowForgotPin(false); }}
           >
             Buy Credits to Start
           </button>
@@ -180,7 +204,29 @@ export default function Auth({ onLogin }) {
 
         {error && <div className="error-message">{error}</div>}
 
-        {isLogin ? (
+        {showForgotPin ? (
+          <form onSubmit={handleForgotPin} className="auth-form">
+            <h3 className="text-lg font-bold mb-2">Recover PIN</h3>
+            <p className="text-sm text-gray-600 mb-4">Enter the email you used when purchasing your credits.</p>
+            {forgotMsg && <div className="bg-green-50 text-green-700 p-3 rounded-lg mb-4 text-sm border border-green-200">{forgotMsg}</div>}
+            <div className="form-group">
+              <label>Email Address</label>
+              <input 
+                type="email" 
+                value={forgotEmail}
+                onChange={(e) => setForgotEmail(e.target.value)}
+                placeholder="your@email.com"
+                required
+              />
+            </div>
+            <button type="submit" disabled={loading} className="btn btn-primary w-full bg-blue-600 text-white font-bold py-2 rounded-lg mb-3">
+              {loading ? <Loader2 className="animate-spin mx-auto" size={20} /> : 'Send Recovery Link'}
+            </button>
+            <button type="button" className="w-full text-sm text-gray-500 hover:text-gray-800 py-2" onClick={() => setShowForgotPin(false)}>
+              Back to Login
+            </button>
+          </form>
+        ) : isLogin ? (
           <form onSubmit={handleLogin} className="auth-form">
             <div className="form-group">
               <label>MARKA ID</label>

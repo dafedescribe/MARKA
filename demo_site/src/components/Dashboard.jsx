@@ -141,8 +141,10 @@ export default function Dashboard({ token, onLogout }) {
     try {
       const res = await fetch(`${API_URL}/scans/${scanId}/wipe-image`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token }),
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
       });
       if (!res.ok) { const d = await res.json().catch(() => ({})); throw new Error(d.detail || 'Failed to delete'); }
       setScans(prev => prev.map(s => s.scan_id === scanId
@@ -163,62 +165,67 @@ export default function Dashboard({ token, onLogout }) {
   };
 
   const handleFileUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+    const files = Array.from(e.target.files);
+    if (files.length === 0) return;
 
-    if (credits <= 0) {
-      alert("You are out of credits! Please top up.");
+    if (credits < files.length && credits !== -1 && token) {
+      // Demotest has 999999 credits, so it's fine. Normal users shouldn't exceed limits.
+      alert(`You only have ${credits} credits but tried to upload ${files.length} images! Please top up.`);
       return;
     }
 
     setUploading(true);
-    const tempId = `temp_${Date.now()}`;
-    const optimisticScan = {
-      id: tempId,
-      status: 'processing',
-      created_at: new Date().toISOString()
-    };
-    setScans(prev => [optimisticScan, ...prev]);
+    
+    // We can upload in parallel using Promise.all
+    const uploadPromises = files.map(async (file, index) => {
+      const tempId = `temp_${Date.now()}_${index}`;
+      const optimisticScan = {
+        id: tempId,
+        status: 'processing',
+        created_at: new Date().toISOString()
+      };
+      setScans(prev => [optimisticScan, ...prev]);
 
-    try {
-      const scanId = Date.now().toString();
-      const res = await fetch(`${API_URL}/upload/presigned-url?scan_id=${scanId}`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      const { upload_url, path } = await res.json();
+      try {
+        const scanId = `${Date.now()}_${index}`;
+        const res = await fetch(`${API_URL}/upload/presigned-url?scan_id=${scanId}`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const { upload_url, path } = await res.json();
 
-      const uploadRes = await fetch(upload_url, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': file.type,
-        },
-        body: file
-      });
+        const uploadRes = await fetch(upload_url, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': file.type,
+          },
+          body: file
+        });
 
-      if (!uploadRes.ok) throw new Error('Failed to upload image directly to Supabase');
+        if (!uploadRes.ok) throw new Error('Failed to upload image directly to Supabase');
 
-      const triggerRes = await fetch(`${API_URL}/process-scan`, {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          scan_id: scanId,
-          exam_code: examCode
-        })
-      });
+        const triggerRes = await fetch(`${API_URL}/process-scan`, {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            scan_id: scanId,
+            exam_code: examCode
+          })
+        });
 
-      if (!triggerRes.ok) throw new Error('Failed to trigger processing');
-      
-    } catch (error) {
-      console.error(error);
-      alert(error.message);
-      setScans(prev => prev.filter(s => s.id !== tempId));
-    } finally {
-      setUploading(false);
-      if (fileInputRef.current) fileInputRef.current.value = '';
-    }
+        if (!triggerRes.ok) throw new Error('Failed to trigger processing');
+        
+      } catch (error) {
+        console.error(error);
+        setScans(prev => prev.filter(s => s.id !== tempId));
+      }
+    });
+
+    await Promise.all(uploadPromises);
+    setUploading(false);
+    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   const handleExport = async () => {
@@ -333,8 +340,8 @@ export default function Dashboard({ token, onLogout }) {
                   <div className="icon-circle">
                     <Upload size={24} />
                   </div>
-                  <span className="upload-title">Tap to Scan OMR</span>
-                  <span className="upload-subtitle">Takes ~1 second</span>
+                  <span className="upload-title">Tap or Drop to Scan OMR Sheets</span>
+                  <span className="upload-subtitle">Upload multiple at once</span>
                 </div>
               )}
               <input 
@@ -342,6 +349,7 @@ export default function Dashboard({ token, onLogout }) {
                 ref={fileInputRef} 
                 className="hidden-input" 
                 accept="image/jpeg, image/png"
+                multiple
                 onChange={handleFileUpload} 
               />
             </div>
