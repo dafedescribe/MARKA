@@ -27,6 +27,9 @@ from fastapi.staticfiles import StaticFiles
 import tempfile
 import json
 import os
+import logging
+
+logger = logging.getLogger("marka")
 
 LAYOUT_JSON_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "omr_layout.json")
 try:
@@ -35,7 +38,6 @@ try:
 except Exception as e:
     GLOBAL_LAYOUT_DATA = None
 
-import json
 import time
 import hmac
 import hashlib
@@ -450,10 +452,10 @@ def process_scan_background(scan_id: str, exam_code: str, user_id: str):
         # 3. Process image. All exams share the standard MARKA sheet layout;
         # fall back to it when the exam_code has no bundled layout of its own.
         layout_path = find_layout_json(code) or find_layout_json("MARKA")
-        if not layout_path:
+        if not layout_path and not GLOBAL_LAYOUT_DATA:
             raise ValueError(f"No OMR layout available for exam '{code}'.")
 
-        result = read_bubbles(tmp_path, layout_path)
+        result = read_bubbles(tmp_path, GLOBAL_LAYOUT_DATA or layout_path)
         result["scan_id"] = scan_id
 
         # Answer key: the user's DB exam key takes precedence; else the bundled key.
@@ -465,7 +467,7 @@ def process_scan_background(scan_id: str, exam_code: str, user_id: str):
 
         if answers:
             out_path = tmp_path.replace(".jpg", "_graded.jpg")
-            grade_result = grade_and_render(result, answers, tmp_path, layout_path, out_path)
+            grade_result = grade_and_render(result, answers, tmp_path, GLOBAL_LAYOUT_DATA or layout_path, out_path)
             score = grade_result["score"]
             total = grade_result["total"]
             percentage = grade_result["percentage"]
@@ -512,14 +514,14 @@ def process_scan_background(scan_id: str, exam_code: str, user_id: str):
         }).eq("scan_id", scan_id).execute()
 
     except Exception as e:
-        print(f"Error processing scan {scan_id}: {e}")
+        logger.error(f"Error processing scan {scan_id}: {e}", exc_info=True)
         try:
             supabase.table("scans").update({
                 "status": "failed",
                 "error_message": str(e)
             }).eq("scan_id", scan_id).execute()
-        except:
-            pass
+        except Exception as db_err:
+            logger.error(f"CRITICAL: Failed to mark scan {scan_id} as failed: {db_err}", exc_info=True)
     finally:
         if 'tmp_path' in locals() and os.path.exists(tmp_path):
             os.unlink(tmp_path)
@@ -660,12 +662,11 @@ def admin_wipe_expired(days: int = 7, x_cron_secret: str = Header(None)):
 
 
 @app.post("/scans/{scan_id}/wipe-image")
-def wipe_scan_image(scan_id: str, req: TokenRequest):
+def wipe_scan_image(scan_id: str, user_id: str = Depends(get_current_user)):
     """Let a user delete a scan's stored images early to reclaim space.
     The scan record and score are kept — only the image files are removed."""
     if not supabase:
         raise HTTPException(500, "Supabase not configured")
-    user_id = _user_id_from_token(req.token)
 
     res = supabase.table("scans").select(
         "id, user_id, image_path, graded_image_path").eq("scan_id", scan_id).execute()
@@ -681,7 +682,7 @@ def wipe_scan_image(scan_id: str, req: TokenRequest):
             try:
                 supabase.storage.from_(bucket).remove([p])
             except Exception as e:
-                print(f"wipe-image: {bucket}/{p} failed: {e}")
+                logger.warning(f"wipe-image: {bucket}/{p} failed: {e}")
     supabase.table("scans").update(
         {"image_path": None, "graded_image_path": None}).eq("id", s["id"]).execute()
     return {"ok": True, "scan_id": scan_id}
