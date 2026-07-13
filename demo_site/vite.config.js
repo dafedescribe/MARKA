@@ -29,7 +29,28 @@ export default defineConfig({
         ]
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,webp}']
+        // Precache only content-hashed, immutable assets — NOT index.html.
+        // (index.html changes every deploy but keeps the same URL, so
+        // cache-first precaching of it serves a stale app after each deploy.)
+        globPatterns: ['**/*.{js,css,ico,png,svg,webp,woff2}'],
+        cleanupOutdatedCaches: true,
+        clientsClaim: true,
+        skipWaiting: true,
+        navigateFallback: null,
+        runtimeCaching: [
+          {
+            // The HTML document is served network-first: online users always
+            // get the freshly deployed index.html (and thus the latest hashed
+            // JS), falling back to the cached copy only when offline.
+            urlPattern: ({ request }) => request.mode === 'navigate',
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'html-shell',
+              networkTimeoutSeconds: 3,
+              expiration: { maxEntries: 10 },
+            },
+          },
+        ],
       }
     })
   ]
