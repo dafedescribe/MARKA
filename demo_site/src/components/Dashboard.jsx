@@ -7,7 +7,7 @@ export default function Dashboard({ token, onLogout }) {
   const [credits, setCredits] = useState(parseInt(localStorage.getItem('marka_credits') || '0'));
   const [scans, setScans] = useState([]);
   const [uploading, setUploading] = useState(false);
-  const [examCode, setExamCode] = useState('DEMO');
+  const [examCode, setExamCode] = useState('MARKA');
   const fileInputRef = useRef(null);
   
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
@@ -165,7 +165,7 @@ export default function Dashboard({ token, onLogout }) {
                 onChange={(e) => setExamCode(e.target.value)}
                 className="select-input"
               >
-                <option value="DEMO">Demo SS2 Civic (MVP)</option>
+                <option value="MARKA">Demo — MARKA Standard Sheet (100Q)</option>
               </select>
             </div>
 
