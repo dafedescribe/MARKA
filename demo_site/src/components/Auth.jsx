@@ -115,7 +115,7 @@ export default function Auth({ onLogin }) {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center font-sans py-12 px-4 sm:px-6 lg:px-8 select-none">
       <div className="absolute top-8 left-8 flex items-center gap-3">
-        <img src="/marka_logo.jpg" alt="MARKA Logo" className="w-10 h-10 object-cover rounded-xl shadow-md" />
+        <img src="/favicon.png" alt="MARKA Logo" className="h-9 w-auto object-contain drop-shadow-sm" />
         <div>
           <span className="text-xl font-black text-[#3B0042] tracking-wider">MARKA</span>
         </div>

@@ -30,7 +30,7 @@ export default function Landing({ onGetStarted }) {
       <header className="bg-white border-b border-gray-100 sticky top-0 z-30 shadow-sm transition-all duration-200">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <div className="flex items-center gap-3 cursor-pointer">
-            <img src="/marka_logo.jpg" alt="MARKA Logo" className="w-10 h-10 object-cover rounded-xl shadow-md" />
+            <img src="/favicon.png" alt="MARKA Logo" className="h-9 w-auto object-contain drop-shadow-sm" />
             <div>
               <span className="text-xl font-black text-[#3B0042] tracking-wider">MARKA</span>
               <span className="block text-[9px] font-bold text-gray-400 tracking-widest uppercase font-mono">

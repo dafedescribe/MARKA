@@ -239,7 +239,7 @@ export default function Dashboard({ token, onLogout }) {
       <header className="bg-white border-b border-gray-100 sticky top-0 z-30 shadow-sm transition-all duration-200">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <img src="/marka_logo.jpg" alt="MARKA Logo" className="w-8 h-8 object-cover rounded-lg shadow-sm" />
+            <img src="/favicon.png" alt="MARKA Logo" className="h-8 w-auto object-contain drop-shadow-sm" />
             <div className="flex flex-col">
               <span className="text-lg font-black text-[#3B0042] tracking-wider leading-none">MARKA</span>
               <span className="text-[8px] font-bold text-gray-400 tracking-widest uppercase mt-0.5">Production</span>
