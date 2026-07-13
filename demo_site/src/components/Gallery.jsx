@@ -1,11 +1,33 @@
-import React from 'react';
-import { motion } from 'motion/react';
-import { Search, RefreshCcw, FileText, Loader2, Clock, Trash2 } from 'lucide-react';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import { Search, RefreshCcw, FileText, Loader2, Clock, Trash2, Download, X, Maximize2 } from 'lucide-react';
 
 export default function Gallery({ scans, fetchScans, wipeImage, expiryInfo, searchQuery, setSearchQuery }) {
+  const [lightbox, setLightbox] = useState(null);
+
   const filteredScans = scans.filter((p) => {
     return (p.scan_id || '').toLowerCase().includes(searchQuery.toLowerCase());
   });
+
+  const downloadImage = async (scan) => {
+    if (!scan?.thumbnailUrl) return;
+    try {
+      const res = await fetch(scan.thumbnailUrl);
+      if (!res.ok) throw new Error('fetch failed');
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `MARKA_${scan.scan_id || scan.id}_graded.webp`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('Download failed', err);
+      alert('Could not download the graded image. It may have been purged.');
+    }
+  };
 
   return (
     <motion.div
@@ -37,11 +59,22 @@ export default function Gallery({ scans, fetchScans, wipeImage, expiryInfo, sear
           filteredScans.map((scan) => {
             const exp = scan.status === 'success' ? expiryInfo(scan.created_at) : null;
             const hasImage = !!scan.graded_image_path;
-            
+
             return (
               <div key={scan.id || scan.scan_id} className="bg-white border border-gray-100 rounded-xl p-4 flex gap-4 items-center shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
                 <div className="w-20 h-20 rounded-lg bg-gray-50 border border-gray-100 flex items-center justify-center flex-shrink-0 overflow-hidden">
-                  {scan.status === 'processing' || scan.status === 'uploading' || scan.status === 'grading' ? <Loader2 className="w-6 h-6 text-[#3B0042] animate-spin" /> : scan.thumbnailUrl ? <img src={scan.thumbnailUrl} alt="Graded OMR" className="w-full h-full object-cover" /> : <FileText className="w-6 h-6 text-gray-300" />}
+                  {scan.status === 'processing' || scan.status === 'uploading' || scan.status === 'grading' ? (
+                    <Loader2 className="w-6 h-6 text-[#3B0042] animate-spin" />
+                  ) : scan.thumbnailUrl ? (
+                    <button type="button" onClick={() => setLightbox(scan)} className="w-full h-full group/thumb relative cursor-zoom-in" title="View full graded sheet">
+                      <img src={scan.thumbnailUrl} alt="Graded OMR" className="w-full h-full object-cover" />
+                      <span className="absolute inset-0 bg-black/0 group-hover/thumb:bg-black/30 flex items-center justify-center transition-colors">
+                        <Maximize2 className="w-5 h-5 text-white opacity-0 group-hover/thumb:opacity-100 transition-opacity" />
+                      </span>
+                    </button>
+                  ) : (
+                    <FileText className="w-6 h-6 text-gray-300" />
+                  )}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
@@ -69,7 +102,10 @@ export default function Gallery({ scans, fetchScans, wipeImage, expiryInfo, sear
                         <span className={`text-[10px] ${exp.urgent ? 'text-red-600 font-bold' : 'text-gray-400 font-medium'}`}>{hasImage ? exp.text : 'Image purged'}</span>
                       </div>
                       {hasImage && (
-                        <button onClick={() => wipeImage(scan.scan_id)} className="text-gray-300 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"><Trash2 className="w-4 h-4" /></button>
+                        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button onClick={() => downloadImage(scan)} className="text-gray-300 hover:text-[#3B0042] transition-colors" title="Download graded sheet"><Download className="w-4 h-4" /></button>
+                          <button onClick={() => wipeImage(scan.scan_id)} className="text-gray-300 hover:text-red-500 transition-colors" title="Delete image immediately"><Trash2 className="w-4 h-4" /></button>
+                        </div>
                       )}
                     </div>
                   )}
@@ -79,6 +115,51 @@ export default function Gallery({ scans, fetchScans, wipeImage, expiryInfo, sear
           })
         )}
       </div>
+
+      {/* Full-size graded sheet lightbox */}
+      <AnimatePresence>
+        {lightbox && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setLightbox(null)}
+            className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] flex flex-col overflow-hidden"
+            >
+              <div className="p-4 border-b border-gray-100 flex items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-sm font-mono font-bold text-gray-900 truncate">{lightbox.scan_id}</p>
+                  <p className="text-xs text-gray-500">
+                    Score <span className="font-bold text-[#3B0042]">{lightbox.score}/{lightbox.total}</span> · {lightbox.percentage}%
+                  </p>
+                </div>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <button onClick={() => downloadImage(lightbox)} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#3B0042] text-white text-xs font-bold rounded-lg hover:bg-[#4d0055] transition-colors">
+                    <Download className="w-3.5 h-3.5" /> Download
+                  </button>
+                  <button onClick={() => setLightbox(null)} className="p-1.5 text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors" title="Close">
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+              <div className="flex-1 overflow-auto bg-gray-50 flex items-center justify-center p-4">
+                {lightbox.thumbnailUrl ? (
+                  <img src={lightbox.thumbnailUrl} alt="Graded OMR sheet" className="max-w-full max-h-[70vh] object-contain rounded-lg shadow" />
+                ) : (
+                  <p className="text-sm text-gray-500 py-12">Image no longer available.</p>
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }
