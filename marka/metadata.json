@@ -1,0 +1,6 @@
+{
+  "name": "MARKA",
+  "description": "The fastest, most reliable automated OMR sheet scanner and grading app for teachers, school administrators, and exam officers.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
