@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Upload, FileText, CheckCircle, XCircle, Loader2, Download, LogOut, RefreshCcw } from 'lucide-react';
+import { Upload, FileText, CheckCircle, XCircle, Loader2, Download, LogOut, RefreshCcw, Trash2, Clock } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import './Dashboard.css';
 
@@ -128,6 +128,33 @@ export default function Dashboard({ token, onLogout }) {
     } finally {
       setExamSaving(false);
     }
+  };
+
+  const wipeImage = async (scanId) => {
+    if (!scanId) return;
+    if (!window.confirm('Delete this scan’s image to reclaim space? The score is kept.')) return;
+    try {
+      const res = await fetch(`${API_URL}/scans/${scanId}/wipe-image`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token }),
+      });
+      if (!res.ok) { const d = await res.json().catch(() => ({})); throw new Error(d.detail || 'Failed to delete'); }
+      setScans(prev => prev.map(s => s.scan_id === scanId
+        ? { ...s, graded_image_path: null, image_path: null, thumbnailUrl: null } : s));
+    } catch (e) {
+      alert(e.message);
+    }
+  };
+
+  // Days/hours until a scan's images auto-wipe (7 days after created_at).
+  const expiryInfo = (createdAt) => {
+    if (!createdAt) return null;
+    const ms = new Date(createdAt).getTime() + 7 * 24 * 3600 * 1000 - Date.now();
+    if (ms <= 0) return { text: 'Images expired', urgent: true };
+    const days = Math.floor(ms / (24 * 3600 * 1000));
+    const hours = Math.floor((ms % (24 * 3600 * 1000)) / (3600 * 1000));
+    return { text: `Expires in ${days}d ${hours}h`, urgent: days < 2 };
   };
 
   const handleFileUpload = async (e) => {
@@ -337,7 +364,10 @@ export default function Dashboard({ token, onLogout }) {
               </div>
             )}
 
-            {scans.map((scan) => (
+            {scans.map((scan) => {
+              const exp = scan.status === 'success' ? expiryInfo(scan.created_at) : null;
+              const hasImage = !!scan.graded_image_path;
+              return (
               <div key={scan.id} className="scan-item">
                 <div className="scan-thumbnail">
                   {scan.status === 'processing' ? (
@@ -355,7 +385,7 @@ export default function Dashboard({ token, onLogout }) {
                     {scan.status === 'success' && <span className="status-badge success">Graded</span>}
                     {scan.status === 'failed' && <span className="status-badge failed">Failed</span>}
                   </div>
-                  
+
                   {scan.status === 'success' ? (
                     <div className="scan-score-box">
                       <span className="scan-score">{scan.score}/{scan.total}</span>
@@ -366,15 +396,32 @@ export default function Dashboard({ token, onLogout }) {
                   ) : (
                     <p className="scan-processing-text">Running ML Extraction...</p>
                   )}
+
+                  {exp && (
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '0.72rem', marginTop: '4px', color: exp.urgent ? '#c0261a' : '#8a8a8a', fontWeight: exp.urgent ? 700 : 500 }}>
+                      <Clock size={12} /> {hasImage ? exp.text : 'Images deleted · score kept'}
+                    </span>
+                  )}
                 </div>
 
-                <div className="scan-status-icon">
+                <div className="scan-status-icon" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
                   {scan.status === 'success' && <CheckCircle className="text-success" size={24} />}
                   {scan.status === 'failed' && <XCircle className="text-danger" size={24} />}
                   {scan.status === 'processing' && <Loader2 className="spinner" size={24} />}
+                  {scan.status === 'success' && hasImage && (
+                    <button
+                      type="button"
+                      title="Delete image to reclaim space (keeps the score)"
+                      onClick={() => wipeImage(scan.scan_id)}
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#b0392b', padding: 0 }}
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  )}
                 </div>
               </div>
-            ))}
+              );
+            })}
           </div>
         </section>
       </main>

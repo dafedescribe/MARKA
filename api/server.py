@@ -191,6 +191,9 @@ class ExamRequest(BaseModel):
     answers: dict  # {"1": "A", "2": "C", ...}
     token: str
 
+class TokenRequest(BaseModel):
+    token: str
+
 
 # ── Authentication Endpoints ──────────────────────────────────────
 
@@ -664,6 +667,34 @@ def admin_wipe_expired(days: int = 7, x_cron_secret: str = Header(None)):
     if not secret or x_cron_secret != secret:
         raise HTTPException(401, "Invalid or missing cron secret")
     return wipe_expired_images(days)
+
+
+@app.post("/scans/{scan_id}/wipe-image")
+def wipe_scan_image(scan_id: str, req: TokenRequest):
+    """Let a user delete a scan's stored images early to reclaim space.
+    The scan record and score are kept — only the image files are removed."""
+    if not supabase:
+        raise HTTPException(500, "Supabase not configured")
+    user_id = _user_id_from_token(req.token)
+
+    res = supabase.table("scans").select(
+        "id, user_id, image_path, graded_image_path").eq("scan_id", scan_id).execute()
+    if not res.data:
+        raise HTTPException(404, "Scan not found")
+    s = res.data[0]
+    if s["user_id"] != user_id:
+        raise HTTPException(403, "Not your scan")
+
+    for bucket, col in (("raw_images", "image_path"), ("graded_images", "graded_image_path")):
+        p = s.get(col)
+        if p:
+            try:
+                supabase.storage.from_(bucket).remove([p])
+            except Exception as e:
+                print(f"wipe-image: {bucket}/{p} failed: {e}")
+    supabase.table("scans").update(
+        {"image_path": None, "graded_image_path": None}).eq("id", s["id"]).execute()
+    return {"ok": True, "scan_id": scan_id}
 
 
 # ── Webhook Endpoints ─────────────────────────────────────────────
