@@ -35,12 +35,20 @@ FILL_RATIO = 0.35
 CONFIDENCE_THRESHOLD = 0.5
 
 # Blur detection
-MIN_SHARPNESS = 50.0  # Laplacian variance below this = too blurry
+MIN_SHARPNESS = 15.0  # Reduced due to downscaling optimization
 
 
 def _find_fiducials(gray):
     """Detect the 4 corner fiducial squares. Returns sorted corners."""
-    blurred = cv2.GaussianBlur(gray, (5, 5), 0)
+    h_img, w_img = gray.shape
+    scale = 1200.0 / w_img
+    if scale < 1.0:
+        small_gray = cv2.resize(gray, (0,0), fx=scale, fy=scale)
+    else:
+        small_gray = gray
+        scale = 1.0
+
+    blurred = cv2.GaussianBlur(small_gray, (5, 5), 0)
     thresh = cv2.adaptiveThreshold(
         blurred, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
         cv2.THRESH_BINARY_INV, 11, 2
@@ -50,23 +58,26 @@ def _find_fiducials(gray):
     )
 
     candidates = []
+    min_area = MIN_FIDUCIAL_AREA * (scale ** 2)
+    max_area = MAX_FIDUCIAL_AREA * (scale ** 2)
+
     for c in contours:
         # Cheap area gate first — skips arcLength/approxPolyDP on the hundreds
         # of small bubble/noise contours (they can never be fiducials).
         area = cv2.contourArea(c)
-        if not (MIN_FIDUCIAL_AREA < area < MAX_FIDUCIAL_AREA):
+        if not (min_area < area < max_area):
             continue
         peri = cv2.arcLength(c, True)
         approx = cv2.approxPolyDP(c, 0.04 * peri, True)
         if len(approx) == 4:
-            x, y, w, h = cv2.boundingRect(approx)
-            aspect = w / float(h)
+            x, y, w_box, h_box = cv2.boundingRect(approx)
+            aspect = w_box / float(h_box)
             if 0.7 <= aspect <= 1.3:
                 M = cv2.moments(c)
                 if M["m00"] != 0:
                     cx = int(M["m10"] / M["m00"])
                     cy = int(M["m01"] / M["m00"])
-                    candidates.append((cx, cy))
+                    candidates.append((cx / scale, cy / scale))
 
     if len(candidates) < 4:
         raise ValueError(
@@ -112,7 +123,13 @@ def _perspective_transform(image, src_pts, layout):
 
 def _check_image_quality(gray):
     """Check if the image is too blurry. Returns sharpness score."""
-    laplacian_var = cv2.Laplacian(gray, cv2.CV_64F).var()
+    h, w = gray.shape
+    scale = 800.0 / w
+    if scale < 1.0:
+        small = cv2.resize(gray, (0,0), fx=scale, fy=scale)
+    else:
+        small = gray
+    laplacian_var = cv2.Laplacian(small, cv2.CV_64F).var()
     return float(laplacian_var)
 
 
@@ -190,7 +207,7 @@ def _read_all_bubbles(gray, bubbles, sheet_h_mm, threshold):
     return results
 
 
-def read_bubbles(image_path, layout_json_path):
+def read_bubbles(image_path, layout_data_or_path):
     """
     THE HOT PATH. Extract what the student marked.
     No scoring. No drawing. Pure speed.
@@ -210,8 +227,11 @@ def read_bubbles(image_path, layout_json_path):
     t0 = time.perf_counter()
 
     # Load layout
-    with open(layout_json_path, "r") as f:
-        layout_data = json.load(f)
+    if isinstance(layout_data_or_path, str):
+        with open(layout_data_or_path, "r") as f:
+            layout_data = json.load(f)
+    else:
+        layout_data = layout_data_or_path
 
     # Use the first sheet's layout (all sheets have identical bubble positions)
     sheet = layout_data["sheets"][0]
@@ -305,13 +325,16 @@ def read_bubbles(image_path, layout_json_path):
     }
 
 
-def grade_and_render(marks_data, answers, image_path, layout_json_path, output_path):
+def grade_and_render(marks_data, answers, image_path, layout_data_or_path, output_path):
     """
     Apply answer key to extracted marks. Draw visual feedback.
     Only called when answer key exists AND visual is requested.
     """
-    with open(layout_json_path, "r") as f:
-        layout_data = json.load(f)
+    if isinstance(layout_data_or_path, str):
+        with open(layout_data_or_path, "r") as f:
+            layout_data = json.load(f)
+    else:
+        layout_data = layout_data_or_path
 
     sheet = layout_data["sheets"][0]
     sheet_h_mm = sheet["sheet_size_mm"][1]

@@ -23,9 +23,9 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     return bcrypt.checkpw(plain_password.encode('utf-8'), hashed_password.encode('utf-8'))
 
 def generate_marka_id() -> str:
-    """Generate a unique 6-character ID like MK-8A2F"""
+    """Generate a unique 9-character ID like MK-8A2F4B"""
     chars = string.ascii_uppercase + string.digits
-    random_str = ''.join(random.choice(chars) for _ in range(4))
+    random_str = ''.join(random.choice(chars) for _ in range(6))
     return f"MK-{random_str}"
 
 def generate_pin() -> str:

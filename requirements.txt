@@ -10,3 +10,4 @@ supabase
 python-jose[cryptography]
 bcrypt
 python-dotenv
+slowapi

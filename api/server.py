@@ -17,10 +17,24 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 sys.path.insert(0, os.path.dirname(__file__))
 
-from fastapi import FastAPI, HTTPException, BackgroundTasks, Request, Header
+from fastapi import FastAPI, HTTPException, BackgroundTasks, Request, Header, Depends
+from fastapi.security import OAuth2PasswordBearer
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 import tempfile
+import json
+import os
+
+LAYOUT_JSON_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "omr_layout.json")
+try:
+    with open(LAYOUT_JSON_PATH, "r") as f:
+        GLOBAL_LAYOUT_DATA = json.load(f)
+except Exception as e:
+    GLOBAL_LAYOUT_DATA = None
+
 import json
 import time
 import hmac
@@ -41,7 +55,11 @@ from pydantic import BaseModel
 
 
 
+limiter = Limiter(key_func=get_remote_address)
 app = FastAPI(title="MARKA Grading API")
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
 # Static frontend
 STATIC_DIR = os.path.join(os.path.dirname(__file__), '..', 'demo_site', 'dist')
@@ -151,7 +169,7 @@ def get_answer_key(exam_code: str) -> dict:
     return None
 
 
-def _user_id_from_token(token: str) -> str:
+def get_current_user(token: str = Depends(oauth2_scheme)) -> str:
     """Decode our MARKA JWT and return the user's UUID (raises 401 if invalid)."""
     from jose import jwt, JWTError
     from auth import JWT_SECRET, ALGORITHM
@@ -184,12 +202,10 @@ class LoginRequest(BaseModel):
 class ProcessScanRequest(BaseModel):
     scan_id: str
     exam_code: str
-    token: str # In production, use Depends(oauth2_scheme)
 
 class ExamRequest(BaseModel):
     exam_code: str
     answers: dict  # {"1": "A", "2": "C", ...}
-    token: str
 
 class TokenRequest(BaseModel):
     token: str
@@ -278,7 +294,8 @@ def purchase_id(req: PurchaseIdRequest):
 
 
 @app.post("/auth/login")
-def login(req: LoginRequest):
+@limiter.limit("5/minute")
+def login(request: Request, req: LoginRequest):
     """Login with MARKA ID and PIN to get a JWT."""
     if not supabase:
         raise HTTPException(500, "Supabase not configured")
@@ -309,12 +326,11 @@ def login(req: LoginRequest):
 # ── Exam / Answer-Key Endpoints ───────────────────────────────────
 
 @app.post("/exams")
-def create_or_update_exam(req: ExamRequest):
+@limiter.limit("10/second")
+def create_or_update_exam(request: Request, req: ExamRequest, user_id: str = Depends(get_current_user)):
     """Create or update an exam's answer key (stored per-user in the DB)."""
     if not supabase:
         raise HTTPException(500, "Supabase not configured")
-    user_id = _user_id_from_token(req.token)
-
     code = (req.exam_code or "").strip().upper()
     if not code:
         raise HTTPException(400, "exam_code is required")
@@ -348,11 +364,11 @@ def create_or_update_exam(req: ExamRequest):
 
 
 @app.get("/exams")
-def list_exams(token: str):
+@limiter.limit("10/second")
+def list_exams(request: Request, user_id: str = Depends(get_current_user)):
     """List the current user's exams (for the exam picker)."""
     if not supabase:
         raise HTTPException(500, "Supabase not configured")
-    user_id = _user_id_from_token(token)
     res = supabase.table("exams").select("exam_code, answer_key, created_at").eq(
         "user_id", user_id).order("created_at", desc=True).execute()
     return {"exams": [
@@ -366,25 +382,13 @@ def list_exams(token: str):
 # ── Upload Endpoints ──────────────────────────────────────────────
 
 @app.get("/upload/presigned-url")
-def get_presigned_url(scan_id: str, token: str):
+@limiter.limit("10/second")
+def get_presigned_url(request: Request, scan_id: str, user_id: str = Depends(get_current_user)):
     """
     Generate a presigned URL for direct-to-Supabase upload.
-    In a real app, 'token' should be verified as a valid JWT first.
     """
     if not supabase:
         raise HTTPException(500, "Supabase not configured")
-        
-    # Example: we extract the user_id from the verified JWT
-    # For now, we mock it or pass it. If we used FastAPI Depends, we'd verify it.
-    from jose import jwt, JWTError
-    from auth import JWT_SECRET, ALGORITHM
-    try:
-        payload = jwt.decode(token, JWT_SECRET, algorithms=[ALGORITHM])
-        user_id = payload.get("sub")
-        if user_id is None:
-            raise HTTPException(401, "Invalid token")
-    except JWTError:
-        raise HTTPException(401, "Invalid token")
 
     # Generate presigned URL for the 'raw_images' bucket
     # Path format: <user_id>/<scan_id>.jpg
@@ -434,6 +438,10 @@ def process_scan_background(scan_id: str, exam_code: str, user_id: str):
         # 2. Download image from raw_images bucket
         file_path = f"{user_id}/{scan_id}.jpg"
         img_bytes = supabase.storage.from_("raw_images").download(file_path)
+
+        # File signature validation (magic numbers)
+        if not (img_bytes.startswith(b'\xff\xd8\xff') or img_bytes.startswith(b'\x89PNG\r\n\x1a\n')):
+            raise ValueError("Uploaded file is not a valid JPEG or PNG image.")
 
         with tempfile.NamedTemporaryFile(delete=False, suffix=".jpg") as tmp:
             tmp.write(img_bytes)
@@ -486,11 +494,10 @@ def process_scan_background(scan_id: str, exam_code: str, user_id: str):
             print(f"Could not delete raw image {file_path}: {e}")
 
 
-        # 4. Deduct credit
-        credits = user_data["credits"]
+        # 4. Deduct credit atomically
         # Only deduct if not DEMO-TEST (DEMO-TEST has unlimited but restricted scans)
         if user_data.get("marka_id") != "DEMO-TEST":
-            supabase.table("users").update({"credits": credits - 1}).eq("id", user_id).execute()
+            supabase.rpc("deduct_credit", {"user_uuid": user_id}).execute()
 
 
         # 5. Update scan record
@@ -519,17 +526,9 @@ def process_scan_background(scan_id: str, exam_code: str, user_id: str):
 
 
 @app.post("/process-scan")
-def trigger_process_scan(req: ProcessScanRequest, background_tasks: BackgroundTasks):
+@limiter.limit("10/second")
+def trigger_process_scan(request: Request, req: ProcessScanRequest, background_tasks: BackgroundTasks, user_id: str = Depends(get_current_user)):
     """Trigger background grading after frontend uploads image to Supabase."""
-    from jose import jwt, JWTError
-    from auth import JWT_SECRET, ALGORITHM
-    try:
-        payload = jwt.decode(req.token, JWT_SECRET, algorithms=[ALGORITHM])
-        user_id = payload.get("sub")
-        if not user_id:
-            raise HTTPException(401, "Invalid token")
-    except JWTError:
-        raise HTTPException(401, "Invalid token")
 
     # Ensure user has credits
     if supabase:
@@ -542,20 +541,11 @@ def trigger_process_scan(req: ProcessScanRequest, background_tasks: BackgroundTa
 
 
 @app.get("/export/{exam_code}")
-def export_results(exam_code: str, token: str):
+@limiter.limit("10/second")
+def export_results(request: Request, exam_code: str, user_id: str = Depends(get_current_user)):
     """Generates a CSV and ZIP of graded images, uploads to exports bucket, returns signed URL."""
     if not supabase:
         raise HTTPException(500, "Supabase not configured")
-        
-    from jose import jwt, JWTError
-    from auth import JWT_SECRET, ALGORITHM
-    try:
-        payload = jwt.decode(token, JWT_SECRET, algorithms=[ALGORITHM])
-        user_id = payload.get("sub")
-        if not user_id:
-            raise HTTPException(401, "Invalid token")
-    except JWTError:
-        raise HTTPException(401, "Invalid token")
 
     # Fetch this user's successful scans. If they have an exam row for this
     # exam_code, scope the export to that exam via exam_id.
@@ -742,10 +732,7 @@ async def paystack_webhook(request: Request, x_paystack_signature: str = Header(
                 return {"status": "error"}
 
             # 2. Add Credits securely
-            user_res = supabase.table("users").select("credits").eq("marka_id", marka_id.upper()).execute()
-            if user_res.data:
-                current_credits = user_res.data[0]['credits']
-                supabase.table("users").update({"credits": current_credits + credits_to_add}).eq("marka_id", marka_id.upper()).execute()
+            supabase.rpc("add_credits_by_marka_id", {"m_id": marka_id.upper(), "amount": credits_to_add}).execute()
 
     return {"status": "success"}
 

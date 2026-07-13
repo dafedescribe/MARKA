@@ -75,7 +75,9 @@ export default function Dashboard({ token, onLogout }) {
 
   const fetchExams = async () => {
     try {
-      const res = await fetch(`${API_URL}/exams?token=${token}`);
+      const res = await fetch(`${API_URL}/exams`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
       if (!res.ok) return;
       const data = await res.json();
       setExams(data.exams || []);
@@ -113,8 +115,11 @@ export default function Dashboard({ token, onLogout }) {
     try {
       const res = await fetch(`${API_URL}/exams`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ exam_code: code, answers, token }),
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ exam_code: code, answers }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.detail || 'Failed to save exam');
@@ -177,7 +182,9 @@ export default function Dashboard({ token, onLogout }) {
 
     try {
       const scanId = Date.now().toString();
-      const res = await fetch(`${API_URL}/upload/presigned-url?scan_id=${scanId}&token=${token}`);
+      const res = await fetch(`${API_URL}/upload/presigned-url?scan_id=${scanId}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
       const { upload_url, path } = await res.json();
 
       const uploadRes = await fetch(upload_url, {
@@ -192,11 +199,13 @@ export default function Dashboard({ token, onLogout }) {
 
       const triggerRes = await fetch(`${API_URL}/process-scan`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify({
           scan_id: scanId,
-          exam_code: examCode,
-          token: token
+          exam_code: examCode
         })
       });
 
@@ -214,7 +223,9 @@ export default function Dashboard({ token, onLogout }) {
 
   const handleExport = async () => {
     try {
-      const res = await fetch(`${API_URL}/export/${examCode}?token=${token}`);
+      const res = await fetch(`${API_URL}/export/${examCode}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
       if (!res.ok) throw new Error("Failed to export");
       const { export_url } = await res.json();
       window.location.href = export_url;
