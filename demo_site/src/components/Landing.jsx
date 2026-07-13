@@ -4,8 +4,12 @@ import './Landing.css';
 
 export default function Landing({ onGetStarted }) {
   const handleDownloadDemo = () => {
-    // In a real app, this would trigger the download of the DEMO OMR sheet PDF
-    alert("This would download the printable DEMO OMR Sheet PDF!");
+    const link = document.createElement('a');
+    link.href = '/demo_omr_sheet.pdf';
+    link.download = 'MARKA_Demo_OMR_Sheet.pdf';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   return (
