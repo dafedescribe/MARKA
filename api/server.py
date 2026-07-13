@@ -71,6 +71,26 @@ EXAMS_DIR = os.path.join(os.path.dirname(__file__), '..', 'output_packages')
 OMR_DIR = os.path.join(os.path.dirname(__file__), '..', 'omr_output')
 
 
+# ── Credit packs (official pricing) ───────────────────────────────
+# Paid amount (₦) → credits. The per-credit rate differs per pack, so this
+# must be a lookup, not a flat formula.
+CREDIT_PACKS = {
+    5000: 100,     # Starter      — ₦50/credit
+    11250: 250,    # Growth       — ₦45/credit
+    20000: 500,    # School       — ₦40/credit
+    35000: 1000,   # Institution  — ₦35/credit
+}
+
+
+def credits_for_amount(amount_naira) -> int:
+    """Map a paid amount (₦) to credits per the official pack table.
+    Non-standard amounts fall back to the base ₦50/credit rate."""
+    amt = int(round(amount_naira))
+    if amt in CREDIT_PACKS:
+        return CREDIT_PACKS[amt]
+    return amt // 50
+
+
 def get_exam_dir(exam_code: str) -> str:
     """Get or create the data directory for an exam code."""
     d = os.path.join(DATA_DIR, exam_code.upper())
@@ -215,7 +235,7 @@ def purchase_id(req: PurchaseIdRequest):
 
     data = res_data["data"]
     amount = data.get("amount", 0) / 100
-    credits_to_add = int(amount / 100) # Example: 1 credit per 100 Naira
+    credits_to_add = credits_for_amount(amount)
 
     # 2. Idempotency Check in transactions table (we use 'NEW_ID' as marka_id for the record)
     try:
@@ -618,8 +638,7 @@ async def paystack_webhook(request: Request, x_paystack_signature: str = Header(
         amount = data.get("data", {}).get("amount", 0) / 100 # Assuming NGN/Kobo
         reference = data.get("data", {}).get("reference")
         
-        # Give 1 credit per 100 Naira (example)
-        credits_to_add = int(amount / 100)
+        credits_to_add = credits_for_amount(amount)
         
         if marka_id and reference and supabase:
             # 1. Idempotency Check: Prevent duplicate webhooks
