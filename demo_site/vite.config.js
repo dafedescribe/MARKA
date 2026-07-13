@@ -7,7 +7,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['marka_logo.jpg'],
+      includeAssets: ['favicon.png', 'marka_logo.jpg'],
       manifest: {
         name: 'MARKA - Keep the Paper, Eliminate the Marking',
         short_name: 'MARKA',
@@ -17,9 +17,9 @@ export default defineConfig({
         display: 'standalone',
         icons: [
           {
-            src: 'marka_logo.jpg',
+            src: 'favicon.png',
             sizes: '512x512',
-            type: 'image/jpeg'
+            type: 'image/png'
           }
         ]
       },
