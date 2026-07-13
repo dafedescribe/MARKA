@@ -51,13 +51,17 @@ def _find_fiducials(gray):
 
     candidates = []
     for c in contours:
+        # Cheap area gate first — skips arcLength/approxPolyDP on the hundreds
+        # of small bubble/noise contours (they can never be fiducials).
+        area = cv2.contourArea(c)
+        if not (MIN_FIDUCIAL_AREA < area < MAX_FIDUCIAL_AREA):
+            continue
         peri = cv2.arcLength(c, True)
         approx = cv2.approxPolyDP(c, 0.04 * peri, True)
         if len(approx) == 4:
             x, y, w, h = cv2.boundingRect(approx)
             aspect = w / float(h)
-            area = cv2.contourArea(c)
-            if 0.7 <= aspect <= 1.3 and MIN_FIDUCIAL_AREA < area < MAX_FIDUCIAL_AREA:
+            if 0.7 <= aspect <= 1.3:
                 M = cv2.moments(c)
                 if M["m00"] != 0:
                     cx = int(M["m10"] / M["m00"])
@@ -213,21 +217,19 @@ def read_bubbles(image_path, layout_json_path):
     sheet = layout_data["sheets"][0]
     sheet_h_mm = sheet["sheet_size_mm"][1]
 
-    # Load image
-    image = cv2.imread(image_path)
-    if image is None:
+    # Load as grayscale — the hot path never needs colour, and a single-channel
+    # warp is ~3x cheaper than warping BGR (also skips two cvtColor passes).
+    gray = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+    if gray is None:
         raise ValueError(f"Could not load image: {image_path}")
-
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
     # Image quality check
     sharpness = _check_image_quality(gray)
     quality_ok = sharpness >= MIN_SHARPNESS
 
-    # Find fiducials and align
+    # Find fiducials and align (all grayscale)
     src_pts = _find_fiducials(gray)
-    aligned, w, h = _perspective_transform(image, src_pts, sheet)
-    aligned_gray = cv2.cvtColor(aligned, cv2.COLOR_BGR2GRAY)
+    aligned_gray, w, h = _perspective_transform(gray, src_pts, sheet)
 
     # Compute adaptive threshold from the actual paper
     threshold, blank_median = _compute_adaptive_threshold(
