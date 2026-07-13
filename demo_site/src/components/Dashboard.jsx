@@ -240,9 +240,8 @@ export default function Dashboard({ token, onLogout }) {
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <img src="/favicon.png" alt="MARKA Logo" className="h-8 w-auto object-contain drop-shadow-sm" />
-            <div className="flex flex-col">
-              <span className="text-lg font-black text-[#3B0042] tracking-wider leading-none">MARKA</span>
-              <span className="text-[8px] font-bold text-gray-400 tracking-widest uppercase mt-0.5">Production</span>
+            <div className="flex flex-col justify-center">
+              <span className="text-[10px] font-bold text-gray-400 tracking-widest uppercase mt-0.5">Production</span>
             </div>
           </div>
           

@@ -32,8 +32,7 @@ export default function Landing({ onGetStarted }) {
           <div className="flex items-center gap-3 cursor-pointer">
             <img src="/favicon.png" alt="MARKA Logo" className="h-9 w-auto object-contain drop-shadow-sm" />
             <div>
-              <span className="text-xl font-black text-[#3B0042] tracking-wider">MARKA</span>
-              <span className="block text-[9px] font-bold text-gray-400 tracking-widest uppercase font-mono">
+              <span className="block text-[9px] font-bold text-gray-400 tracking-widest uppercase font-mono mt-1">
                 OMR Grading Scanner
               </span>
             </div>
@@ -191,39 +190,7 @@ export default function Landing({ onGetStarted }) {
             </div>
           </div>
 
-          {/* Testimonials */}
-          <div className="bg-purple-950 text-white rounded-3xl p-10 md:p-16 relative overflow-hidden">
-            <div className="absolute inset-0 bg-[#3B0042] opacity-50"></div>
-            <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-              <div className="space-y-6">
-                <span className="text-xs font-bold text-amber-400 tracking-widest uppercase">
-                  PILOT SCHOOLS FEEDBACK
-                </span>
-                <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight leading-tight">
-                  Trusted by 45+ schools during our private beta
-                </h2>
-                <p className="text-purple-100 leading-relaxed">
-                  Teachers reported saving over 6 hours per exam batch, eliminating fatigue, and
-                  focusing more time on student interventions.
-                </p>
-              </div>
-              <div className="space-y-6 bg-white/5 p-8 rounded-2xl border border-white/10 backdrop-blur-md">
-                <p className="italic text-purple-50 text-sm leading-relaxed">
-                  "We scanned 480 biology exam papers using MARKA. The results were finished within 10
-                  minutes. The best part is there's no learning curve. Our teachers understood it instantly."
-                </p>
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-full bg-amber-400 flex items-center justify-center text-purple-950 font-bold">
-                    AO
-                  </div>
-                  <div>
-                    <span className="block font-bold text-white text-sm">Mrs. Alabi Olakunle</span>
-                    <span className="block text-xs text-purple-200">Exam Officer, Hillcrest College</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+
 
           {/* Pricing Cards */}
           <div id="pricing-section" className="space-y-12">
