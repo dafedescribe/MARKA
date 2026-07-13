@@ -298,8 +298,14 @@ def create_or_update_exam(req: ExamRequest):
     if not req.answers:
         raise HTTPException(400, "answers cannot be empty")
 
-    # Normalise to {str question: str option}
-    answers = {str(k): str(v).strip().upper() for k, v in req.answers.items()}
+    # Normalise. A value may be a single option ("A"), a list of accepted
+    # options (["A","C"]), or "*" for a bonus (any answer counts).
+    def _norm(v):
+        if isinstance(v, list):
+            opts = [str(x).strip().upper() for x in v if str(x).strip()]
+            return opts[0] if len(opts) == 1 else opts
+        return str(v).strip().upper()
+    answers = {str(k): _norm(v) for k, v in req.answers.items()}
 
     try:
         existing = supabase.table("exams").select("id").eq(

@@ -8,12 +8,19 @@ export default function Dashboard({ token, onLogout }) {
   const [scans, setScans] = useState([]);
   const [uploading, setUploading] = useState(false);
   const [examCode, setExamCode] = useState('MARKA');
+  const [exams, setExams] = useState([]);
+  const [showExamForm, setShowExamForm] = useState(false);
+  const [newExamCode, setNewExamCode] = useState('');
+  const [newExamKey, setNewExamKey] = useState('');
+  const [examSaving, setExamSaving] = useState(false);
+  const [examMsg, setExamMsg] = useState('');
   const fileInputRef = useRef(null);
   
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
   useEffect(() => {
     fetchScans();
+    fetchExams();
     const channel = supabase
       .channel('public:scans')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'scans' }, (payload) => {
@@ -63,6 +70,63 @@ export default function Dashboard({ token, onLogout }) {
       }
     } catch (e) {
       console.error("Error fetching scans:", e);
+    }
+  };
+
+  const fetchExams = async () => {
+    try {
+      const res = await fetch(`${API_URL}/exams?token=${token}`);
+      if (!res.ok) return;
+      const data = await res.json();
+      setExams(data.exams || []);
+    } catch (e) {
+      console.error("Error fetching exams:", e);
+    }
+  };
+
+  // Parse a letter-string answer key into { "1": "A", "3": "*", "4": ["A","C"] }.
+  // Questions are separated by spaces/commas/newlines; position = question number.
+  //   A     -> single answer
+  //   AC    -> multiple accepted (any of them); run letters together
+  //   *     -> bonus (any answer is correct)
+  const parseAnswerKey = (text) => {
+    const tokens = (text || '').trim().split(/[\s,]+/).filter(Boolean);
+    const answers = {};
+    tokens.forEach((tok, i) => {
+      const q = String(i + 1);
+      const t = tok.toUpperCase();
+      if (t === '*' || t === 'ANY' || t === 'BONUS') { answers[q] = '*'; return; }
+      const letters = [...new Set(t.replace(/[^A-E]/g, '').split(''))];
+      if (letters.length === 0) return;               // skip junk token
+      answers[q] = letters.length === 1 ? letters[0] : letters;
+    });
+    return answers;
+  };
+
+  const handleCreateExam = async () => {
+    const code = newExamCode.trim().toUpperCase();
+    if (!code) { setExamMsg('Enter an exam name/code.'); return; }
+    const answers = parseAnswerKey(newExamKey);
+    if (Object.keys(answers).length === 0) { setExamMsg('Enter the answer key.'); return; }
+    setExamSaving(true);
+    setExamMsg('');
+    try {
+      const res = await fetch(`${API_URL}/exams`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ exam_code: code, answers, token }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || 'Failed to save exam');
+      setNewExamCode('');
+      setNewExamKey('');
+      setShowExamForm(false);
+      await fetchExams();
+      setExamCode(code);
+    } catch (e) {
+      setExamMsg(e.message);
+    } finally {
+      setExamSaving(false);
     }
   };
 
@@ -160,14 +224,62 @@ export default function Dashboard({ token, onLogout }) {
             
             <div className="form-group">
               <label>Select Exam</label>
-              <select 
+              <select
                 value={examCode}
                 onChange={(e) => setExamCode(e.target.value)}
                 className="select-input"
               >
                 <option value="MARKA">Demo — MARKA Standard Sheet (100Q)</option>
+                {exams.filter((ex) => ex.exam_code !== 'MARKA').map((ex) => (
+                  <option key={ex.exam_code} value={ex.exam_code}>
+                    {ex.exam_code} ({ex.num_questions}Q)
+                  </option>
+                ))}
               </select>
+              <button
+                type="button"
+                onClick={() => { setShowExamForm((v) => !v); setExamMsg(''); }}
+                style={{ background: 'none', border: 'none', color: 'var(--primary, #3B0042)', cursor: 'pointer', padding: '6px 0', fontWeight: 600, fontSize: '0.85rem' }}
+              >
+                {showExamForm ? '× Cancel' : '+ New exam / answer key'}
+              </button>
             </div>
+
+            {showExamForm && (
+              <div style={{ background: 'rgba(0,0,0,0.03)', padding: '12px', borderRadius: '8px', marginBottom: '1rem' }}>
+                <label>Exam name</label>
+                <input
+                  type="text"
+                  value={newExamCode}
+                  onChange={(e) => setNewExamCode(e.target.value)}
+                  placeholder="e.g. BIO-SS2-T1"
+                  className="select-input"
+                />
+                <label style={{ marginTop: '0.6rem', display: 'block' }}>Answer key</label>
+                <textarea
+                  value={newExamKey}
+                  onChange={(e) => setNewExamKey(e.target.value)}
+                  placeholder="A B C D E A C ...  (one answer per question)"
+                  rows={4}
+                  className="select-input"
+                  style={{ resize: 'vertical', fontFamily: 'monospace' }}
+                />
+                <p style={{ fontSize: '0.75rem', color: '#666', margin: '6px 0' }}>
+                  One answer per question, separated by spaces. Use <b>*</b> for a
+                  bonus (any answer correct), and run letters together for multiple
+                  accepted answers (e.g. <b>AC</b>).
+                </p>
+                {examMsg && <p style={{ fontSize: '0.8rem', color: '#b00', margin: '6px 0' }}>{examMsg}</p>}
+                <button
+                  type="button"
+                  className="btn btn-block"
+                  disabled={examSaving}
+                  onClick={handleCreateExam}
+                >
+                  {examSaving ? 'Saving…' : 'Save Exam'}
+                </button>
+              </div>
+            )}
 
             <div 
               className={`upload-zone ${uploading ? 'uploading' : ''}`}

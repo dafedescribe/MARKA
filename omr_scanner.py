@@ -335,8 +335,22 @@ def grade_and_render(marks_data, answers, image_path, layout_json_path, output_p
     for q_str, correct in answers.items():
         q_num = int(q_str)
         student_answer = marks.get(q_str)
-        is_correct = student_answer == correct
 
+        # An answer-key entry may be:
+        #   "A"          → single correct option
+        #   ["A", "C"]   → any of these options is accepted
+        #   "*"          → bonus: any answer (or none) is correct
+        if correct == "*" or correct == ["*"]:
+            is_bonus = True
+            accepted = set()
+        elif isinstance(correct, list):
+            is_bonus = False
+            accepted = {str(c).strip().upper() for c in correct}
+        else:
+            is_bonus = False
+            accepted = {str(correct).strip().upper()}
+
+        is_correct = is_bonus or (student_answer in accepted)
         if is_correct:
             score += 1
 
@@ -345,20 +359,18 @@ def grade_and_render(marks_data, answers, image_path, layout_json_path, output_p
             cx = int(b["x_mm"] * PX_PER_MM)
             cy = int((sheet_h_mm - b["y_mm"]) * PX_PER_MM)
             r = int(b["radius_mm"] * PX_PER_MM)
+            opt = b["option"]
 
-            if b["option"] == student_answer:
-                if is_correct:
-                    cv2.circle(aligned, (cx, cy), r + 2, (0, 200, 0), 3)   # green ring
-                    cv2.circle(aligned, (cx, cy), r, (0, 200, 0), -1)       # green fill
-                else:
-                    cv2.circle(aligned, (cx, cy), r + 2, (0, 0, 220), 3)   # red ring
-                    cv2.circle(aligned, (cx, cy), r, (0, 0, 220), -1)       # red fill
-            elif b["option"] == correct and not is_correct:
-                cv2.circle(aligned, (cx, cy), r + 2, (0, 200, 0), 3)       # green outline
+            if opt == student_answer:
+                color = (0, 200, 0) if is_correct else (0, 0, 220)
+                cv2.circle(aligned, (cx, cy), r + 2, color, 3)  # ring
+                cv2.circle(aligned, (cx, cy), r, color, -1)     # fill
+            elif opt in accepted and not is_correct:
+                cv2.circle(aligned, (cx, cy), r + 2, (0, 200, 0), 3)   # missed correct option
 
             # Mark ambiguous answers with orange
             if q_str in marks_data.get("ambiguous", []):
-                if b["option"] in marks_data.get("multi_marks", {}).get(q_str, []):
+                if opt in marks_data.get("multi_marks", {}).get(q_str, []):
                     cv2.circle(aligned, (cx, cy), r + 2, (0, 165, 255), 3)  # orange
 
     # Score overlay
