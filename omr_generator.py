@@ -346,7 +346,7 @@ class OMRGenerator:
         c.setFont("Helvetica-Bold", 4.5)
         c.setFillColor(MUTED_COLOR)
         c.drawRightString(safe_right, sy + FID_INSET + 0.5 * mm, 
-            "Paper Exams. Instant Results. Tell your teacher about marka.com.ng")
+            "Paper Exams. Instant Results. marka.com.ng")
 
         c.restoreState()
 
