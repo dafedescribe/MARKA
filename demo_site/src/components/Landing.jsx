@@ -99,54 +99,73 @@ export default function Landing({ onGetStarted }) {
         </div>
 
         <div className="pricing-grid">
-          {/* Starter Plan */}
+          {/* Starter */}
           <div className="pricing-card">
             <div className="price-header">
               <div className="price-name">Starter</div>
-              <div className="price-amount">₦500</div>
-              <div className="price-sub">5 Exam Scans</div>
-            </div>
-            <ul className="price-features">
-              <li className="price-feature"><CheckCircle2 size={20} /> Instantly Generated ID</li>
-              <li className="price-feature"><CheckCircle2 size={20} /> 5 Accurate Gradings</li>
-              <li className="price-feature"><CheckCircle2 size={20} /> CSV Result Exports</li>
-            </ul>
-            <button onClick={onGetStarted} className="btn btn-outline" style={{ width: '100%', padding: '1rem' }}>Get Starter</button>
-          </div>
-
-          {/* Teacher Plan */}
-          <div className="pricing-card popular">
-            <div className="popular-badge">Most Popular</div>
-            <div className="price-header">
-              <div className="price-name">Teacher</div>
-              <div className="price-amount">₦2,000</div>
-              <div className="price-sub">20 Exam Scans</div>
-            </div>
-            <ul className="price-features">
-              <li className="price-feature"><CheckCircle2 size={20} /> Instantly Generated ID</li>
-              <li className="price-feature"><CheckCircle2 size={20} /> 20 Accurate Gradings</li>
-              <li className="price-feature"><CheckCircle2 size={20} /> CSV Result Exports</li>
-              <li className="price-feature"><CheckCircle2 size={20} /> Priority Background Queue</li>
-            </ul>
-            <button onClick={onGetStarted} className="btn btn-primary" style={{ width: '100%', padding: '1rem' }}>Get Teacher Pack</button>
-          </div>
-
-          {/* School Plan */}
-          <div className="pricing-card">
-            <div className="price-header">
-              <div className="price-name">School</div>
-              <div className="price-amount">₦10,000</div>
-              <div className="price-sub">100 Exam Scans</div>
+              <div className="price-amount">₦5,000</div>
+              <div className="price-sub">100 credits · ₦50 each</div>
             </div>
             <ul className="price-features">
               <li className="price-feature"><CheckCircle2 size={20} /> Instantly Generated ID</li>
               <li className="price-feature"><CheckCircle2 size={20} /> 100 Accurate Gradings</li>
               <li className="price-feature"><CheckCircle2 size={20} /> CSV Result Exports</li>
+            </ul>
+            <button onClick={onGetStarted} className="btn btn-outline" style={{ width: '100%', padding: '1rem' }}>Get Starter</button>
+          </div>
+
+          {/* Growth */}
+          <div className="pricing-card popular">
+            <div className="popular-badge">Most Popular</div>
+            <div className="price-header">
+              <div className="price-name">Growth</div>
+              <div className="price-amount">₦11,250</div>
+              <div className="price-sub">250 credits · ₦45 each</div>
+            </div>
+            <ul className="price-features">
+              <li className="price-feature"><CheckCircle2 size={20} /> Instantly Generated ID</li>
+              <li className="price-feature"><CheckCircle2 size={20} /> 250 Accurate Gradings</li>
+              <li className="price-feature"><CheckCircle2 size={20} /> CSV Result Exports</li>
+              <li className="price-feature"><CheckCircle2 size={20} /> Priority Background Queue</li>
+            </ul>
+            <button onClick={onGetStarted} className="btn btn-primary" style={{ width: '100%', padding: '1rem' }}>Get Growth Pack</button>
+          </div>
+
+          {/* School */}
+          <div className="pricing-card">
+            <div className="price-header">
+              <div className="price-name">School</div>
+              <div className="price-amount">₦20,000</div>
+              <div className="price-sub">500 credits · ₦40 each</div>
+            </div>
+            <ul className="price-features">
+              <li className="price-feature"><CheckCircle2 size={20} /> Instantly Generated ID</li>
+              <li className="price-feature"><CheckCircle2 size={20} /> 500 Accurate Gradings</li>
+              <li className="price-feature"><CheckCircle2 size={20} /> CSV Result Exports</li>
               <li className="price-feature"><CheckCircle2 size={20} /> Visual Proof Retention</li>
             </ul>
             <button onClick={onGetStarted} className="btn btn-outline" style={{ width: '100%', padding: '1rem' }}>Get School Pack</button>
           </div>
+
+          {/* Institution */}
+          <div className="pricing-card">
+            <div className="price-header">
+              <div className="price-name">Institution</div>
+              <div className="price-amount">₦35,000</div>
+              <div className="price-sub">1,000 credits · ₦35 each</div>
+            </div>
+            <ul className="price-features">
+              <li className="price-feature"><CheckCircle2 size={20} /> Instantly Generated ID</li>
+              <li className="price-feature"><CheckCircle2 size={20} /> 1,000 Accurate Gradings</li>
+              <li className="price-feature"><CheckCircle2 size={20} /> CSV Result Exports</li>
+              <li className="price-feature"><CheckCircle2 size={20} /> Best Per-Credit Rate</li>
+            </ul>
+            <button onClick={onGetStarted} className="btn btn-outline" style={{ width: '100%', padding: '1rem' }}>Get Institution Pack</button>
+          </div>
         </div>
+        <p className="hero-subtitle" style={{ margin: '1.5rem auto 0', textAlign: 'center' }}>
+          Need 5,000+ credits? <a href="mailto:hello@marka.ng" style={{ color: 'var(--primary)', fontWeight: 600 }}>Contact us for Enterprise pricing.</a>
+        </p>
       </section>
 
       {/* Footer */}

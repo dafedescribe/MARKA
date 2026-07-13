@@ -7,7 +7,7 @@ export default function Auth({ onLogin }) {
   const [markaId, setMarkaId] = useState('');
   const [pin, setPin] = useState('');
   const [email, setEmail] = useState('');
-  const [amount, setAmount] = useState(500); // Dynamic amount state
+  const [amount, setAmount] = useState(5000); // Naira; matches the Starter pack
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [successData, setSuccessData] = useState(null);
@@ -222,9 +222,10 @@ export default function Auth({ onLogin }) {
                 onChange={(e) => setAmount(Number(e.target.value))}
                 value={amount}
               >
-                <option value={500}>Starter (₦500) - 5 Scans</option>
-                <option value={2000}>Teacher (₦2,000) - 20 Scans</option>
-                <option value={10000}>School (₦10,000) - 100 Scans</option>
+                <option value={5000}>Starter — ₦5,000 (100 credits)</option>
+                <option value={11250}>Growth — ₦11,250 (250 credits)</option>
+                <option value={20000}>School — ₦20,000 (500 credits)</option>
+                <option value={35000}>Institution — ₦35,000 (1,000 credits)</option>
               </select>
             </div>
 
