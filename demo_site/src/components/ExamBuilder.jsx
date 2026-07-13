@@ -1,12 +1,44 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Star } from 'lucide-react';
+
+// Answer-key values can be:
+//   "A"            single correct option
+//   ["A","C"]      multiple accepted options (any of them is correct)
+//   "*"            bonus question (any/no answer is correct)
+const getSel = (val) => {
+  if (val === '*') return { bonus: true, set: new Set() };
+  if (Array.isArray(val)) return { bonus: false, set: new Set(val) };
+  if (typeof val === 'string' && val) return { bonus: false, set: new Set([val]) };
+  return { bonus: false, set: new Set(['A']) };
+};
+const normalize = (set) => {
+  const arr = [...set].sort();
+  if (arr.length <= 1) return arr[0] || 'A';
+  return arr;
+};
 
 export default function ExamBuilder({
   newExamCode, setNewExamCode, questionsCount, setQuestionsCount, optionsCount,
   answerKey, setAnswerKey, activeBuilderQ, setActiveBuilderQ,
   examSaving, examMsg, handleCreateExam, setCurrentView
 }) {
+  const toggleOption = (qNum, opt) => {
+    setAnswerKey((prev) => {
+      const { set } = getSel(prev[qNum]); // selecting a letter also clears bonus
+      if (set.has(opt)) {
+        if (set.size > 1) set.delete(opt); // keep at least one accepted answer
+      } else {
+        set.add(opt);
+      }
+      return { ...prev, [qNum]: normalize(set) };
+    });
+  };
+
+  const toggleBonus = (qNum) => {
+    setAnswerKey((prev) => ({ ...prev, [qNum]: prev[qNum] === '*' ? 'A' : '*' }));
+  };
+
   return (
     <motion.div
       key="builder-view"
@@ -18,7 +50,7 @@ export default function ExamBuilder({
       <div className="flex justify-between items-center border-b border-gray-200 pb-4">
         <div>
           <h2 className="text-xl font-black text-[#3B0042]">Create Objective Answer Key</h2>
-          <p className="text-xs text-gray-400">Draft parameters for the OMR scanning. Arrow keys up/down changes question. Press A/B/C/D key to mark option!</p>
+          <p className="text-xs text-gray-400">Arrow keys change question; press A/B/C/D to mark. Click multiple letters to accept any of them, or ★ for a bonus (always correct).</p>
         </div>
         <button onClick={() => setCurrentView("dashboard")} className="px-4 py-2 border border-gray-200 hover:bg-gray-50 text-gray-600 text-xs font-bold rounded-xl">Cancel</button>
       </div>
@@ -41,13 +73,13 @@ export default function ExamBuilder({
                 <option value={100}>100 Questions</option>
               </select>
             </div>
-            <div className="space-y-2 opacity-50 cursor-not-allowed">
-              <label className="block text-xs font-bold text-gray-400 uppercase">Scoring Config <span className="text-[9px] bg-purple-100 text-[#3B0042] px-2 py-0.5 rounded-full ml-1">Soon</span></label>
-              <select disabled className="w-full px-3 py-3 rounded-xl border border-gray-100 focus:outline-none text-sm bg-gray-50 font-bold text-gray-400 cursor-not-allowed">
-                <option>Standard (+1/-0)</option>
-                <option>Negative Marking (+1/-0.25)</option>
-                <option>Custom Weights</option>
-              </select>
+            <div className="rounded-xl bg-purple-50/50 border border-purple-100 p-3 space-y-1">
+              <p className="text-[11px] font-bold text-[#3B0042] uppercase tracking-wide">Answer key legend</p>
+              <p className="text-[11px] text-gray-500 leading-relaxed">
+                <span className="font-bold text-gray-700">One letter</span> = single answer ·
+                <span className="font-bold text-gray-700"> Several letters</span> = any accepted ·
+                <span className="font-bold text-gray-700"> ★</span> = bonus (marked correct regardless).
+              </p>
             </div>
           </div>
 
@@ -63,14 +95,33 @@ export default function ExamBuilder({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[500px] overflow-y-auto pr-2">
             {Array.from({ length: questionsCount }).map((_, idx) => {
               const qNum = idx + 1;
-              const activeOpt = answerKey[qNum] || "A";
+              const { bonus, set } = getSel(answerKey[qNum]);
               return (
                 <div key={qNum} onClick={() => setActiveBuilderQ(qNum)} className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-all ${activeBuilderQ === qNum ? "border-[#3B0042] bg-purple-50/20 ring-2 ring-[#3B0042]/10" : "border-gray-100"}`}>
                   <span className="font-mono text-xs font-bold text-gray-400">Q{String(qNum).padStart(2, "0")}</span>
                   <div className="flex items-center gap-2">
-                    {["A", "B", "C", "D", "E"].slice(0, optionsCount).map((opt) => (
-                      <button key={opt} type="button" onClick={(e) => { e.stopPropagation(); setAnswerKey((prev) => ({ ...prev, [qNum]: opt })); }} className={`w-7 h-7 rounded-full text-xs font-bold transition-all ${activeOpt === opt ? "bg-[#3B0042] text-white" : "bg-gray-50 text-gray-500 hover:bg-gray-100"}`}>{opt}</button>
-                    ))}
+                    {["A", "B", "C", "D", "E"].slice(0, optionsCount).map((opt) => {
+                      const active = !bonus && set.has(opt);
+                      return (
+                        <button
+                          key={opt}
+                          type="button"
+                          onClick={(e) => { e.stopPropagation(); toggleOption(qNum, opt); }}
+                          className={`w-7 h-7 rounded-full text-xs font-bold transition-all ${active ? "bg-[#3B0042] text-white" : bonus ? "bg-gray-50 text-gray-300" : "bg-gray-50 text-gray-500 hover:bg-gray-100"}`}
+                        >
+                          {opt}
+                        </button>
+                      );
+                    })}
+                    <span className="w-px h-5 bg-gray-200 mx-0.5"></span>
+                    <button
+                      type="button"
+                      onClick={(e) => { e.stopPropagation(); toggleBonus(qNum); }}
+                      title="Bonus — any answer counts as correct"
+                      className={`w-7 h-7 rounded-full flex items-center justify-center transition-all ${bonus ? "bg-amber-400 text-white" : "bg-gray-50 text-gray-400 hover:bg-amber-50 hover:text-amber-500"}`}
+                    >
+                      <Star className="w-3.5 h-3.5" fill={bonus ? "currentColor" : "none"} />
+                    </button>
                   </div>
                 </div>
               );
