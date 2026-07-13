@@ -53,7 +53,7 @@ export default function Landing({ onGetStarted }) {
               <div style={{ textAlign: 'center', color: 'var(--text-muted)' }}>
                 <Camera size={64} style={{ margin: '0 auto 1rem', opacity: 0.5, color: 'var(--primary)' }} />
                 <p style={{ fontWeight: 600, fontSize: '1.25rem' }}>Visual Zero ML Grading Engine in Action</p>
-                <p style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>Takes a blurry photo -> Isolates anchors -> Grades bubbles -> Outputs CSV</p>
+                <p style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>Takes a blurry photo → Isolates anchors → Grades bubbles → Outputs CSV</p>
               </div>
             </div>
           </div>
