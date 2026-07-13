@@ -131,6 +131,20 @@ def get_answer_key(exam_code: str) -> dict:
     return None
 
 
+def _user_id_from_token(token: str) -> str:
+    """Decode our MARKA JWT and return the user's UUID (raises 401 if invalid)."""
+    from jose import jwt, JWTError
+    from auth import JWT_SECRET, ALGORITHM
+    try:
+        payload = jwt.decode(token, JWT_SECRET, algorithms=[ALGORITHM])
+    except JWTError:
+        raise HTTPException(401, "Invalid token")
+    user_id = payload.get("sub")
+    if not user_id:
+        raise HTTPException(401, "Invalid token")
+    return user_id
+
+
 # ── Endpoints ─────────────────────────────────────────────────────
 
 @app.get("/health")
@@ -151,6 +165,11 @@ class ProcessScanRequest(BaseModel):
     scan_id: str
     exam_code: str
     token: str # In production, use Depends(oauth2_scheme)
+
+class ExamRequest(BaseModel):
+    exam_code: str
+    answers: dict  # {"1": "A", "2": "C", ...}
+    token: str
 
 
 # ── Authentication Endpoints ──────────────────────────────────────
@@ -263,6 +282,58 @@ def login(req: LoginRequest):
     except Exception as e:
         raise HTTPException(500, str(e))
 
+
+# ── Exam / Answer-Key Endpoints ───────────────────────────────────
+
+@app.post("/exams")
+def create_or_update_exam(req: ExamRequest):
+    """Create or update an exam's answer key (stored per-user in the DB)."""
+    if not supabase:
+        raise HTTPException(500, "Supabase not configured")
+    user_id = _user_id_from_token(req.token)
+
+    code = (req.exam_code or "").strip().upper()
+    if not code:
+        raise HTTPException(400, "exam_code is required")
+    if not req.answers:
+        raise HTTPException(400, "answers cannot be empty")
+
+    # Normalise to {str question: str option}
+    answers = {str(k): str(v).strip().upper() for k, v in req.answers.items()}
+
+    try:
+        existing = supabase.table("exams").select("id").eq(
+            "user_id", user_id).eq("exam_code", code).execute()
+        if existing.data:
+            exam_id = existing.data[0]["id"]
+            supabase.table("exams").update({"answer_key": answers}).eq("id", exam_id).execute()
+        else:
+            ins = supabase.table("exams").insert({
+                "user_id": user_id, "exam_code": code, "answer_key": answers
+            }).execute()
+            exam_id = ins.data[0]["id"]
+    except Exception as e:
+        raise HTTPException(500, f"Could not save exam: {e}")
+
+    return {"exam_id": exam_id, "exam_code": code, "num_questions": len(answers)}
+
+
+@app.get("/exams")
+def list_exams(token: str):
+    """List the current user's exams (for the exam picker)."""
+    if not supabase:
+        raise HTTPException(500, "Supabase not configured")
+    user_id = _user_id_from_token(token)
+    res = supabase.table("exams").select("exam_code, answer_key, created_at").eq(
+        "user_id", user_id).order("created_at", desc=True).execute()
+    return {"exams": [
+        {"exam_code": e["exam_code"],
+         "num_questions": len(e.get("answer_key") or {}),
+         "created_at": e.get("created_at")}
+        for e in (res.data or [])
+    ]}
+
+
 # ── Upload Endpoints ──────────────────────────────────────────────
 
 @app.get("/upload/presigned-url")
@@ -308,14 +379,25 @@ def process_scan_background(scan_id: str, exam_code: str, user_id: str):
         return
 
     try:
-        # 1. Update status to processing and fetch user info
+        code = (exam_code or "").strip().upper()
+
+        # 1. Fetch user info
         user_res = supabase.table("users").select("credits, marka_id").eq("id", user_id).execute()
         user_data = user_res.data[0] if user_res.data else {"credits": 0, "marka_id": ""}
-        
+
+        # Resolve this user's exam (if they created one) → exam_id + DB answer key.
+        exam_id = None
+        db_answer_key = None
+        exam_res = supabase.table("exams").select("id, answer_key").eq(
+            "user_id", user_id).eq("exam_code", code).execute()
+        if exam_res.data:
+            exam_id = exam_res.data[0]["id"]
+            db_answer_key = exam_res.data[0].get("answer_key")
+
         supabase.table("scans").insert({
             "scan_id": scan_id,
             "user_id": user_id,
-            "exam_id": None,  # linked once the exams table exists (Phase 1)
+            "exam_id": exam_id,
             "status": "processing"
         }).execute()
 
@@ -323,20 +405,22 @@ def process_scan_background(scan_id: str, exam_code: str, user_id: str):
         # 2. Download image from raw_images bucket
         file_path = f"{user_id}/{scan_id}.jpg"
         img_bytes = supabase.storage.from_("raw_images").download(file_path)
-        
+
         with tempfile.NamedTemporaryFile(delete=False, suffix=".jpg") as tmp:
             tmp.write(img_bytes)
             tmp_path = tmp.name
 
-        # 3. Process image
-        layout_path = find_layout_json(exam_code)
+        # 3. Process image. All exams share the standard MARKA sheet layout;
+        # fall back to it when the exam_code has no bundled layout of its own.
+        layout_path = find_layout_json(code) or find_layout_json("MARKA")
         if not layout_path:
-            raise ValueError(f"Exam code '{exam_code}' not found.")
+            raise ValueError(f"No OMR layout available for exam '{code}'.")
 
         result = read_bubbles(tmp_path, layout_path)
         result["scan_id"] = scan_id
 
-        answers = get_answer_key(exam_code)
+        # Answer key: the user's DB exam key takes precedence; else the bundled key.
+        answers = db_answer_key or get_answer_key(code)
         graded_file_path = None
         score = None
         total = None
@@ -435,10 +519,14 @@ def export_results(exam_code: str, token: str):
     except JWTError:
         raise HTTPException(401, "Invalid token")
 
-    # Fetch successful scans
-    res = supabase.table("scans").select("*").eq("user_id", user_id).eq("status", "success").execute()
-    # Note: Currently not filtering by exam_code in DB since exam_id wasn't properly linked in MVP process_scan
-    # In production, we'd ensure exam_code or exam_id is correctly associated and filtered.
+    # Fetch this user's successful scans. If they have an exam row for this
+    # exam_code, scope the export to that exam via exam_id.
+    code = (exam_code or "").strip().upper()
+    query = supabase.table("scans").select("*").eq("user_id", user_id).eq("status", "success")
+    exam_res = supabase.table("exams").select("id").eq("user_id", user_id).eq("exam_code", code).execute()
+    if exam_res.data:
+        query = query.eq("exam_id", exam_res.data[0]["id"])
+    res = query.execute()
     if not res.data:
         raise HTTPException(404, "No successful scans found to export.")
 
