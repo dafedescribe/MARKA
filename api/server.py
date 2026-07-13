@@ -171,7 +171,13 @@ def purchase_id(req: PurchaseIdRequest):
 
     # 1. Verify transaction with Paystack
     url = f"https://api.paystack.co/transaction/verify/{req.reference}"
-    headers = {"Authorization": f"Bearer {PAYSTACK_SECRET}"}
+    headers = {
+        "Authorization": f"Bearer {PAYSTACK_SECRET}",
+        # Paystack is behind Cloudflare, which 403s the default Python-urllib
+        # User-Agent (error 1010). Any normal UA passes.
+        "User-Agent": "MARKA-Server/1.0",
+        "Accept": "application/json",
+    }
     req_obj = urllib.request.Request(url, headers=headers)
     
     try:
