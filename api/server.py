@@ -325,6 +325,31 @@ def login(request: Request, req: LoginRequest):
         raise HTTPException(500, str(e))
 
 
+class ForgotPinRequest(BaseModel):
+    email: str
+
+@app.post("/auth/forgot-pin")
+@limiter.limit("3/minute")
+def forgot_pin(request: Request, req: ForgotPinRequest):
+    """Initiate the Forgot PIN flow."""
+    if not supabase:
+        raise HTTPException(500, "Supabase not configured")
+
+    res = supabase.table("users").select("marka_id").eq("email", req.email).execute()
+    if not res.data:
+        # Don't leak whether the email exists
+        return {"message": "If that email is registered, a recovery link has been sent."}
+
+    marka_id = res.data[0]["marka_id"]
+    
+    # In a real production setup, we would generate a short-lived token and 
+    # use Resend/SendGrid to email a magic link to req.email.
+    # For now, we simulate success.
+    logger.info(f"Simulating magic link email to {req.email} for MARKA ID {marka_id}")
+    
+    return {"message": "If that email is registered, a recovery link has been sent."}
+
+
 # ── Exam / Answer-Key Endpoints ───────────────────────────────────
 
 @app.post("/exams")
@@ -392,6 +417,17 @@ def get_presigned_url(request: Request, scan_id: str, user_id: str = Depends(get
     if not supabase:
         raise HTTPException(500, "Supabase not configured")
 
+    import re
+    if not re.match(r'^[\w-]+$', scan_id):
+        raise HTTPException(400, "Invalid scan_id format")
+
+    # Check credits before allowing upload
+    user_res = supabase.table("users").select("credits, marka_id").eq("id", user_id).execute()
+    if user_res.data:
+        user_data = user_res.data[0]
+        if user_data.get("marka_id") != "DEMO-TEST" and user_data.get("credits", 0) <= 0:
+            raise HTTPException(402, "Insufficient credits to upload scan")
+
     # Generate presigned URL for the 'raw_images' bucket
     # Path format: <user_id>/<scan_id>.jpg
     file_path = f"{user_id}/{scan_id}.jpg"
@@ -419,6 +455,10 @@ def process_scan_background(scan_id: str, exam_code: str, user_id: str):
         # 1. Fetch user info
         user_res = supabase.table("users").select("credits, marka_id").eq("id", user_id).execute()
         user_data = user_res.data[0] if user_res.data else {"credits": 0, "marka_id": ""}
+        
+        is_demo = user_data.get("marka_id") == "DEMO-TEST"
+        if not is_demo and user_data.get("credits", 0) <= 0:
+            raise ValueError("Insufficient credits to process this scan.")
 
         # Resolve this user's exam (if they created one) → exam_id + DB answer key.
         exam_id = None
@@ -619,17 +659,33 @@ def export_results(request: Request, exam_code: str, user_id: str = Depends(get_
 # ── Retention: 7-day image wipe ───────────────────────────────────
 
 def wipe_expired_images(days: int = 7) -> dict:
-    """Delete raw + graded images for scans older than `days`. Scores and the
-    scan records are kept forever — only the image files (and their paths) go."""
+    """Delete raw + graded images for standard scans older than `days`, 
+    and DEMO-TEST scans older than 15 minutes. Scores and records are kept."""
     if not supabase:
         return {"error": "supabase not configured"}
     import datetime as _dt
-    cutoff = (_dt.datetime.now(_dt.timezone.utc) - _dt.timedelta(days=days)).isoformat()
+    
+    now = _dt.datetime.now(_dt.timezone.utc)
+    standard_cutoff = (now - _dt.timedelta(days=days)).isoformat()
+    demo_cutoff = (now - _dt.timedelta(minutes=15)).isoformat()
 
+    # Find DEMO-TEST user
+    demo_res = supabase.table("users").select("id").eq("marka_id", "DEMO-TEST").execute()
+    demo_user_id = demo_res.data[0]["id"] if demo_res.data else None
+
+    # Get standard scans older than 7 days OR demo scans older than 15 mins
     res = supabase.table("scans").select(
-        "id, image_path, graded_image_path").lt("created_at", cutoff).execute()
-    targets = [s for s in (res.data or [])
-               if s.get("image_path") or s.get("graded_image_path")]
+        "id, user_id, image_path, graded_image_path, created_at"
+    ).or_(f"image_path.not.is.null,graded_image_path.not.is.null").execute()
+    
+    targets = []
+    for s in (res.data or []):
+        is_demo = (s["user_id"] == demo_user_id)
+        created = s["created_at"]
+        if is_demo and created < demo_cutoff:
+            targets.append(s)
+        elif not is_demo and created < standard_cutoff:
+            targets.append(s)
 
     files_deleted = 0
     for s in targets:
@@ -641,14 +697,14 @@ def wipe_expired_images(days: int = 7) -> dict:
                     supabase.storage.from_(bucket).remove([p])
                     files_deleted += 1
                 except Exception as e:
-                    print(f"wipe: {bucket}/{p} failed: {e}")
+                    logger.warning(f"wipe: {bucket}/{p} failed: {e}")
         try:
             supabase.table("scans").update(
                 {"image_path": None, "graded_image_path": None}).eq("id", s["id"]).execute()
         except Exception as e:
-            print(f"wipe: db update failed for scan {s['id']}: {e}")
+            logger.error(f"wipe: db update failed for scan {s['id']}: {e}")
 
-    return {"scans_affected": len(targets), "files_deleted": files_deleted, "cutoff": cutoff}
+    return {"scans_affected": len(targets), "files_deleted": files_deleted}
 
 
 @app.post("/admin/wipe-expired")
