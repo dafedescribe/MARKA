@@ -96,24 +96,58 @@ def _find_fiducials(gray):
                     cy = int(M["m01"] / M["m00"])
                     candidates.append((cx / scale, cy / scale))
 
-    if len(candidates) < 4:
+    # Extract the 4 extreme corners (TL, TR, BR, BL) from a set of points.
+    def _extreme_corners(points):
+        pts = np.array(points, dtype="float32")
+        s = pts.sum(axis=1)
+        diff = np.diff(pts, axis=1).flatten()
+        return [pts[np.argmin(s)], pts[np.argmin(diff)],
+                pts[np.argmax(s)], pts[np.argmax(diff)]]  # tl, tr, br, bl
+
+    def _distinct(corners, tol=25.0):
+        uniq = []
+        for c in corners:
+            if not any(np.linalg.norm(c - u) < tol for u in uniq):
+                uniq.append(c)
+        return uniq
+
+    if len(candidates) >= 4:
+        corners = _extreme_corners(candidates)
+        uniq = _distinct(corners)
+    else:
+        uniq = _distinct([np.array(c, dtype="float32") for c in candidates])
+
+    if len(uniq) == 3:
+        # Only three fiducials detected — commonly the top-right one, which sits
+        # next to the QR block and can fuse with it at certain angles. The four
+        # fiducials form a rectangle, so the missing corner is fully determined:
+        # the two farthest-apart points are a diagonal, and the missing corner is
+        # the reflection of the third point through that diagonal's midpoint.
+        import itertools
+        (i, j) = max(itertools.combinations(range(3), 2),
+                     key=lambda pr: np.linalg.norm(uniq[pr[0]] - uniq[pr[1]]))
+        k = ({0, 1, 2} - {i, j}).pop()
+        center = (uniq[i] + uniq[j]) / 2.0
+        missing = 2.0 * center - uniq[k]
+        four = uniq + [missing]
+        # Sanity: the reconstructed quad must be a plausible sheet — corners well
+        # separated and spanning a large area — else fall through to the error.
+        corners = _extreme_corners(four)
+        min_side = min(np.linalg.norm(corners[a] - corners[b])
+                       for a, b in [(0, 1), (1, 2), (2, 3), (3, 0)])
+        if min_side < 50:
+            uniq = []  # degenerate — trigger the error below
+        else:
+            return np.array(corners, dtype="float32")
+
+    if len(uniq) < 4:
         raise ValueError(
             f"Found {len(candidates)} fiducial markers instead of 4. "
             "Ensure all 4 corner squares are clearly visible in the photo. "
             "Take the photo in good lighting with the full sheet visible."
         )
 
-    # Extract the 4 extreme corners from all candidates
-    pts = np.array(candidates, dtype="float32")
-    s = pts.sum(axis=1)
-    diff = np.diff(pts, axis=1).flatten()
-
-    tl = pts[np.argmin(s)]
-    br = pts[np.argmax(s)]
-    tr = pts[np.argmin(diff)]
-    bl = pts[np.argmax(diff)]
-
-    return np.array([tl, tr, br, bl], dtype="float32")
+    return np.array(_extreme_corners(candidates), dtype="float32")
 
 
 def _perspective_transform(image, src_pts, layout):
