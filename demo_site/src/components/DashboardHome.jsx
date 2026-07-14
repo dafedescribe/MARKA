@@ -1,8 +1,8 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { Coins, HardDrive, PlusCircle, History, ClipboardList, Download, Printer } from 'lucide-react';
+import { Coins, HardDrive, PlusCircle, History, ClipboardList, Download, Eye } from 'lucide-react';
 
-export default function DashboardHome({ credits, scans, exams, setExamCode, setCurrentView, handleExport, setQuestionsCount }) {
+export default function DashboardHome({ credits, scans, exams, setExamCode, setCurrentView, handleExport, setQuestionsCount, setAnswerKey, setNewExamCode, handleWipeAllRaw }) {
   return (
     <motion.div
       key="dashboard-view"
@@ -34,7 +34,7 @@ export default function DashboardHome({ credits, scans, exams, setExamCode, setC
               <div className="bg-[#3B0042] h-2 rounded-full" style={{ width: `${Math.min((scans.length / 500) * 100, 100)}%` }}></div>
             </div>
           </div>
-          <button onClick={() => alert("Wipe all coming soon")} className="w-full text-center py-2.5 rounded-xl border border-gray-200 hover:bg-gray-50 text-gray-600 font-bold text-xs transition-all">Delete original images</button>
+          <button onClick={handleWipeAllRaw} className="w-full text-center py-2.5 rounded-xl border border-gray-200 hover:bg-gray-50 text-gray-600 font-bold text-xs transition-all">Delete original images</button>
         </div>
 
         <div className="bg-[#3B0042] text-white p-6 rounded-2xl flex flex-col justify-between shadow-lg relative overflow-hidden">
@@ -80,7 +80,7 @@ export default function DashboardHome({ credits, scans, exams, setExamCode, setC
                     <td className="py-4 text-gray-400 font-mono">{new Date(ex.created_at).toLocaleDateString()}</td>
                     <td className="py-4 text-right space-x-2">
                       <button onClick={() => { setExamCode(ex.exam_code); setCurrentView("upload"); }} className="px-3 py-1.5 bg-purple-50 hover:bg-purple-100 text-[#3B0042] font-bold rounded-lg transition-all">Scan Papers</button>
-                      <button onClick={() => { setQuestionsCount(ex.num_questions); setCurrentView("print"); }} className="px-2.5 py-1.5 border border-gray-200 hover:bg-purple-50 hover:border-purple-200 hover:text-purple-700 text-gray-500 rounded-lg transition-all" title="Print Blank OMR Sheet"><Printer className="w-3.5 h-3.5" /></button>
+                      <button onClick={() => { setQuestionsCount(ex.num_questions); setAnswerKey(ex.answer_key || {}); setNewExamCode(ex.exam_code); setCurrentView("builder"); }} className="px-2.5 py-1.5 border border-gray-200 hover:bg-purple-50 hover:border-purple-200 hover:text-purple-700 text-gray-500 rounded-lg transition-all" title="View / Edit Key"><Eye className="w-3.5 h-3.5" /></button>
                       <button onClick={() => handleExport(ex.exam_code)} className="px-2.5 py-1.5 border border-gray-200 hover:bg-gray-50 text-gray-500 rounded-lg transition-all" title="Download CSV"><Download className="w-3.5 h-3.5" /></button>
                     </td>
                   </tr>

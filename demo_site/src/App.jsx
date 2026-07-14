@@ -3,9 +3,18 @@ import Auth from './components/Auth';
 import Dashboard from './components/Dashboard';
 import Landing from './components/Landing';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+
 function App() {
   const [token, setToken] = useState(localStorage.getItem('marka_token'));
   const [showAuth, setShowAuth] = useState(false);
+  const [initialAuthTab, setInitialAuthTab] = useState('login');
+
+  useEffect(() => {
+    // 1. Silent Wake-up for Render Cold Starts
+    // Fire a non-blocking request to wake up the API if it has spun down.
+    fetch(`${API_URL}/`).catch(() => {});
+  }, []);
 
   // If token changes (e.g. from logout), update state
   const handleLogin = (newToken) => {
@@ -31,10 +40,10 @@ function App() {
           >
             ← Back to Home
           </button>
-          <Auth onLogin={handleLogin} />
+          <Auth onLogin={handleLogin} initialTab={initialAuthTab} />
         </div>
       ) : (
-        <Landing onGetStarted={() => setShowAuth(true)} />
+        <Landing onGetStarted={(tab = 'login') => { setInitialAuthTab(tab); setShowAuth(true); }} />
       )}
     </div>
   );

@@ -45,6 +45,46 @@ export default defineConfig({
               expiration: { maxEntries: 10 },
             },
           },
+          {
+            // Google Fonts stylesheets — these change rarely.
+            urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
+            handler: 'StaleWhileRevalidate',
+            options: {
+              cacheName: 'google-fonts-stylesheets',
+              expiration: { maxEntries: 10, maxAgeSeconds: 60 * 60 * 24 * 365 },
+            },
+          },
+          {
+            // Google Fonts webfont files — immutable once downloaded.
+            urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'google-fonts-webfonts',
+              expiration: { maxEntries: 30, maxAgeSeconds: 60 * 60 * 24 * 365 },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
+          {
+            // Paystack JS SDK — cache so payment works faster.
+            urlPattern: /^https:\/\/js\.paystack\.co\/.*/i,
+            handler: 'StaleWhileRevalidate',
+            options: {
+              cacheName: 'paystack-sdk',
+              expiration: { maxEntries: 5, maxAgeSeconds: 60 * 60 * 24 * 7 },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
+          {
+            // Supabase storage signed URLs (graded images) — cache-first with
+            // a generous TTL so the gallery loads instantly on repeat visits.
+            urlPattern: /^https:\/\/.*\.supabase\.co\/storage\/.*/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'supabase-images',
+              expiration: { maxEntries: 200, maxAgeSeconds: 60 * 60 },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
         ],
       }
     })
