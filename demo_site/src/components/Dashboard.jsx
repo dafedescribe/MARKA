@@ -189,7 +189,11 @@ export default function Dashboard({ token, onLogout }) {
       email: userEmail,
       amount: 5000 * 100, // Top up starter pack (100 credits)
       currency: 'NGN',
-      metadata: { marka_id: markaId },
+      metadata: { 
+        custom_fields: [
+          { display_name: "MARKA ID", variable_name: "marka_id", value: markaId }
+        ]
+      },
       callback: (response) => {
         alert("Payment successful! Your credits will be updated momentarily.");
         setTimeout(refreshCredits, 2000);

@@ -870,11 +870,12 @@ async def paystack_webhook(request: Request, x_paystack_signature: str = Header(
         # Extract user email or reference
         # In a real app, you'd pass the MARKA ID or user_id in the metadata
         metadata = data.get("data", {}).get("metadata", {})
-        marka_id = None
-        for field in metadata.get("custom_fields", []):
-            if field.get("variable_name") == "marka_id":
-                marka_id = field.get("value")
-                break
+        marka_id = metadata.get("marka_id")
+        if not marka_id:
+            for field in metadata.get("custom_fields", []):
+                if field.get("variable_name") == "marka_id":
+                    marka_id = field.get("value")
+                    break
 
         amount = data.get("data", {}).get("amount", 0) / 100 # Assuming NGN/Kobo
         reference = data.get("data", {}).get("reference")
