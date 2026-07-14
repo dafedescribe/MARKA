@@ -39,6 +39,8 @@ except Exception as e:
     GLOBAL_LAYOUT_DATA = None
 
 import time
+import queue
+import threading
 import hmac
 import hashlib
 import zipfile
@@ -590,10 +592,49 @@ def process_scan_background(scan_id: str, exam_code: str, user_id: str):
             os.unlink(tmp_path)
 
 
+# ── Serialized grading queue ──────────────────────────────────────
+#
+# Grading is memory-hungry (OpenCV decode + warp + render on multi-megapixel
+# phone photos). Running several at once on a small instance exhausts it and the
+# scans die with "[Errno 11] Resource temporarily unavailable" — observed live
+# when a 3-sheet batch was submitted at once: two of the three failed.
+#
+# FastAPI's BackgroundTasks would run every scan concurrently, so instead we hand
+# jobs to a single long-lived worker thread that grades them one at a time. The
+# endpoint returns immediately (just an enqueue), memory stays bounded no matter
+# how large a batch the user drops in, and throughput is unchanged in practice
+# since grading was never actually parallel-friendly on this hardware.
+#
+# uvicorn runs a single process here (no --workers), so one worker thread means
+# exactly one grading job in flight process-wide.
+_scan_queue: "queue.Queue" = queue.Queue()
+
+
+def _scan_worker():
+    """Drain the scan queue, grading one sheet at a time, forever."""
+    while True:
+        job = _scan_queue.get()
+        try:
+            scan_id, exam_code, user_id = job
+            process_scan_background(scan_id, exam_code, user_id)
+        except Exception:
+            # process_scan_background already records failures on the scan row;
+            # this is a last-resort guard so one bad job can never kill the worker.
+            logger.error("Scan worker crashed on job %r", job, exc_info=True)
+        finally:
+            _scan_queue.task_done()
+
+
+@app.on_event("startup")
+def _start_scan_worker():
+    threading.Thread(target=_scan_worker, name="marka-scan-worker", daemon=True).start()
+    logger.info("Scan worker started (grading is serialized, 1 at a time)")
+
+
 @app.post("/process-scan")
 @limiter.limit("10/second")
-def trigger_process_scan(request: Request, req: ProcessScanRequest, background_tasks: BackgroundTasks, user_id: str = Depends(get_current_user)):
-    """Trigger background grading after frontend uploads image to Supabase."""
+def trigger_process_scan(request: Request, req: ProcessScanRequest, user_id: str = Depends(get_current_user)):
+    """Queue a scan for grading after the frontend uploads the image to Supabase."""
 
     # Ensure user has credits
     if supabase:
@@ -601,8 +642,12 @@ def trigger_process_scan(request: Request, req: ProcessScanRequest, background_t
         if not user_res.data or user_res.data[0]['credits'] <= 0:
             raise HTTPException(402, "Insufficient credits")
 
-    background_tasks.add_task(process_scan_background, req.scan_id, req.exam_code, user_id)
-    return {"message": "Processing started", "scan_id": req.scan_id}
+    _scan_queue.put((req.scan_id, req.exam_code, user_id))
+    return {
+        "message": "Processing started",
+        "scan_id": req.scan_id,
+        "queue_depth": _scan_queue.qsize(),
+    }
 
 
 @app.get("/export/{exam_code}")
