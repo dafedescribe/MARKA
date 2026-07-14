@@ -79,7 +79,7 @@ export default function Landing({ onGetStarted }) {
               <h1 className="text-4xl md:text-6xl font-black text-gray-900 leading-tight tracking-tight">
                 Stop Marking <br />
                 <span className="text-[#3B0042] underline decoration-amber-400 decoration-wavy">
-                  Objective Exams
+                  Multiple Choice Tests
                 </span>{" "}
                 With A Red Pen.
               </h1>
@@ -203,10 +203,10 @@ export default function Landing({ onGetStarted }) {
 
             <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
               {[
-                { count: 100, price: "₦5,000", desc: "For small classroom tests" },
-                { count: 250, price: "₦11,250", desc: "Best for midterm exams" },
-                { count: 500, price: "₦20,000", desc: "Perfect for secondary schools" },
-                { count: 1000, price: "₦35,000", desc: "For large end-of-term exams" }
+                { count: 100, price: "₦5,000", desc: "For quick assessments" },
+                { count: 250, price: "₦11,250", desc: "Best for regular testing" },
+                { count: 500, price: "₦20,000", desc: "Perfect for organizations" },
+                { count: 1000, price: "₦35,000", desc: "For mass screening & exams" }
               ].map((p, idx) => (
                 <div
                   key={idx}
@@ -263,7 +263,7 @@ export default function Landing({ onGetStarted }) {
               <div className="space-y-6">
                 <h3 className="text-xl font-bold text-gray-900">Contact & Support</h3>
                 <p className="text-sm text-gray-500">
-                  Need help setting up OMR templates or custom bulk credits for your district?
+                  Need help setting up OMR templates or custom bulk credits for your organization?
                   Our support team is active.
                 </p>
                 <div className="flex flex-wrap gap-4">
@@ -279,7 +279,7 @@ export default function Landing({ onGetStarted }) {
             </div>
 
             <div className="border-t border-gray-100 pt-8 flex flex-col md:flex-row justify-between items-center text-xs text-gray-400 gap-4">
-              <span>© {new Date().getFullYear()} MARKA OMR. Built for premium teacher confidence.</span>
+              <span>© {new Date().getFullYear()} MARKA OMR. Built for absolute grading confidence.</span>
               <div className="flex gap-6">
                 <a href="#" className="hover:underline">Privacy Policy</a>
                 <a href="#" className="hover:underline">Terms of Service</a>
