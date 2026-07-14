@@ -83,10 +83,8 @@ export default function Landing({ onGetStarted }) {
                 </span>{" "}
                 With A Red Pen.
               </h1>
-              <p className="text-lg md:text-xl text-gray-500 leading-relaxed max-w-2xl">
-                Grade 100 student sheets in 60 seconds using just your smartphone camera. 
-                Eliminate human error, speed up results, and export directly to Excel. 
-                No expensive OMR hardware needed.
+              <p className="text-lg md:text-xl text-gray-500 leading-relaxed max-w-xl">
+                Grade 100 sheets in 60 seconds using your smartphone. No expensive hardware needed. Export instantly to Excel.
               </p>
               <div className="flex flex-wrap gap-4 pt-2">
                 <button
@@ -165,7 +163,7 @@ export default function Landing({ onGetStarted }) {
                 </div>
                 <h3 className="text-lg font-bold text-gray-900">Print Free Sheets</h3>
                 <p className="text-sm text-gray-500 leading-relaxed">
-                  Download our standard OMR templates and print them on any normal A4 paper for your students.
+                  Print standard WAEC/JAMB format templates on normal A4 paper.
                 </p>
               </div>
 
@@ -175,7 +173,7 @@ export default function Landing({ onGetStarted }) {
                 </div>
                 <h3 className="text-lg font-bold text-gray-900">Snap With Your Phone</h3>
                 <p className="text-sm text-gray-500 leading-relaxed">
-                  Just take photos of the filled sheets. Our AI automatically handles shadows, angles, and phone camera blur.
+                  Take photos of filled sheets. Our AI handles shadows and blur automatically.
                 </p>
               </div>
 
@@ -185,7 +183,7 @@ export default function Landing({ onGetStarted }) {
                 </div>
                 <h3 className="text-lg font-bold text-gray-900">Export Results</h3>
                 <p className="text-sm text-gray-500 leading-relaxed">
-                  Watch them grade instantly. Download the final scores as an Excel file, ready to submit to the principal.
+                  Get scores instantly. Download as an Excel file ready for submission.
                 </p>
               </div>
             </div>
