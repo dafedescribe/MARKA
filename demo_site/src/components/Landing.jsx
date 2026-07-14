@@ -163,7 +163,7 @@ export default function Landing({ onGetStarted }) {
                 </div>
                 <h3 className="text-lg font-bold text-gray-900">Print Free Sheets</h3>
                 <p className="text-sm text-gray-500 leading-relaxed">
-                  Print standard WAEC/JAMB format templates on normal A4 paper.
+                  Print standard 100-question OMR templates on normal A4 paper.
                 </p>
               </div>
 
