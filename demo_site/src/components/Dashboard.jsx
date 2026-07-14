@@ -275,6 +275,25 @@ export default function Dashboard({ token, onLogout }) {
     }
   };
 
+  // Remove a scan entirely (images + record). Unlike wipeImage, the score goes too.
+  const deleteScan = async (scanId) => {
+    if (!scanId) return;
+    if (!window.confirm('Delete this scan permanently? The score and images will be removed. This cannot be undone.')) return;
+    const prevScans = scans;
+    // Drop it from the list immediately, but put it back if the server rejects.
+    setScans(prev => prev.filter(s => s.scan_id !== scanId));
+    try {
+      const res = await fetch(`${API_URL}/scans/${scanId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (!res.ok) { const d = await res.json().catch(() => ({})); throw new Error(d.detail || 'Failed to delete scan'); }
+    } catch (e) {
+      setScans(prevScans);
+      alert(e.message);
+    }
+  };
+
   const handleWipeAllRaw = async () => {
     if (!window.confirm('Delete ALL original high-res images to reclaim space? (Your graded images and scores will be kept). This cannot be undone.')) return;
     try {
@@ -531,7 +550,7 @@ export default function Dashboard({ token, onLogout }) {
           {currentView === "dashboard" && <DashboardHome credits={credits} scans={scans} exams={exams} setExamCode={setExamCode} setCurrentView={setCurrentView} handleExport={handleExport} setQuestionsCount={setQuestionsCount} setAnswerKey={setAnswerKey} setNewExamCode={setNewExamCode} handleWipeAllRaw={handleWipeAllRaw} />}
           {currentView === "builder" && <ExamBuilder newExamCode={newExamCode} setNewExamCode={setNewExamCode} questionsCount={questionsCount} setQuestionsCount={setQuestionsCount} optionsCount={optionsCount} setOptionsCount={setOptionsCount} answerKey={answerKey} setAnswerKey={setAnswerKey} activeBuilderQ={activeBuilderQ} setActiveBuilderQ={setActiveBuilderQ} examSaving={examSaving} examMsg={examMsg} handleCreateExam={handleCreateExam} setCurrentView={setCurrentView} />}
           {currentView === "upload" && <UploadQueue examCode={examCode} setExamCode={setExamCode} exams={exams} uploadQueue={uploadQueue} setUploadQueue={setUploadQueue} fileInputRef={fileInputRef} handleFilesAdded={handleFilesAdded} runBatchProcessing={runBatchProcessing} isUploadingBatch={isUploadingBatch} retryFailed={retryFailed} goToLibrary={goToLibrary} />}
-          {currentView === "gallery" && <Gallery scans={scans} fetchScans={() => fetchScans(0, false)} loadMoreScans={loadMoreScans} hasMoreScans={hasMoreScans} wipeImage={wipeImage} expiryInfo={expiryInfo} searchQuery={searchQuery} setSearchQuery={setSearchQuery} scansError={scansError} />}
+          {currentView === "gallery" && <Gallery scans={scans} fetchScans={() => fetchScans(0, false)} loadMoreScans={loadMoreScans} hasMoreScans={hasMoreScans} wipeImage={wipeImage} deleteScan={deleteScan} expiryInfo={expiryInfo} searchQuery={searchQuery} setSearchQuery={setSearchQuery} scansError={scansError} />}
         </AnimatePresence>
       </main>
     </div>

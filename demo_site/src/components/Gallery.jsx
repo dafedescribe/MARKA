@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Search, RefreshCcw, FileText, Loader2, Clock, Trash2, Download, X, Maximize2 } from 'lucide-react';
 
-export default function Gallery({ scans, fetchScans, loadMoreScans, hasMoreScans, wipeImage, expiryInfo, searchQuery, setSearchQuery, scansError }) {
+export default function Gallery({ scans, fetchScans, loadMoreScans, hasMoreScans, wipeImage, deleteScan, expiryInfo, searchQuery, setSearchQuery, scansError }) {
   const [lightbox, setLightbox] = useState(null);
   const [overrideQ, setOverrideQ] = useState('');
   const [overrideOpt, setOverrideOpt] = useState('');
@@ -153,12 +153,25 @@ export default function Gallery({ scans, fetchScans, loadMoreScans, hasMoreScans
                       {hasImage && (
                         <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                           <button onClick={() => downloadImage(scan)} className="text-gray-300 hover:text-[#3B0042] transition-colors" title="Download graded sheet"><Download className="w-4 h-4" /></button>
-                          <button onClick={() => wipeImage(scan.scan_id)} className="text-gray-300 hover:text-red-500 transition-colors" title="Delete image immediately"><Trash2 className="w-4 h-4" /></button>
+                          <button onClick={() => wipeImage(scan.scan_id)} className="text-gray-300 hover:text-red-500 transition-colors" title="Delete image only (keeps the score)"><Trash2 className="w-4 h-4" /></button>
                         </div>
                       )}
                     </div>
                   )}
                 </div>
+
+                {/* Remove the scan entirely. Shown on every card — failed scans have
+                    no other actions, and pruning them is the whole point. */}
+                {scan.scan_id && (
+                  <button
+                    onClick={() => deleteScan(scan.scan_id)}
+                    className="absolute top-1.5 right-1.5 p-1.5 rounded-lg text-gray-300 hover:text-white hover:bg-red-500 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-all"
+                    title="Delete this scan permanently"
+                    aria-label="Delete this scan permanently"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                )}
               </div>
             );
           })

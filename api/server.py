@@ -459,6 +459,13 @@ def process_scan_background(scan_id: str, exam_code: str, user_id: str):
         print("Error: Supabase not configured")
         return
 
+    # The frontend always uploads to this deterministic path before calling us, so
+    # we can clean it up in `finally` no matter where we bail out. The raw photo is
+    # the biggest storage cost (3-5MB) and is never reused once grading is attempted
+    # — a retry re-uploads from the browser. Previously it was only deleted on the
+    # success path, so every failed scan leaked its upload forever.
+    raw_path = f"{user_id}/{scan_id}.jpg"
+
     try:
         code = (exam_code or "").strip().upper()
 
@@ -488,8 +495,7 @@ def process_scan_background(scan_id: str, exam_code: str, user_id: str):
 
 
         # 2. Download image from raw_images bucket
-        file_path = f"{user_id}/{scan_id}.jpg"
-        img_bytes = supabase.storage.from_("raw_images").download(file_path)
+        img_bytes = supabase.storage.from_("raw_images").download(raw_path)
 
         # File signature validation (magic numbers)
         if not (img_bytes.startswith(b'\xff\xd8\xff') or img_bytes.startswith(b'\x89PNG\r\n\x1a\n')):
@@ -553,13 +559,7 @@ def process_scan_background(scan_id: str, exam_code: str, user_id: str):
                 graded_file_path, img_buf.tobytes(), {"content-type": ctype})
             os.unlink(out_path)
 
-        # Delete the raw upload now that grading is done — it is never reused and
-        # is the biggest storage cost (3-5MB per phone photo).
-        try:
-            supabase.storage.from_("raw_images").remove([file_path])
-        except Exception as e:
-            print(f"Could not delete raw image {file_path}: {e}")
-
+        # (the raw upload is removed in `finally` — on success *and* failure)
 
         # 4. Deduct credit atomically
         # Only deduct if not DEMO-TEST (DEMO-TEST has unlimited but restricted scans)
@@ -588,6 +588,12 @@ def process_scan_background(scan_id: str, exam_code: str, user_id: str):
         except Exception as db_err:
             logger.error(f"CRITICAL: Failed to mark scan {scan_id} as failed: {db_err}", exc_info=True)
     finally:
+        # Always reclaim the raw upload, however grading ended. Best-effort: a
+        # failure here must never mask the real outcome of the scan.
+        try:
+            supabase.storage.from_("raw_images").remove([raw_path])
+        except Exception as e:
+            logger.warning(f"Could not delete raw image {raw_path}: {e}")
         if 'tmp_path' in locals() and os.path.exists(tmp_path):
             os.unlink(tmp_path)
 
@@ -811,6 +817,39 @@ def wipe_scan_image(scan_id: str, user_id: str = Depends(get_current_user)):
     supabase.table("scans").update(
         {"image_path": None, "graded_image_path": None}).eq("id", s["id"]).execute()
     return {"ok": True, "scan_id": scan_id}
+
+
+@app.delete("/scans/{scan_id}")
+def delete_scan(scan_id: str, user_id: str = Depends(get_current_user)):
+    """Remove a scan entirely — its images and the record itself.
+
+    Distinct from /wipe-image, which frees the image files but keeps the score.
+    This is what the Library's delete button calls, so users can prune failed or
+    unwanted scans without a manual DB cleanup.
+    """
+    if not supabase:
+        raise HTTPException(500, "Supabase not configured")
+
+    res = supabase.table("scans").select(
+        "id, user_id, image_path, graded_image_path").eq("scan_id", scan_id).execute()
+    if not res.data:
+        raise HTTPException(404, "Scan not found")
+    s = res.data[0]
+    if s["user_id"] != user_id:
+        raise HTTPException(403, "Not your scan")
+
+    # Drop the stored images first so a mid-way failure can't orphan them: if the
+    # row goes but the files remain, nothing points at them any more.
+    for bucket, col in (("raw_images", "image_path"), ("graded_images", "graded_image_path")):
+        p = s.get(col)
+        if p:
+            try:
+                supabase.storage.from_(bucket).remove([p])
+            except Exception as e:
+                logger.warning(f"delete-scan: {bucket}/{p} failed: {e}")
+
+    supabase.table("scans").delete().eq("id", s["id"]).execute()
+    return {"ok": True, "scan_id": scan_id, "deleted": True}
 
 
 @app.post("/scans/wipe-all-raw")
