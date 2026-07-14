@@ -34,7 +34,9 @@ Live: Render backend + Vercel frontend, custom domain `marka.com.ng`. ✅ = done
 **⚠️ Known bugs / decisions open:**
 - ✅ **A–E fix DONE** — builder `optionsCount` now 5, so E is keyable (was hardcoded to 4).
 - ✅ **Over-grading DONE** — non-demo scans now require a saved key (no bundled 100-Q fallback); `total = len(your key)`, grades only keyed questions.
-- ✅ **Blank-scored-correct DONE** — stricter read threshold (0.35); ✅ **upside-down rejected** (orientation check — validate on a couple of real photos, heuristic is header-vs-footer darkness).
+- ✅ **Blank-scored-correct DONE** — stricter read threshold (0.35).
+- ✅ **Upside-down detection FIXED** — the original brightness heuristic false-rejected real upright sheets (footer darker than header + shadowed photos). Replaced with a QR-texture (variance top-right vs bottom-left) check, validated on a real photo (upright accepted, flipped rejected).
+- 🟠 **Dark/low-contrast photo reading** — on a real shadowed phone photo the reader detected only ~9 of ~30 filled bubbles (adaptive threshold too strict when the whole sheet is dark). Needs contrast normalization (e.g. CLAHE before thresholding) + in-app "good lighting, flat sheet" guidance. Not yet fixed.
 - 🟠 **Forgot-PIN recovery disabled** — returned plaintext MARKA ID/PIN (account-takeover); now returns a generic message only. Needs real emailed reset link (Resend/SendGrid). PINs are also stored unhashed — hash them.
 - 🟡 **"Image not served"** — colleague's WebP→JPEG fallback added, but WebP works on Render, so the real cause is unconfirmed; needs a specific failing scan to diagnose.
 - 🔑 Activate 7-day wipe cron (`CRON_SECRET` on Render + cron-job.org → `/admin/wipe-expired`).

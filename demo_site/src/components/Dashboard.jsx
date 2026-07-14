@@ -448,6 +448,17 @@ export default function Dashboard({ token, onLogout }) {
     if (wakeLock) {
       wakeLock.release().catch(() => {});
     }
+
+    // Grading finishes asynchronously on the server. Don't rely solely on the
+    // realtime subscription (it may be disabled/dropped) — poll a few times so
+    // the optimistic "processing" cards reconcile to the real graded results.
+    fetchScans(0, false);
+    [3000, 7000, 12000, 20000].forEach((ms) => setTimeout(() => fetchScans(0, false), ms));
+  };
+
+  const goToLibrary = () => {
+    fetchScans(0, false);
+    setCurrentView('gallery');
   };
 
   const handleExport = async (exportExamCode) => {
@@ -483,7 +494,7 @@ export default function Dashboard({ token, onLogout }) {
           <button onClick={() => setCurrentView("dashboard")} className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${currentView === "dashboard" ? "bg-[#3B0042] text-white shadow" : "text-gray-500 hover:bg-gray-100"}`}>Dashboard</button>
           <button onClick={() => { setNewExamCode(""); setQuestionsCount(20); setCurrentView("builder"); }} className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${currentView === "builder" ? "bg-[#3B0042] text-white shadow" : "text-gray-500 hover:bg-gray-100"}`}>New Exam Sheet</button>
           <button onClick={() => setCurrentView("upload")} className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${currentView === "upload" ? "bg-[#3B0042] text-white shadow" : "text-gray-500 hover:bg-gray-100"}`}>Scan & Grade</button>
-          <button onClick={() => setCurrentView("gallery")} className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${currentView === "gallery" ? "bg-[#3B0042] text-white shadow" : "text-gray-500 hover:bg-gray-100"}`}>OMR Library</button>
+          <button onClick={goToLibrary} className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${currentView === "gallery" ? "bg-[#3B0042] text-white shadow" : "text-gray-500 hover:bg-gray-100"}`}>OMR Library</button>
           <div className="w-px h-6 bg-gray-200 mx-2"></div>
           <div className="flex items-center gap-2 bg-purple-50 px-3 py-1.5 rounded-lg border border-purple-100">
             <span className="text-xs font-bold text-purple-900 uppercase">Credits</span>
@@ -508,7 +519,7 @@ export default function Dashboard({ token, onLogout }) {
         <AnimatePresence mode="wait">
           {currentView === "dashboard" && <DashboardHome credits={credits} scans={scans} exams={exams} setExamCode={setExamCode} setCurrentView={setCurrentView} handleExport={handleExport} setQuestionsCount={setQuestionsCount} setAnswerKey={setAnswerKey} setNewExamCode={setNewExamCode} handleWipeAllRaw={handleWipeAllRaw} />}
           {currentView === "builder" && <ExamBuilder newExamCode={newExamCode} setNewExamCode={setNewExamCode} questionsCount={questionsCount} setQuestionsCount={setQuestionsCount} optionsCount={optionsCount} setOptionsCount={setOptionsCount} answerKey={answerKey} setAnswerKey={setAnswerKey} activeBuilderQ={activeBuilderQ} setActiveBuilderQ={setActiveBuilderQ} examSaving={examSaving} examMsg={examMsg} handleCreateExam={handleCreateExam} setCurrentView={setCurrentView} />}
-          {currentView === "upload" && <UploadQueue examCode={examCode} setExamCode={setExamCode} exams={exams} uploadQueue={uploadQueue} setUploadQueue={setUploadQueue} fileInputRef={fileInputRef} handleFilesAdded={handleFilesAdded} runBatchProcessing={runBatchProcessing} isUploadingBatch={isUploadingBatch} retryFailed={retryFailed} />}
+          {currentView === "upload" && <UploadQueue examCode={examCode} setExamCode={setExamCode} exams={exams} uploadQueue={uploadQueue} setUploadQueue={setUploadQueue} fileInputRef={fileInputRef} handleFilesAdded={handleFilesAdded} runBatchProcessing={runBatchProcessing} isUploadingBatch={isUploadingBatch} retryFailed={retryFailed} goToLibrary={goToLibrary} />}
           {currentView === "gallery" && <Gallery scans={scans} fetchScans={() => fetchScans(0, false)} loadMoreScans={loadMoreScans} hasMoreScans={hasMoreScans} wipeImage={wipeImage} expiryInfo={expiryInfo} searchQuery={searchQuery} setSearchQuery={setSearchQuery} />}
         </AnimatePresence>
       </main>

@@ -251,11 +251,17 @@ def read_bubbles(image_path, layout_data_or_path):
     src_pts = _find_fiducials(gray)
     aligned_gray, w, h = _perspective_transform(gray, src_pts, sheet)
 
-    # Orientation Check: If rotated 180 degrees, the bottom (blank) will be darker than the top (MARKA header)
-    top_roi = aligned_gray[: int(h * 0.1), :]
-    bot_roi = aligned_gray[int(h * 0.9):, :]
-    if bot_roi.mean() < top_roi.mean() - 10:
-        raise ValueError("Image appears to be upside down. Please rotate 180 degrees.")
+    # Orientation check via the QR block, which is always printed in the sheet's
+    # TOP-RIGHT corner. Brightness comparisons are unreliable — real photos have
+    # lighting gradients (a shadowed bottom edge) that swamp the sheet's own ink —
+    # but the QR's dense high-frequency texture survives shadows. Compare texture
+    # (variance) of the top-right vs bottom-left corner: if the bottom-left is much
+    # busier, the QR has moved there and the sheet was scanned upside down.
+    # Validated on real photos: upright tr_var >> bl_var; flipped bl_var >> tr_var.
+    tr_var = float(aligned_gray[: int(h * 0.18), int(w * 0.75):].astype(np.float32).var())
+    bl_var = float(aligned_gray[int(h * 0.82):, : int(w * 0.25)].astype(np.float32).var())
+    if bl_var > 300 and bl_var > tr_var * 1.6:
+        raise ValueError("Image appears to be upside down. Please rotate 180 degrees and rescan.")
 
     # Compute adaptive threshold from the actual paper
     threshold, blank_median = _compute_adaptive_threshold(
