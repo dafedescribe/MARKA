@@ -575,7 +575,7 @@ def process_scan_background(scan_id: str, exam_code: str, user_id: str):
             "score": score,
             "total": total,
             "percentage": percentage,
-            "raw_marks": result["marks"],
+            "raw_marks": result,
             "image_path": None,  # raw wiped immediately post-grade
             "graded_image_path": graded_file_path
         }).eq("scan_id", scan_id).execute()
@@ -635,8 +635,9 @@ def export_results(request: Request, exam_code: str, user_id: str = Depends(get_
     
     all_questions = set()
     for s in scans:
-        if s.get("raw_marks"):
-            all_questions.update(s["raw_marks"].keys())
+        marks = s.get("raw_marks", {}).get("marks", {})
+        if marks:
+            all_questions.update(marks.keys())
             
     q_keys = sorted(list(all_questions), key=lambda x: int(x) if str(x).isdigit() else x)
     header = ["Scan ID", "Score", "Total", "Percentage"] + [f"Q{k}" for k in q_keys]
@@ -644,7 +645,7 @@ def export_results(request: Request, exam_code: str, user_id: str = Depends(get_
     
     for s in scans:
         row = [s["scan_id"], s["score"], s["total"], s["percentage"]]
-        marks = s.get("raw_marks", {})
+        marks = s.get("raw_marks", {}).get("marks", {})
         for k in q_keys:
             row.append(marks.get(str(k), ""))
         writer.writerow(row)
@@ -821,8 +822,8 @@ def override_mark(scan_id: str, req: OverrideRequest, user_id: str = Depends(get
         raw_marks["ambiguous"].remove(req.q_num)
         
     # Recalculate score
-    code = scan.get("exam_code")
-    exam_res = supabase.table("exams").select("answer_key").eq("user_id", user_id).eq("exam_code", code).execute()
+    exam_id = scan.get("exam_id")
+    exam_res = supabase.table("exams").select("answer_key").eq("user_id", user_id).eq("id", exam_id).execute()
     answers = exam_res.data[0]["answer_key"] if exam_res.data else {}
     
     score = 0
@@ -869,7 +870,12 @@ async def paystack_webhook(request: Request, x_paystack_signature: str = Header(
         # Extract user email or reference
         # In a real app, you'd pass the MARKA ID or user_id in the metadata
         metadata = data.get("data", {}).get("metadata", {})
-        marka_id = metadata.get("marka_id")
+        marka_id = None
+        for field in metadata.get("custom_fields", []):
+            if field.get("variable_name") == "marka_id":
+                marka_id = field.get("value")
+                break
+
         amount = data.get("data", {}).get("amount", 0) / 100 # Assuming NGN/Kobo
         reference = data.get("data", {}).get("reference")
         
@@ -893,7 +899,16 @@ async def paystack_webhook(request: Request, x_paystack_signature: str = Header(
                 return {"status": "error"}
 
             # 2. Add Credits securely
-            supabase.rpc("add_credits_by_marka_id", {"m_id": marka_id.upper(), "amount": credits_to_add}).execute()
+            try:
+                supabase.rpc("add_credits_by_marka_id", {"m_id": marka_id.upper(), "amount": credits_to_add}).execute()
+            except Exception as rpc_err:
+                print(f"RPC add_credits_by_marka_id failed (maybe not defined?): {rpc_err}")
+                # Fallback to direct update
+                u_res = supabase.table("users").select("id, credits").eq("marka_id", marka_id.upper()).execute()
+                if u_res.data:
+                    uid = u_res.data[0]["id"]
+                    old_credits = u_res.data[0]["credits"]
+                    supabase.table("users").update({"credits": old_credits + credits_to_add}).eq("id", uid).execute()
 
     return {"status": "success"}
 
