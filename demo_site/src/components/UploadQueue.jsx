@@ -1,11 +1,12 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { Upload, FileText, CheckCircle, XCircle, Loader2, Play, AlertTriangle } from 'lucide-react';
+import { Upload, FileText, CheckCircle, XCircle, Loader2, Play, AlertTriangle, RefreshCw } from 'lucide-react';
 
 export default function UploadQueue({
   examCode, setExamCode, exams, uploadQueue, setUploadQueue,
-  fileInputRef, handleFilesAdded, runBatchProcessing, isUploadingBatch
+  fileInputRef, handleFilesAdded, runBatchProcessing, isUploadingBatch, retryFailed
 }) {
+  const hasFailedItems = uploadQueue.some(item => item.status === 'failed');
   return (
     <motion.div
       key="upload-view"
@@ -42,6 +43,11 @@ export default function UploadQueue({
             <h3 className="text-sm font-bold text-gray-900">{uploadQueue.length} sheets in queue</h3>
             <div className="flex gap-2">
               <button onClick={() => setUploadQueue([])} className="px-4 py-2 border border-gray-200 rounded-xl text-xs font-bold text-gray-600">Clear</button>
+              {hasFailedItems && !isUploadingBatch && (
+                <button onClick={retryFailed} className="px-4 py-2 bg-amber-500 text-white rounded-xl text-xs font-bold flex items-center gap-2 hover:bg-amber-600 transition-colors">
+                  <RefreshCw className="w-4 h-4" /> Retry Failed
+                </button>
+              )}
               <button onClick={runBatchProcessing} disabled={isUploadingBatch} className="px-4 py-2 bg-[#3B0042] text-white rounded-xl text-xs font-bold disabled:bg-gray-400 flex items-center gap-2">
                 {isUploadingBatch ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />}
                 {isUploadingBatch ? 'Processing...' : 'Start Grading'}

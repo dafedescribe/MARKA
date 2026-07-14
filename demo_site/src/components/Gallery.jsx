@@ -105,7 +105,7 @@ export default function Gallery({ scans, fetchScans, loadMoreScans, hasMoreScans
                     <Loader2 className="w-6 h-6 text-[#3B0042] animate-spin" />
                   ) : scan.thumbnailUrl ? (
                     <button type="button" onClick={() => setLightbox(scan)} className="w-full h-full group/thumb relative cursor-zoom-in" title="View full graded sheet">
-                      <img src={scan.thumbnailUrl} alt="Graded OMR" className="w-full h-full object-cover" />
+                      <img src={scan.thumbnailUrl} alt="Graded OMR" loading="lazy" decoding="async" className="w-full h-full object-cover" />
                       <span className="absolute inset-0 bg-black/0 group-hover/thumb:bg-black/30 flex items-center justify-center transition-colors">
                         <Maximize2 className="w-5 h-5 text-white opacity-0 group-hover/thumb:opacity-100 transition-opacity" />
                       </span>

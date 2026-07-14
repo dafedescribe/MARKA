@@ -352,6 +352,14 @@ export default function Dashboard({ token, onLogout }) {
   };
   const runBatchProcessing = async () => {
     setIsUploadingBatch(true);
+    let wakeLock = null;
+    try {
+      if ('wakeLock' in navigator) {
+        wakeLock = await navigator.wakeLock.request('screen');
+      }
+    } catch (err) {
+      console.warn("WakeLock not supported or denied.");
+    }
     
     const currentQueue = [...uploadQueue];
     for (let i = 0; i < currentQueue.length; i++) {
@@ -374,34 +382,45 @@ export default function Dashboard({ token, onLogout }) {
         };
         setScans(prev => [optimisticScan, ...prev]);
 
-        const res = await fetch(`${API_URL}/upload/presigned-url?scan_id=${scanId}`, {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-        const { upload_url } = await res.json();
+        let triggerRes;
+        // Retry logic for cold starts (up to 2 retries)
+        for (let attempt = 1; attempt <= 3; attempt++) {
+          try {
+            const res = await fetch(`${API_URL}/upload/presigned-url?scan_id=${scanId}`, {
+              headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (!res.ok) throw new Error("API not ready");
+            const { upload_url } = await res.json();
 
-        const uploadRes = await fetch(upload_url, {
-          method: 'PUT',
-          headers: { 'Content-Type': item.file.type },
-          body: item.file
-        });
+            const uploadRes = await fetch(upload_url, {
+              method: 'PUT',
+              headers: { 'Content-Type': item.file.type },
+              body: item.file
+            });
 
-        if (!uploadRes.ok) throw new Error('Failed to upload image directly to Supabase');
+            if (!uploadRes.ok) throw new Error('Failed to upload image directly to Supabase');
+            
+            setUploadQueue((prev) =>
+              prev.map((itm) => (itm.id === item.id ? { ...itm, status: "grading" } : itm))
+            );
 
-        setUploadQueue((prev) =>
-          prev.map((itm) => (itm.id === item.id ? { ...itm, status: "grading" } : itm))
-        );
-
-        const triggerRes = await fetch(`${API_URL}/process-scan`, {
-          method: 'POST',
-          headers: { 
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify({
-            scan_id: scanId,
-            exam_code: examCode
-          })
-        });
+            triggerRes = await fetch(`${API_URL}/process-scan`, {
+              method: 'POST',
+              headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+              },
+              body: JSON.stringify({
+                scan_id: scanId,
+                exam_code: examCode
+              })
+            });
+            break; // Success
+          } catch (err) {
+            if (attempt === 3) throw err;
+            await new Promise(r => setTimeout(r, 2000)); // wait 2s before retry
+          }
+        }
 
         if (!triggerRes.ok) throw new Error('Failed to trigger processing');
         
@@ -422,6 +441,9 @@ export default function Dashboard({ token, onLogout }) {
     }
     
     setIsUploadingBatch(false);
+    if (wakeLock) {
+      wakeLock.release().catch(() => {});
+    }
   };
 
   const handleExport = async (exportExamCode) => {
@@ -435,6 +457,15 @@ export default function Dashboard({ token, onLogout }) {
     } catch (e) {
       alert(e.message);
     }
+  };
+
+  const retryFailed = () => {
+    // Reset all failed items back to 'queued' so runBatchProcessing picks them up
+    setUploadQueue(prev => prev.map(item =>
+      item.status === 'failed' ? { ...item, status: 'queued', error: null } : item
+    ));
+    // Immediately kick off batch processing again
+    setTimeout(() => runBatchProcessing(), 100);
   };
 
   return (
@@ -476,7 +507,7 @@ export default function Dashboard({ token, onLogout }) {
         <AnimatePresence mode="wait">
           {currentView === "dashboard" && <DashboardHome credits={credits} scans={scans} exams={exams} setExamCode={setExamCode} setCurrentView={setCurrentView} handleExport={handleExport} setQuestionsCount={setQuestionsCount} setAnswerKey={setAnswerKey} setNewExamCode={setNewExamCode} handleWipeAllRaw={handleWipeAllRaw} />}
           {currentView === "builder" && <ExamBuilder newExamCode={newExamCode} setNewExamCode={setNewExamCode} questionsCount={questionsCount} setQuestionsCount={setQuestionsCount} optionsCount={optionsCount} setOptionsCount={setOptionsCount} answerKey={answerKey} setAnswerKey={setAnswerKey} activeBuilderQ={activeBuilderQ} setActiveBuilderQ={setActiveBuilderQ} examSaving={examSaving} examMsg={examMsg} handleCreateExam={handleCreateExam} setCurrentView={setCurrentView} />}
-          {currentView === "upload" && <UploadQueue examCode={examCode} setExamCode={setExamCode} exams={exams} uploadQueue={uploadQueue} setUploadQueue={setUploadQueue} fileInputRef={fileInputRef} handleFilesAdded={handleFilesAdded} runBatchProcessing={runBatchProcessing} isUploadingBatch={isUploadingBatch} />}
+          {currentView === "upload" && <UploadQueue examCode={examCode} setExamCode={setExamCode} exams={exams} uploadQueue={uploadQueue} setUploadQueue={setUploadQueue} fileInputRef={fileInputRef} handleFilesAdded={handleFilesAdded} runBatchProcessing={runBatchProcessing} isUploadingBatch={isUploadingBatch} retryFailed={retryFailed} />}
           {currentView === "gallery" && <Gallery scans={scans} fetchScans={() => fetchScans(0, false)} loadMoreScans={loadMoreScans} hasMoreScans={hasMoreScans} wipeImage={wipeImage} expiryInfo={expiryInfo} searchQuery={searchQuery} setSearchQuery={setSearchQuery} />}
         </AnimatePresence>
       </main>
