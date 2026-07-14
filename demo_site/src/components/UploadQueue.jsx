@@ -1,6 +1,13 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { Upload, FileText, CheckCircle, XCircle, Loader2, Play, AlertTriangle, RefreshCw, Plus, Images } from 'lucide-react';
+import { Upload, FileText, CheckCircle, XCircle, Loader2, Play, AlertTriangle, RefreshCw, Plus, Images, Sun, Maximize, PenLine, ScanLine } from 'lucide-react';
+
+const CAPTURE_TIPS = [
+  { icon: Sun, title: 'Even, bright light', desc: 'No shadows across the sheet' },
+  { icon: Maximize, title: 'Flat & fully in frame', desc: 'All 4 corner squares visible' },
+  { icon: PenLine, title: 'Fill bubbles darkly', desc: 'Dark pencil or pen, fully shaded' },
+  { icon: ScanLine, title: 'Straight & in focus', desc: 'Shoot from directly above' },
+];
 
 export default function UploadQueue({
   examCode, setExamCode, exams, uploadQueue, setUploadQueue,
@@ -34,6 +41,22 @@ export default function UploadQueue({
             <option key={ex.exam_code} value={ex.exam_code}>{ex.exam_code}</option>
           ))}
         </select>
+      </div>
+
+      {/* Capture guidance — the biggest driver of grading accuracy is photo quality */}
+      <div className="bg-purple-50/60 border border-purple-100 rounded-2xl p-4">
+        <p className="text-[11px] font-black uppercase tracking-wider text-[#3B0042] mb-3">For accurate grading, photograph each sheet like this</p>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          {CAPTURE_TIPS.map(({ icon: Icon, title, desc }) => (
+            <div key={title} className="flex items-start gap-2.5">
+              <div className="w-8 h-8 flex-shrink-0 bg-white text-[#3B0042] rounded-lg flex items-center justify-center shadow-sm"><Icon className="w-4 h-4" /></div>
+              <div className="min-w-0">
+                <p className="text-xs font-bold text-gray-900 leading-tight">{title}</p>
+                <p className="text-[11px] text-gray-500 leading-tight mt-0.5">{desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
       {uploadQueue.length === 0 ? (
