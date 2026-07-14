@@ -74,18 +74,19 @@ export default function Landing({ onGetStarted }) {
             <div className="lg:col-span-7 space-y-8 pr-4">
               <div className="inline-flex items-center gap-2 bg-purple-50 border border-purple-100 text-[#3B0042] px-4 py-1.5 rounded-full text-xs font-bold tracking-wide uppercase">
                 <Sparkles className="w-3.5 h-3.5 text-amber-500 animate-spin" />
-                First-of-its-kind Instant OMR Scanner
+                Turn Your Phone Into An OMR Machine
               </div>
               <h1 className="text-4xl md:text-6xl font-black text-gray-900 leading-tight tracking-tight">
                 Stop Marking <br />
                 <span className="text-[#3B0042] underline decoration-amber-400 decoration-wavy">
                   Objective Exams
                 </span>{" "}
-                Manually.
+                With A Red Pen.
               </h1>
               <p className="text-lg md:text-xl text-gray-500 leading-relaxed max-w-2xl">
-                Deploy MARKA in your school. Upload a batch of up to 100 scanned student sheets,
-                and watch them grade in seconds. Credits are deducted only on success.
+                Grade 100 student sheets in 60 seconds using just your smartphone camera. 
+                Eliminate human error, speed up results, and export directly to Excel. 
+                No expensive OMR hardware needed.
               </p>
               <div className="flex flex-wrap gap-4 pt-2">
                 <button
@@ -110,7 +111,7 @@ export default function Landing({ onGetStarted }) {
               <div className="relative z-10 space-y-6">
                 <div className="flex justify-between items-center pb-4 border-b border-gray-100">
                   <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">
-                    Visual Zero Engine
+                    AI Grading Engine
                   </span>
                   <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600 text-[10px] font-bold">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -120,8 +121,8 @@ export default function Landing({ onGetStarted }) {
 
                 <div className="space-y-4 p-4 bg-gray-50 rounded-xl border border-gray-100 font-mono text-xs">
                   <div className="flex justify-between font-bold border-b pb-2 text-purple-950">
-                    <span>OMR CARD #01</span>
-                    <span>CONFIDENCE 99%</span>
+                    <span>STUDENT CARD #01</span>
+                    <span>ACCURACY 99.9%</span>
                   </div>
                   <div className="space-y-2">
                     <div className="flex justify-between">
@@ -141,7 +142,7 @@ export default function Landing({ onGetStarted }) {
 
                 <div className="text-center p-3 bg-purple-50/50 rounded-xl">
                   <span className="text-xs font-semibold text-[#3B0042]">
-                    Takes a blurry photo → Isolates anchors → Grades bubbles → Outputs CSV
+                    Snap a photo → Auto-aligns paper → Grades shades → Exports to Excel
                   </span>
                 </div>
               </div>
@@ -162,9 +163,9 @@ export default function Landing({ onGetStarted }) {
                 <div className="w-14 h-14 rounded-full bg-purple-50 text-[#3B0042] flex items-center justify-center mx-auto text-2xl font-bold">
                   1
                 </div>
-                <h3 className="text-lg font-bold text-gray-900">Print Sheets</h3>
+                <h3 className="text-lg font-bold text-gray-900">Print Free Sheets</h3>
                 <p className="text-sm text-gray-500 leading-relaxed">
-                  Download and print our standard OMR bubble templates for your students.
+                  Download our standard OMR templates and print them on any normal A4 paper for your students.
                 </p>
               </div>
 
@@ -172,9 +173,9 @@ export default function Landing({ onGetStarted }) {
                 <div className="w-14 h-14 rounded-full bg-purple-50 text-[#3B0042] flex items-center justify-center mx-auto text-2xl font-bold">
                   2
                 </div>
-                <h3 className="text-lg font-bold text-gray-900">Upload Photos</h3>
+                <h3 className="text-lg font-bold text-gray-900">Snap With Your Phone</h3>
                 <p className="text-sm text-gray-500 leading-relaxed">
-                  Snap pictures of the sheets with your mobile phone or scan them in batches.
+                  Just take photos of the filled sheets. Our AI automatically handles shadows, angles, and phone camera blur.
                 </p>
               </div>
 
@@ -182,9 +183,9 @@ export default function Landing({ onGetStarted }) {
                 <div className="w-14 h-14 rounded-full bg-purple-50 text-[#3B0042] flex items-center justify-center mx-auto text-2xl font-bold">
                   3
                 </div>
-                <h3 className="text-lg font-bold text-gray-900">Get Results</h3>
+                <h3 className="text-lg font-bold text-gray-900">Export Results</h3>
                 <p className="text-sm text-gray-500 leading-relaxed">
-                  Instantly download individual scores, visual diagnostic analytics, or CSV exports.
+                  Watch them grade instantly. Download the final scores as an Excel file, ready to submit to the principal.
                 </p>
               </div>
             </div>
