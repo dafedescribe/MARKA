@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Search, RefreshCcw, FileText, Loader2, Clock, Trash2, Download, X, Maximize2 } from 'lucide-react';
 
-export default function Gallery({ scans, fetchScans, loadMoreScans, hasMoreScans, wipeImage, expiryInfo, searchQuery, setSearchQuery }) {
+export default function Gallery({ scans, fetchScans, loadMoreScans, hasMoreScans, wipeImage, expiryInfo, searchQuery, setSearchQuery, scansError }) {
   const [lightbox, setLightbox] = useState(null);
   const [overrideQ, setOverrideQ] = useState('');
   const [overrideOpt, setOverrideOpt] = useState('');
@@ -89,10 +89,21 @@ export default function Gallery({ scans, fetchScans, loadMoreScans, hasMoreScans
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {filteredScans.length === 0 ? (
-          <div className="col-span-full text-center py-12">
-            <FileText className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-            <p className="text-gray-500 text-sm font-medium">No scans found.</p>
-          </div>
+          scansError ? (
+            <div className="col-span-full text-center py-12">
+              <div className="w-12 h-12 rounded-full bg-red-50 text-red-500 flex items-center justify-center mx-auto mb-3 text-2xl font-black">!</div>
+              <p className="text-red-600 text-sm font-bold">Couldn't load your scans.</p>
+              <p className="text-gray-400 text-xs mt-1 max-w-sm mx-auto">{scansError}</p>
+              <button onClick={fetchScans} className="mt-4 px-4 py-2 bg-[#3B0042] text-white rounded-xl text-xs font-bold inline-flex items-center gap-2 hover:bg-[#2c0032] transition-colors">
+                <RefreshCcw className="w-4 h-4" /> Retry
+              </button>
+            </div>
+          ) : (
+            <div className="col-span-full text-center py-12">
+              <FileText className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+              <p className="text-gray-500 text-sm font-medium">{searchQuery ? 'No scans match your search.' : 'No scans yet. Graded sheets will appear here.'}</p>
+            </div>
+          )
         ) : (
           filteredScans.map((scan) => {
             const exp = scan.status === 'success' ? expiryInfo(scan.created_at) : null;

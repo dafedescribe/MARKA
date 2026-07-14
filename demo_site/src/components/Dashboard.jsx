@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { supabase } from '../lib/supabase';
+import { supabase, setSupabaseToken } from '../lib/supabase';
 import { LogOut } from 'lucide-react';
 import { AnimatePresence } from 'motion/react';
 import DashboardHome from './DashboardHome';
@@ -15,6 +15,7 @@ export default function Dashboard({ token, onLogout }) {
   const [hasMoreScans, setHasMoreScans] = useState(true);
   const [exams, setExams] = useState([]);
   const [isOffline, setIsOffline] = useState(false);
+  const [scansError, setScansError] = useState(null);
   const [userEmail, setUserEmail] = useState('');
   const [markaId, setMarkaId] = useState('');
   
@@ -41,6 +42,10 @@ export default function Dashboard({ token, onLogout }) {
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
+  // Authenticate the Supabase client with our backend JWT before any read.
+  // Without this every supabase query runs as anon and RLS returns nothing.
+  useEffect(() => { setSupabaseToken(token); }, [token]);
+
   useEffect(() => {
     // Dynamically load Paystack JS
     const script = document.createElement('script');
@@ -48,6 +53,7 @@ export default function Dashboard({ token, onLogout }) {
     script.async = true;
     document.body.appendChild(script);
 
+    setSupabaseToken(token);
     fetchScans(0, false);
     fetchExams();
     refreshCredits();
@@ -107,7 +113,6 @@ export default function Dashboard({ token, onLogout }) {
 
   const refreshCredits = async () => {
     try {
-      await supabase.auth.setSession({ access_token: token, refresh_token: '' });
       const { data } = await supabase.from('users').select('credits, email, marka_id').single();
       if (data) {
         setCredits(data.credits);
@@ -122,13 +127,17 @@ export default function Dashboard({ token, onLogout }) {
 
   const fetchScans = async (page = 0, append = false) => {
     try {
-      await supabase.auth.setSession({ access_token: token, refresh_token: '' });
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('scans')
         .select('*')
         .order('created_at', { ascending: false })
         .range(page * 100, (page + 1) * 100 - 1);
-        
+
+      // A real query error (auth/RLS/permission) must NOT look like "no scans" —
+      // surface it so the user knows the list failed to load rather than assuming
+      // their grading was lost.
+      if (error) throw error;
+
       if (data) {
         setHasMoreScans(data.length === 100);
         const scansWithUrls = await Promise.all(data.map(async (scan) => {
@@ -147,10 +156,12 @@ export default function Dashboard({ token, onLogout }) {
           setScanPage(0);
         }
       }
+      setScansError(null);
       setIsOffline(false);
     } catch (e) {
       console.error("Error fetching scans:", e);
       if (e.message === 'Failed to fetch' || e.name === 'TypeError') setIsOffline(true);
+      setScansError(e.message || 'Could not load your scans. Please retry.');
     }
   };
 
@@ -520,7 +531,7 @@ export default function Dashboard({ token, onLogout }) {
           {currentView === "dashboard" && <DashboardHome credits={credits} scans={scans} exams={exams} setExamCode={setExamCode} setCurrentView={setCurrentView} handleExport={handleExport} setQuestionsCount={setQuestionsCount} setAnswerKey={setAnswerKey} setNewExamCode={setNewExamCode} handleWipeAllRaw={handleWipeAllRaw} />}
           {currentView === "builder" && <ExamBuilder newExamCode={newExamCode} setNewExamCode={setNewExamCode} questionsCount={questionsCount} setQuestionsCount={setQuestionsCount} optionsCount={optionsCount} setOptionsCount={setOptionsCount} answerKey={answerKey} setAnswerKey={setAnswerKey} activeBuilderQ={activeBuilderQ} setActiveBuilderQ={setActiveBuilderQ} examSaving={examSaving} examMsg={examMsg} handleCreateExam={handleCreateExam} setCurrentView={setCurrentView} />}
           {currentView === "upload" && <UploadQueue examCode={examCode} setExamCode={setExamCode} exams={exams} uploadQueue={uploadQueue} setUploadQueue={setUploadQueue} fileInputRef={fileInputRef} handleFilesAdded={handleFilesAdded} runBatchProcessing={runBatchProcessing} isUploadingBatch={isUploadingBatch} retryFailed={retryFailed} goToLibrary={goToLibrary} />}
-          {currentView === "gallery" && <Gallery scans={scans} fetchScans={() => fetchScans(0, false)} loadMoreScans={loadMoreScans} hasMoreScans={hasMoreScans} wipeImage={wipeImage} expiryInfo={expiryInfo} searchQuery={searchQuery} setSearchQuery={setSearchQuery} />}
+          {currentView === "gallery" && <Gallery scans={scans} fetchScans={() => fetchScans(0, false)} loadMoreScans={loadMoreScans} hasMoreScans={hasMoreScans} wipeImage={wipeImage} expiryInfo={expiryInfo} searchQuery={searchQuery} setSearchQuery={setSearchQuery} scansError={scansError} />}
         </AnimatePresence>
       </main>
     </div>
