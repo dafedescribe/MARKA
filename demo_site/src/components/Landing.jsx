@@ -74,18 +74,17 @@ export default function Landing({ onGetStarted }) {
             <div className="lg:col-span-7 space-y-8 pr-4">
               <div className="inline-flex items-center gap-2 bg-purple-50 border border-purple-100 text-[#3B0042] px-4 py-1.5 rounded-full text-xs font-bold tracking-wide uppercase">
                 <Sparkles className="w-3.5 h-3.5 text-amber-500 animate-spin" />
-                First-of-its-kind Instant OMR Scanner
+                Turn Your Phone Into An OMR Machine
               </div>
               <h1 className="text-4xl md:text-6xl font-black text-gray-900 leading-tight tracking-tight">
                 Stop Marking <br />
                 <span className="text-[#3B0042] underline decoration-amber-400 decoration-wavy">
-                  Objective Exams
+                  Multiple Choice Tests
                 </span>{" "}
-                Manually.
+                With A Red Pen.
               </h1>
-              <p className="text-lg md:text-xl text-gray-500 leading-relaxed max-w-2xl">
-                Deploy MARKA in your school. Upload a batch of up to 100 scanned student sheets,
-                and watch them grade in seconds. Credits are deducted only on success.
+              <p className="text-lg md:text-xl text-gray-500 leading-relaxed max-w-xl">
+                Grade 100 sheets in 60 seconds using your smartphone. No expensive hardware needed. Export instantly to Excel.
               </p>
               <div className="flex flex-wrap gap-4 pt-2">
                 <button
@@ -110,7 +109,7 @@ export default function Landing({ onGetStarted }) {
               <div className="relative z-10 space-y-6">
                 <div className="flex justify-between items-center pb-4 border-b border-gray-100">
                   <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">
-                    Visual Zero Engine
+                    AI Grading Engine
                   </span>
                   <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600 text-[10px] font-bold">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -120,8 +119,8 @@ export default function Landing({ onGetStarted }) {
 
                 <div className="space-y-4 p-4 bg-gray-50 rounded-xl border border-gray-100 font-mono text-xs">
                   <div className="flex justify-between font-bold border-b pb-2 text-purple-950">
-                    <span>OMR CARD #01</span>
-                    <span>CONFIDENCE 99%</span>
+                    <span>STUDENT CARD #01</span>
+                    <span>ACCURACY 99.9%</span>
                   </div>
                   <div className="space-y-2">
                     <div className="flex justify-between">
@@ -141,7 +140,7 @@ export default function Landing({ onGetStarted }) {
 
                 <div className="text-center p-3 bg-purple-50/50 rounded-xl">
                   <span className="text-xs font-semibold text-[#3B0042]">
-                    Takes a blurry photo → Isolates anchors → Grades bubbles → Outputs CSV
+                    Snap a photo → Auto-aligns paper → Grades shades → Exports to Excel
                   </span>
                 </div>
               </div>
@@ -162,9 +161,9 @@ export default function Landing({ onGetStarted }) {
                 <div className="w-14 h-14 rounded-full bg-purple-50 text-[#3B0042] flex items-center justify-center mx-auto text-2xl font-bold">
                   1
                 </div>
-                <h3 className="text-lg font-bold text-gray-900">Print Sheets</h3>
+                <h3 className="text-lg font-bold text-gray-900">Print Free Sheets</h3>
                 <p className="text-sm text-gray-500 leading-relaxed">
-                  Download and print our standard OMR bubble templates for your students.
+                  Print standard 100-question OMR templates on normal A4 paper.
                 </p>
               </div>
 
@@ -172,9 +171,9 @@ export default function Landing({ onGetStarted }) {
                 <div className="w-14 h-14 rounded-full bg-purple-50 text-[#3B0042] flex items-center justify-center mx-auto text-2xl font-bold">
                   2
                 </div>
-                <h3 className="text-lg font-bold text-gray-900">Upload Photos</h3>
+                <h3 className="text-lg font-bold text-gray-900">Snap With Your Phone</h3>
                 <p className="text-sm text-gray-500 leading-relaxed">
-                  Snap pictures of the sheets with your mobile phone or scan them in batches.
+                  Take photos of filled sheets. Our AI handles shadows and blur automatically.
                 </p>
               </div>
 
@@ -182,9 +181,9 @@ export default function Landing({ onGetStarted }) {
                 <div className="w-14 h-14 rounded-full bg-purple-50 text-[#3B0042] flex items-center justify-center mx-auto text-2xl font-bold">
                   3
                 </div>
-                <h3 className="text-lg font-bold text-gray-900">Get Results</h3>
+                <h3 className="text-lg font-bold text-gray-900">Export Results</h3>
                 <p className="text-sm text-gray-500 leading-relaxed">
-                  Instantly download individual scores, visual diagnostic analytics, or CSV exports.
+                  Get scores instantly. Download as an Excel file ready for submission.
                 </p>
               </div>
             </div>
@@ -204,10 +203,10 @@ export default function Landing({ onGetStarted }) {
 
             <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
               {[
-                { count: 100, price: "₦5,000", desc: "For small classroom tests" },
-                { count: 250, price: "₦11,250", desc: "Best for midterm exams" },
-                { count: 500, price: "₦20,000", desc: "Perfect for secondary schools" },
-                { count: 1000, price: "₦35,000", desc: "For large end-of-term exams" }
+                { count: 100, price: "₦5,000", desc: "For quick assessments" },
+                { count: 250, price: "₦11,250", desc: "Best for regular testing" },
+                { count: 500, price: "₦20,000", desc: "Perfect for organizations" },
+                { count: 1000, price: "₦35,000", desc: "For mass screening & exams" }
               ].map((p, idx) => (
                 <div
                   key={idx}
@@ -227,7 +226,7 @@ export default function Landing({ onGetStarted }) {
                     <div className="text-2xl font-black text-gray-900 py-2">{p.price}</div>
                   </div>
                   <button
-                    onClick={onGetStarted}
+                    onClick={() => onGetStarted('buy')}
                     className={`mt-6 w-full py-3 rounded-xl font-bold text-sm transition-all ${idx === 1 ? 'bg-[#3B0042] text-white hover:bg-[#2c0032]' : 'bg-purple-50 text-[#3B0042] hover:bg-[#3B0042] hover:text-white'}`}
                   >
                     Choose Package
@@ -264,7 +263,7 @@ export default function Landing({ onGetStarted }) {
               <div className="space-y-6">
                 <h3 className="text-xl font-bold text-gray-900">Contact & Support</h3>
                 <p className="text-sm text-gray-500">
-                  Need help setting up OMR templates or custom bulk credits for your district?
+                  Need help setting up OMR templates or custom bulk credits for your organization?
                   Our support team is active.
                 </p>
                 <div className="flex flex-wrap gap-4">
@@ -280,7 +279,7 @@ export default function Landing({ onGetStarted }) {
             </div>
 
             <div className="border-t border-gray-100 pt-8 flex flex-col md:flex-row justify-between items-center text-xs text-gray-400 gap-4">
-              <span>© {new Date().getFullYear()} MARKA OMR. Built for premium teacher confidence.</span>
+              <span>© {new Date().getFullYear()} MARKA OMR. Built for absolute grading confidence.</span>
               <div className="flex gap-6">
                 <a href="#" className="hover:underline">Privacy Policy</a>
                 <a href="#" className="hover:underline">Terms of Service</a>

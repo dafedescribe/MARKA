@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://marka.com.ng/sitemap.xml
+Sitemap: https://www.marka.com.ng/sitemap.xml
