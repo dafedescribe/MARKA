@@ -31,6 +31,23 @@ MAX_FIDUCIAL_AREA = 60000
 # Lower ratio = more lenient (catches light pencil); higher = stricter
 FILL_RATIO = 0.35
 
+# Per-question LOCAL threshold (gradient-proof). Each bubble is judged against
+# the blank reference of its OWN row, not a global constant — so uneven lighting
+# (a shadow across the bottom of the sheet) no longer makes blank paper in the
+# dark region read darker than a real mark in the bright region.
+#   LOCAL_FILL_RATIO  — bubble is filled if it's this fraction darker than the
+#                       row's blank reference (catches faint pencil on dark photos)
+#   LOCAL_MIN_MARGIN  — ...and at least this many gray levels darker in absolute
+#                       terms, so an all-blank row (all bubbles similar) stays blank
+LOCAL_FILL_RATIO = 0.28
+LOCAL_MIN_MARGIN = 22
+
+# CLAHE (Contrast-Limited Adaptive Histogram Equalization) normalizes local
+# contrast before reading — pulls filled bubbles away from blank paper under
+# shadows/yellow light without blowing out clean, well-lit scans.
+CLAHE_CLIP = 2.0
+CLAHE_GRID = (8, 8)
+
 # Minimum confidence to count as a definite mark
 CONFIDENCE_THRESHOLD = 0.5
 
@@ -263,7 +280,14 @@ def read_bubbles(image_path, layout_data_or_path):
     if bl_var > 300 and bl_var > tr_var * 1.6:
         raise ValueError("Image appears to be upside down. Please rotate 180 degrees and rescan.")
 
-    # Compute adaptive threshold from the actual paper
+    # Normalize local contrast. On evenly-lit scans this is nearly a no-op; on
+    # shadowed / yellow-lit phone photos it lifts faint marks out of the paper
+    # so the per-question threshold below can separate them reliably.
+    clahe = cv2.createCLAHE(clipLimit=CLAHE_CLIP, tileGridSize=CLAHE_GRID)
+    aligned_gray = clahe.apply(aligned_gray)
+
+    # Compute adaptive threshold from the actual paper (kept for reporting and as
+    # a coarse global reference; the real decision below is per-question local).
     threshold, blank_median = _compute_adaptive_threshold(
         aligned_gray, sheet["bubbles"], sheet_h_mm
     )
@@ -285,16 +309,22 @@ def read_bubbles(image_path, layout_data_or_path):
             confidence[str(q_num)] = 0
             continue
 
-        # Calculate confidence for each option:
-        # confidence = how far below the threshold the bubble is, relative to blank
+        # Local blank reference for THIS question: the 2nd-brightest bubble in
+        # the row. Using the row's own paper as the baseline makes the decision
+        # immune to lighting gradients across the sheet. The 2nd-brightest (not
+        # the brightest) tolerates a single specular glare spike, and is still a
+        # genuine blank as long as at most 3 of the 5 options are marked.
+        row_means = sorted((mv for _, mv in q_bubbles), reverse=True)
+        local_blank = row_means[1] if len(row_means) >= 2 else row_means[0]
+
         option_scores = []
         for opt, mean_val in q_bubbles:
-            if blank_median > 0:
-                # 1.0 = completely black, 0.0 = same as blank paper
-                fill_pct = max(0, (blank_median - mean_val) / blank_median)
-            else:
-                fill_pct = 0
-            is_filled = mean_val < threshold
+            margin = local_blank - mean_val
+            # 1.0 = far darker than the row's blank paper, 0.0 = same as blank
+            fill_pct = max(0.0, margin / local_blank) if local_blank > 0 else 0.0
+            # Filled = clearly darker than this row's paper, both in relative and
+            # absolute terms (the absolute floor keeps all-blank rows blank).
+            is_filled = fill_pct >= LOCAL_FILL_RATIO and margin >= LOCAL_MIN_MARGIN
             option_scores.append((opt, mean_val, fill_pct, is_filled))
 
         filled = [(opt, score) for opt, _, score, is_filled in option_scores if is_filled]
