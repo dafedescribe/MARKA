@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Download, Loader2, KeyRound, Coins, ShieldAlert, CheckCircle2, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
-export default function Auth({ onLogin }) {
-  const [isLogin, setIsLogin] = useState(true);
+export default function Auth({ onLogin, initialTab = 'login' }) {
+  const [isLogin, setIsLogin] = useState(initialTab === 'login');
+  const [isForgotPin, setIsForgotPin] = useState(false);
   const [markaId, setMarkaId] = useState('');
   const [pin, setPin] = useState('');
   const [email, setEmail] = useState('');
@@ -44,6 +45,9 @@ export default function Auth({ onLogin }) {
       
       localStorage.setItem('marka_token', data.access_token);
       localStorage.setItem('marka_credits', data.credits);
+      if (window.location.hash) {
+        window.history.replaceState(null, '', window.location.pathname);
+      }
       onLogin(data.access_token);
     } catch (err) {
       setError(err.message);
@@ -112,6 +116,41 @@ export default function Auth({ onLogin }) {
     handler.openIframe();
   };
 
+  const handleForgotPin = async (e) => {
+    e.preventDefault();
+    if (!email) {
+      setError("Email is required to recover PIN.");
+      return;
+    }
+    setError('');
+    setLoading(true);
+    try {
+      const res = await fetch(`${API_URL}/auth/forgot-pin`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || 'Recovery failed');
+      
+      // Since it's a demo, we might get the credentials directly
+      if (data.marka_id && data.pin) {
+        setSuccessData({
+          marka_id: data.marka_id,
+          pin: data.pin,
+          credits: "Recovered"
+        });
+      } else {
+        alert(data.message);
+        setIsForgotPin(false);
+      }
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center font-sans py-12 px-4 sm:px-6 lg:px-8 select-none">
       <div className="absolute top-8 left-8 flex items-center gap-3">
@@ -158,7 +197,7 @@ export default function Auth({ onLogin }) {
               </div>
 
               <div className="bg-white p-3 rounded-xl border border-gray-100 text-sm font-bold text-[#3B0042]">
-                {successData.credits} Credits added to your account
+                {successData.credits === "Recovered" ? "Credentials Recovered Successfully" : `${successData.credits} Credits added to your account`}
               </div>
 
               <p className="text-[11px] text-gray-400 leading-normal px-4">
@@ -192,9 +231,9 @@ export default function Auth({ onLogin }) {
             <div className="grid grid-cols-2 gap-4 bg-gray-50 p-1.5 rounded-xl border border-gray-100">
               <button
                 type="button"
-                onClick={() => { setIsLogin(true); setError(''); }}
+                onClick={() => { setIsLogin(true); setIsForgotPin(false); setError(''); }}
                 className={`py-2.5 rounded-lg text-xs font-bold transition-all ${
-                  isLogin
+                  isLogin && !isForgotPin
                     ? "bg-white text-[#3B0042] shadow-sm"
                     : "text-gray-500 hover:text-gray-900"
                 }`}
@@ -203,9 +242,9 @@ export default function Auth({ onLogin }) {
               </button>
               <button
                 type="button"
-                onClick={() => { setIsLogin(false); setError(''); }}
+                onClick={() => { setIsLogin(false); setIsForgotPin(false); setError(''); }}
                 className={`py-2.5 rounded-lg text-xs font-bold transition-all ${
-                  !isLogin
+                  !isLogin && !isForgotPin
                     ? "bg-white text-[#3B0042] shadow-sm"
                     : "text-gray-500 hover:text-gray-900"
                 }`}
@@ -264,6 +303,11 @@ export default function Auth({ onLogin }) {
                   </div>
                 </div>
 
+                <div className="pt-2 text-center">
+                  <button type="button" onClick={() => { setIsForgotPin(true); setError(''); }} className="text-[11px] font-bold text-gray-500 hover:text-[#3B0042] transition-colors">
+                    Forgot MARKA ID or PIN?
+                  </button>
+                </div>
                 <button
                   type="submit"
                   disabled={loading}
@@ -276,6 +320,55 @@ export default function Auth({ onLogin }) {
                     </>
                   ) : (
                     "Continue to Dashboard"
+                  )}
+                </button>
+              </form>
+            ) : isForgotPin ? (
+              <form onSubmit={handleForgotPin} className="space-y-6">
+                <div className="text-center space-y-2 pb-2">
+                  <div className="w-12 h-12 bg-amber-50 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-2">
+                    <ShieldAlert className="w-6 h-6" />
+                  </div>
+                  <h2 className="text-2xl font-black text-gray-900">Recover Access</h2>
+                  <p className="text-xs text-gray-500">
+                    Enter the email you used to purchase credits.
+                  </p>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="space-y-2 pt-2">
+                    <label className="block text-xs font-bold text-gray-600 uppercase tracking-wide">
+                      Email Address
+                    </label>
+                    <input
+                      type="email"
+                      required
+                      placeholder="your@email.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:border-[#3B0042] text-sm transition-colors"
+                    />
+                  </div>
+                </div>
+
+                <div className="pt-2 text-center">
+                  <button type="button" onClick={() => setIsForgotPin(false)} className="text-[11px] font-bold text-gray-500 hover:text-[#3B0042] transition-colors">
+                    Back to Login
+                  </button>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full py-4 bg-amber-500 hover:bg-amber-600 disabled:bg-gray-300 text-white font-extrabold rounded-xl transition-all flex items-center justify-center gap-2 shadow-md active:scale-95"
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      Recovering...
+                    </>
+                  ) : (
+                    "Recover My PIN"
                   )}
                 </button>
               </form>

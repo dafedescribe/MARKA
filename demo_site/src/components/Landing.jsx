@@ -227,7 +227,7 @@ export default function Landing({ onGetStarted }) {
                     <div className="text-2xl font-black text-gray-900 py-2">{p.price}</div>
                   </div>
                   <button
-                    onClick={onGetStarted}
+                    onClick={() => onGetStarted('buy')}
                     className={`mt-6 w-full py-3 rounded-xl font-bold text-sm transition-all ${idx === 1 ? 'bg-[#3B0042] text-white hover:bg-[#2c0032]' : 'bg-purple-50 text-[#3B0042] hover:bg-[#3B0042] hover:text-white'}`}
                   >
                     Choose Package

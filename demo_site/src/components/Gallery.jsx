@@ -2,8 +2,46 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Search, RefreshCcw, FileText, Loader2, Clock, Trash2, Download, X, Maximize2 } from 'lucide-react';
 
-export default function Gallery({ scans, fetchScans, wipeImage, expiryInfo, searchQuery, setSearchQuery }) {
+export default function Gallery({ scans, fetchScans, loadMoreScans, hasMoreScans, wipeImage, expiryInfo, searchQuery, setSearchQuery }) {
   const [lightbox, setLightbox] = useState(null);
+  const [overrideQ, setOverrideQ] = useState('');
+  const [overrideOpt, setOverrideOpt] = useState('');
+  const [isOverriding, setIsOverriding] = useState(false);
+
+  const handleOverride = async (e) => {
+    e.preventDefault();
+    if (!overrideQ || !overrideOpt) return;
+    setIsOverriding(true);
+    try {
+      const token = localStorage.getItem('marka_token');
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+      const res = await fetch(`${API_URL}/scans/${lightbox.scan_id}/override`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ q_num: overrideQ, new_option: overrideOpt.toUpperCase() })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || "Override failed");
+      
+      // Update local state for immediate feedback
+      setLightbox(prev => ({
+        ...prev,
+        score: data.score,
+        percentage: data.percentage,
+        raw_marks: data.raw_marks
+      }));
+      setOverrideQ('');
+      setOverrideOpt('');
+      fetchScans(); // Refresh background gallery list silently
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      setIsOverriding(false);
+    }
+  };
 
   const filteredScans = scans.filter((p) => {
     return (p.scan_id || '').toLowerCase().includes(searchQuery.toLowerCase());
@@ -116,6 +154,17 @@ export default function Gallery({ scans, fetchScans, wipeImage, expiryInfo, sear
         )}
       </div>
 
+      {hasMoreScans && filteredScans.length > 0 && searchQuery === "" && (
+        <div className="flex justify-center pt-6">
+          <button
+            onClick={loadMoreScans}
+            className="px-6 py-2.5 bg-white border border-gray-200 hover:bg-gray-50 hover:border-gray-300 text-gray-600 font-bold text-sm rounded-xl transition-all shadow-sm flex items-center gap-2"
+          >
+            Load More Scans
+          </button>
+        </div>
+      )}
+
       {/* Full-size graded sheet lightbox */}
       <AnimatePresence>
         {lightbox && (
@@ -133,13 +182,27 @@ export default function Gallery({ scans, fetchScans, wipeImage, expiryInfo, sear
               onClick={(e) => e.stopPropagation()}
               className="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] flex flex-col overflow-hidden"
             >
-              <div className="p-4 border-b border-gray-100 flex items-center justify-between gap-3">
+              <div className="p-4 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="min-w-0">
                   <p className="text-sm font-mono font-bold text-gray-900 truncate">{lightbox.scan_id}</p>
                   <p className="text-xs text-gray-500">
                     Score <span className="font-bold text-[#3B0042]">{lightbox.score}/{lightbox.total}</span> · {lightbox.percentage}%
+                    {lightbox.raw_marks?.ambiguous?.length > 0 && (
+                      <span className="ml-2 text-amber-600 font-bold bg-amber-50 px-2 py-0.5 rounded-full">
+                        Ambiguous: {lightbox.raw_marks.ambiguous.join(", ")}
+                      </span>
+                    )}
                   </p>
                 </div>
+                
+                <form onSubmit={handleOverride} className="flex items-center gap-2 flex-shrink-0 bg-gray-50 p-1.5 rounded-xl border border-gray-200">
+                  <input type="number" placeholder="Q#" value={overrideQ} onChange={e=>setOverrideQ(e.target.value)} required min={1} className="w-12 px-2 py-1 text-xs border border-gray-200 rounded text-center focus:outline-none focus:border-purple-500" />
+                  <input type="text" placeholder="A-E" value={overrideOpt} onChange={e=>setOverrideOpt(e.target.value.toUpperCase())} required maxLength={1} className="w-12 px-2 py-1 text-xs border border-gray-200 rounded text-center focus:outline-none focus:border-purple-500 uppercase" />
+                  <button type="submit" disabled={isOverriding} className="px-3 py-1 bg-white border border-gray-200 text-xs font-bold text-[#3B0042] rounded hover:bg-gray-50 transition-colors disabled:opacity-50">
+                    {isOverriding ? '...' : 'Override'}
+                  </button>
+                </form>
+
                 <div className="flex items-center gap-2 flex-shrink-0">
                   <button onClick={() => downloadImage(lightbox)} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#3B0042] text-white text-xs font-bold rounded-lg hover:bg-[#4d0055] transition-colors">
                     <Download className="w-3.5 h-3.5" /> Download

@@ -251,6 +251,12 @@ def read_bubbles(image_path, layout_data_or_path):
     src_pts = _find_fiducials(gray)
     aligned_gray, w, h = _perspective_transform(gray, src_pts, sheet)
 
+    # Orientation Check: If rotated 180 degrees, the bottom (blank) will be darker than the top (MARKA header)
+    top_roi = aligned_gray[: int(h * 0.1), :]
+    bot_roi = aligned_gray[int(h * 0.9):, :]
+    if bot_roi.mean() < top_roi.mean() - 10:
+        raise ValueError("Image appears to be upside down. Please rotate 180 degrees.")
+
     # Compute adaptive threshold from the actual paper
     threshold, blank_median = _compute_adaptive_threshold(
         aligned_gray, sheet["bubbles"], sheet_h_mm
@@ -298,7 +304,7 @@ def read_bubbles(image_path, layout_data_or_path):
         else:
             # Nothing clearly filled. Check for light marks.
             best = max(option_scores, key=lambda x: x[2])
-            if best[2] > 0.15:  # Very light mark detected
+            if best[2] > 0.35:  # Very light mark detected
                 marks[str(q_num)] = best[0]
                 confidence[str(q_num)] = round(best[2], 2)
                 if best[2] < CONFIDENCE_THRESHOLD:

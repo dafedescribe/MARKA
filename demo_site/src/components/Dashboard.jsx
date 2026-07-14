@@ -6,12 +6,17 @@ import DashboardHome from './DashboardHome';
 import ExamBuilder from './ExamBuilder';
 import UploadQueue from './UploadQueue';
 import Gallery from './Gallery';
-import PrintableOMRSheet from './PrintableOMRSheet';
+
 
 export default function Dashboard({ token, onLogout }) {
   const [credits, setCredits] = useState(parseInt(localStorage.getItem('marka_credits') || '0'));
   const [scans, setScans] = useState([]);
+  const [scanPage, setScanPage] = useState(0);
+  const [hasMoreScans, setHasMoreScans] = useState(true);
   const [exams, setExams] = useState([]);
+  const [isOffline, setIsOffline] = useState(false);
+  const [userEmail, setUserEmail] = useState('');
+  const [markaId, setMarkaId] = useState('');
   
   // Navigation
   const [currentView, setCurrentView] = useState('dashboard'); // dashboard, builder, upload, gallery
@@ -20,7 +25,7 @@ export default function Dashboard({ token, onLogout }) {
   const [examCode, setExamCode] = useState('MARKA');
   const [newExamCode, setNewExamCode] = useState('');
   const [questionsCount, setQuestionsCount] = useState(20);
-  const [optionsCount, setOptionsCount] = useState(4);
+  const [optionsCount, setOptionsCount] = useState(5);
   const [answerKey, setAnswerKey] = useState({});
   const [activeBuilderQ, setActiveBuilderQ] = useState(1);
   const [examSaving, setExamSaving] = useState(false);
@@ -37,18 +42,28 @@ export default function Dashboard({ token, onLogout }) {
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
   useEffect(() => {
-    fetchScans();
+    // Dynamically load Paystack JS
+    const script = document.createElement('script');
+    script.src = 'https://js.paystack.co/v1/inline.js';
+    script.async = true;
+    document.body.appendChild(script);
+
+    fetchScans(0, false);
     fetchExams();
+    refreshCredits();
     const channel = supabase
       .channel('public:scans')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'scans' }, (payload) => {
-        fetchScans();
+        fetchScans(0, false);
         refreshCredits();
       })
       .subscribe();
 
     return () => {
       supabase.removeChannel(channel);
+      if (document.body.contains(script)) {
+        document.body.removeChild(script);
+      }
     };
   }, []);
 
@@ -93,9 +108,11 @@ export default function Dashboard({ token, onLogout }) {
   const refreshCredits = async () => {
     try {
       await supabase.auth.setSession({ access_token: token, refresh_token: '' });
-      const { data } = await supabase.from('users').select('credits').single();
+      const { data } = await supabase.from('users').select('credits, email, marka_id').single();
       if (data) {
         setCredits(data.credits);
+        setUserEmail(data.email);
+        setMarkaId(data.marka_id);
         localStorage.setItem('marka_credits', data.credits);
       }
     } catch (e) {
@@ -103,16 +120,17 @@ export default function Dashboard({ token, onLogout }) {
     }
   };
 
-  const fetchScans = async () => {
+  const fetchScans = async (page = 0, append = false) => {
     try {
       await supabase.auth.setSession({ access_token: token, refresh_token: '' });
       const { data } = await supabase
         .from('scans')
         .select('*')
         .order('created_at', { ascending: false })
-        .limit(100);
+        .range(page * 100, (page + 1) * 100 - 1);
         
       if (data) {
+        setHasMoreScans(data.length === 100);
         const scansWithUrls = await Promise.all(data.map(async (scan) => {
           if (scan.status === 'success' && scan.graded_image_path) {
             const { data: urlData } = await supabase.storage
@@ -122,11 +140,24 @@ export default function Dashboard({ token, onLogout }) {
           }
           return scan;
         }));
-        setScans(scansWithUrls);
+        if (append) {
+          setScans(prev => [...prev, ...scansWithUrls]);
+        } else {
+          setScans(scansWithUrls);
+          setScanPage(0);
+        }
       }
+      setIsOffline(false);
     } catch (e) {
       console.error("Error fetching scans:", e);
+      if (e.message === 'Failed to fetch' || e.name === 'TypeError') setIsOffline(true);
     }
+  };
+
+  const loadMoreScans = () => {
+    const nextPage = scanPage + 1;
+    setScanPage(nextPage);
+    fetchScans(nextPage, true);
   };
 
   const fetchExams = async () => {
@@ -137,9 +168,34 @@ export default function Dashboard({ token, onLogout }) {
       if (!res.ok) return;
       const data = await res.json();
       setExams(data.exams || []);
+      setIsOffline(false);
     } catch (e) {
       console.error("Error fetching exams:", e);
+      if (e.message === 'Failed to fetch' || e.name === 'TypeError') setIsOffline(true);
     }
+  };
+
+  const handleTopUp = () => {
+    if (!userEmail || !markaId) {
+      alert("User details not fully loaded. Please wait a moment or refresh.");
+      return;
+    }
+    if (typeof PaystackPop === 'undefined') {
+      alert("Payment system is loading. Please try again in a second.");
+      return;
+    }
+    const handler = PaystackPop.setup({
+      key: import.meta.env.VITE_PAYSTACK_PUBLIC_KEY || 'pk_test_replace_with_your_key_here',
+      email: userEmail,
+      amount: 5000 * 100, // Top up starter pack (100 credits)
+      currency: 'NGN',
+      metadata: { marka_id: markaId },
+      callback: (response) => {
+        alert("Payment successful! Your credits will be updated momentarily.");
+        setTimeout(refreshCredits, 2000);
+      }
+    });
+    handler.openIframe();
   };
 
   const handleCreateExam = async () => {
@@ -199,6 +255,25 @@ export default function Dashboard({ token, onLogout }) {
       if (!res.ok) { const d = await res.json().catch(() => ({})); throw new Error(d.detail || 'Failed to delete'); }
       setScans(prev => prev.map(s => s.scan_id === scanId
         ? { ...s, graded_image_path: null, image_path: null, thumbnailUrl: null } : s));
+    } catch (e) {
+      alert(e.message);
+    }
+  };
+
+  const handleWipeAllRaw = async () => {
+    if (!window.confirm('Delete ALL original high-res images to reclaim space? (Your graded images and scores will be kept). This cannot be undone.')) return;
+    try {
+      const res = await fetch(`${API_URL}/scans/wipe-all-raw`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || 'Failed to delete batch');
+      alert(`Successfully deleted ${data.deleted} original images to reclaim space.`);
+      fetchScans(0, false);
     } catch (e) {
       alert(e.message);
     }
@@ -381,6 +456,9 @@ export default function Dashboard({ token, onLogout }) {
           <div className="flex items-center gap-2 bg-purple-50 px-3 py-1.5 rounded-lg border border-purple-100">
             <span className="text-xs font-bold text-purple-900 uppercase">Credits</span>
             <span className="text-sm font-black text-[#3B0042]">{credits.toLocaleString()}</span>
+            <button onClick={handleTopUp} className="ml-2 px-2 py-1 bg-[#3B0042] text-white text-[10px] font-bold rounded hover:bg-[#2c0032] transition-colors uppercase">
+              Top Up
+            </button>
           </div>
           <button onClick={onLogout} className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Logout">
             <LogOut className="w-5 h-5" />
@@ -389,12 +467,17 @@ export default function Dashboard({ token, onLogout }) {
       </header>
 
       <main className="flex-1 max-w-7xl w-full mx-auto p-6 md:p-8">
+        {isOffline && (
+          <div className="mb-4 bg-amber-50 border border-amber-200 text-amber-800 px-4 py-3 rounded-xl text-sm font-bold flex items-center justify-between">
+            <span>Network Error: Could not reach MARKA services. Retrying...</span>
+            <button onClick={() => { fetchScans(); fetchExams(); }} className="underline hover:text-amber-900">Retry Now</button>
+          </div>
+        )}
         <AnimatePresence mode="wait">
-          {currentView === "dashboard" && <DashboardHome credits={credits} scans={scans} exams={exams} setExamCode={setExamCode} setCurrentView={setCurrentView} handleExport={handleExport} setQuestionsCount={setQuestionsCount} />}
+          {currentView === "dashboard" && <DashboardHome credits={credits} scans={scans} exams={exams} setExamCode={setExamCode} setCurrentView={setCurrentView} handleExport={handleExport} setQuestionsCount={setQuestionsCount} setAnswerKey={setAnswerKey} setNewExamCode={setNewExamCode} handleWipeAllRaw={handleWipeAllRaw} />}
           {currentView === "builder" && <ExamBuilder newExamCode={newExamCode} setNewExamCode={setNewExamCode} questionsCount={questionsCount} setQuestionsCount={setQuestionsCount} optionsCount={optionsCount} setOptionsCount={setOptionsCount} answerKey={answerKey} setAnswerKey={setAnswerKey} activeBuilderQ={activeBuilderQ} setActiveBuilderQ={setActiveBuilderQ} examSaving={examSaving} examMsg={examMsg} handleCreateExam={handleCreateExam} setCurrentView={setCurrentView} />}
           {currentView === "upload" && <UploadQueue examCode={examCode} setExamCode={setExamCode} exams={exams} uploadQueue={uploadQueue} setUploadQueue={setUploadQueue} fileInputRef={fileInputRef} handleFilesAdded={handleFilesAdded} runBatchProcessing={runBatchProcessing} isUploadingBatch={isUploadingBatch} />}
-          {currentView === "gallery" && <Gallery scans={scans} fetchScans={fetchScans} wipeImage={wipeImage} expiryInfo={expiryInfo} searchQuery={searchQuery} setSearchQuery={setSearchQuery} />}
-          {currentView === "print" && <PrintableOMRSheet questionsCount={questionsCount} optionsCount={optionsCount} />}
+          {currentView === "gallery" && <Gallery scans={scans} fetchScans={() => fetchScans(0, false)} loadMoreScans={loadMoreScans} hasMoreScans={hasMoreScans} wipeImage={wipeImage} expiryInfo={expiryInfo} searchQuery={searchQuery} setSearchQuery={setSearchQuery} />}
         </AnimatePresence>
       </main>
     </div>

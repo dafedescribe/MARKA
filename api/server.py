@@ -292,6 +292,8 @@ def purchase_id(req: PurchaseIdRequest):
             "message": "Payment verified. Please save your MARKA ID and PIN securely!"
         }
     except Exception as e:
+        if "duplicate key value" in str(e).lower() or "23505" in str(e):
+            raise HTTPException(400, "Email is already registered. Please login and use 'Top Up', or use 'Forgot PIN' to recover your credentials.")
         raise HTTPException(400, f"Error creating user: {str(e)}")
 
 
@@ -342,12 +344,20 @@ def forgot_pin(request: Request, req: ForgotPinRequest):
 
     marka_id = res.data[0]["marka_id"]
     
+    # Need to fetch the pin for demo recovery
+    res_full = supabase.table("users").select("pin").eq("marka_id", marka_id).execute()
+    pin = res_full.data[0]["pin"] if res_full.data else "UNKNOWN"
+    
     # In a real production setup, we would generate a short-lived token and 
     # use Resend/SendGrid to email a magic link to req.email.
-    # For now, we simulate success.
+    # For this demo environment, we will return the credentials directly.
     logger.info(f"Simulating magic link email to {req.email} for MARKA ID {marka_id}")
     
-    return {"message": "If that email is registered, a recovery link has been sent."}
+    return {
+        "message": "Recovery successful. For this demo, here are your credentials.",
+        "marka_id": marka_id,
+        "pin": pin
+    }
 
 
 # ── Exam / Answer-Key Endpoints ───────────────────────────────────
@@ -500,8 +510,15 @@ def process_scan_background(scan_id: str, exam_code: str, user_id: str):
         result = read_bubbles(tmp_path, GLOBAL_LAYOUT_DATA or layout_path)
         result["scan_id"] = scan_id
 
-        # Answer key: the user's DB exam key takes precedence; else the bundled key.
-        answers = db_answer_key or get_answer_key(code)
+        # Ensure answer key exists
+        is_demo = user_data.get("marka_id") == "DEMO-TEST"
+        answers = db_answer_key
+        if not answers:
+            if is_demo:
+                answers = get_answer_key(code)
+            else:
+                raise ValueError(f"No answer key found for exam '{code}'. Please create the exam key first.")
+
         graded_file_path = None
         score = None
         total = None
@@ -517,17 +534,25 @@ def process_scan_background(scan_id: str, exam_code: str, user_id: str):
             graded_img = cv2.imread(out_path)
 
             # Apply Heavy Watermark if DEMO-TEST
-            if user_data.get("marka_id") == "DEMO-TEST":
+            if is_demo:
                 h, w = graded_img.shape[:2]
                 cv2.putText(graded_img, "MARKA DEMO", (int(w*0.1), int(h*0.4)), cv2.FONT_HERSHEY_SIMPLEX, 3, (0, 0, 255), 8, cv2.LINE_AA)
                 cv2.putText(graded_img, "NOT FOR PRODUCTION", (int(w*0.05), int(h*0.6)), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 255), 6, cv2.LINE_AA)
 
-            # Compress the graded proof to WebP (~60% quality) to protect the 1GB
-            # storage budget — a ~2MB JPEG becomes ~100-150KB, still legible.
+            # Compress the graded proof to WebP to protect storage budget
             ok, webp_buf = cv2.imencode(".webp", graded_img, [cv2.IMWRITE_WEBP_QUALITY, 60])
-            graded_file_path = f"{user_id}/{scan_id}.webp"
+            if not ok or webp_buf is None:
+                # Fallback if WebP is unsupported by this OpenCV build
+                ok, img_buf = cv2.imencode(".jpg", graded_img, [cv2.IMWRITE_JPEG_QUALITY, 70])
+                graded_file_path = f"{user_id}/{scan_id}.jpg"
+                ctype = "image/jpeg"
+            else:
+                img_buf = webp_buf
+                graded_file_path = f"{user_id}/{scan_id}.webp"
+                ctype = "image/webp"
+
             supabase.storage.from_("graded_images").upload(
-                graded_file_path, webp_buf.tobytes(), {"content-type": "image/webp"})
+                graded_file_path, img_buf.tobytes(), {"content-type": ctype})
             os.unlink(out_path)
 
         # Delete the raw upload now that grading is done — it is never reused and
@@ -744,6 +769,83 @@ def wipe_scan_image(scan_id: str, user_id: str = Depends(get_current_user)):
     supabase.table("scans").update(
         {"image_path": None, "graded_image_path": None}).eq("id", s["id"]).execute()
     return {"ok": True, "scan_id": scan_id}
+
+
+@app.post("/scans/wipe-all-raw")
+def wipe_all_raw(request: Request, user_id: str = Depends(get_current_user)):
+    """Wipe all raw, original images to reclaim storage space without losing grades."""
+    if not supabase:
+        raise HTTPException(500, "Supabase not configured")
+        
+    res = supabase.table("scans").select("id, image_path").eq("user_id", user_id).not_.is_("image_path", "null").execute()
+    paths = [s["image_path"] for s in res.data if s.get("image_path")]
+    
+    if paths:
+        # Remove in chunks of 100
+        for i in range(0, len(paths), 100):
+            try:
+                supabase.storage.from_("raw_images").remove(paths[i:i+100])
+            except Exception as e:
+                logger.warning(f"wipe-all-raw failed on chunk: {e}")
+                
+        try:
+            supabase.table("scans").update({"image_path": None}).eq("user_id", user_id).not_.is_("image_path", "null").execute()
+        except Exception as e:
+            logger.error(f"Failed to update db after wipe-all: {e}")
+            
+    return {"ok": True, "deleted": len(paths)}
+
+class OverrideRequest(BaseModel):
+    q_num: str
+    new_option: str
+
+@app.post("/scans/{scan_id}/override")
+def override_mark(scan_id: str, req: OverrideRequest, user_id: str = Depends(get_current_user)):
+    """Manually override an ambiguous or incorrectly read mark."""
+    if not supabase:
+        raise HTTPException(500, "Supabase not configured")
+        
+    s_res = supabase.table("scans").select("*").eq("scan_id", scan_id).eq("user_id", user_id).execute()
+    if not s_res.data:
+        raise HTTPException(404, "Scan not found")
+    scan = s_res.data[0]
+    
+    raw_marks = scan.get("raw_marks", {})
+    if not raw_marks or "marks" not in raw_marks:
+        raise HTTPException(400, "No raw marks found for this scan")
+        
+    # Apply override
+    raw_marks["marks"][req.q_num] = req.new_option
+    
+    if req.q_num in raw_marks.get("ambiguous", []):
+        raw_marks["ambiguous"].remove(req.q_num)
+        
+    # Recalculate score
+    code = scan.get("exam_code")
+    exam_res = supabase.table("exams").select("answer_key").eq("user_id", user_id).eq("exam_code", code).execute()
+    answers = exam_res.data[0]["answer_key"] if exam_res.data else {}
+    
+    score = 0
+    total = len(answers)
+    for q_str, correct in answers.items():
+        student_ans = raw_marks["marks"].get(q_str)
+        is_bonus = correct == "*" or correct == ["*"]
+        if is_bonus:
+            score += 1
+            continue
+        accepted = {str(c).strip().upper() for c in correct} if isinstance(correct, list) else {str(correct).strip().upper()}
+        if student_ans in accepted:
+            score += 1
+            
+    pct = round((score / total) * 100, 1) if total > 0 else 0
+    
+    supabase.table("scans").update({
+        "raw_marks": raw_marks,
+        "score": score,
+        "percentage": pct
+    }).eq("id", scan["id"]).execute()
+    
+    return {"ok": True, "score": score, "percentage": pct, "raw_marks": raw_marks}
 
 
 # ── Webhook Endpoints ─────────────────────────────────────────────

@@ -6,6 +6,7 @@ import Landing from './components/Landing';
 function App() {
   const [token, setToken] = useState(localStorage.getItem('marka_token'));
   const [showAuth, setShowAuth] = useState(false);
+  const [initialAuthTab, setInitialAuthTab] = useState('login');
 
   // If token changes (e.g. from logout), update state
   const handleLogin = (newToken) => {
@@ -31,10 +32,10 @@ function App() {
           >
             ← Back to Home
           </button>
-          <Auth onLogin={handleLogin} />
+          <Auth onLogin={handleLogin} initialTab={initialAuthTab} />
         </div>
       ) : (
-        <Landing onGetStarted={() => setShowAuth(true)} />
+        <Landing onGetStarted={(tab = 'login') => { setInitialAuthTab(tab); setShowAuth(true); }} />
       )}
     </div>
   );
