@@ -110,12 +110,14 @@ export default function ExamBuilder({
               const { bonus, set } = getSel(answerKey[qNum]);
               const unset = !bonus && set.size === 0;
               return (
-                <div key={qNum} onClick={() => setActiveBuilderQ(qNum)} className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-all ${activeBuilderQ === qNum ? "border-[#3B0042] bg-purple-50/20 ring-2 ring-[#3B0042]/10" : unset ? "border-amber-200 bg-amber-50/30" : "border-gray-100"}`}>
+                <div key={qNum} onClick={() => setActiveBuilderQ(qNum)} className={`flex flex-wrap items-center justify-between gap-y-2 p-3 rounded-xl border cursor-pointer transition-all ${activeBuilderQ === qNum ? "border-[#3B0042] bg-purple-50/20 ring-2 ring-[#3B0042]/10" : unset ? "border-amber-200 bg-amber-50/30" : "border-gray-100"}`}>
                   <span className="font-mono text-xs font-bold text-gray-400 flex items-center gap-1.5">
                     {unset && <span className="w-1.5 h-1.5 rounded-full bg-amber-400" title="Unanswered"></span>}
                     Q{String(qNum).padStart(2, "0")}
                   </span>
-                  <div className="flex items-center gap-2">
+                  {/* Wrap the option cluster so the ★ bonus button is never pushed past
+                      the card edge (and hidden behind the next column) on narrow widths. */}
+                  <div className="flex flex-wrap items-center justify-end gap-1.5">
                     {["A", "B", "C", "D", "E"].slice(0, optionsCount).map((opt) => {
                       const active = !bonus && set.has(opt);
                       return (

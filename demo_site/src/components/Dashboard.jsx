@@ -282,16 +282,29 @@ export default function Dashboard({ token, onLogout }) {
     const prevScans = scans;
     // Drop it from the list immediately, but put it back if the server rejects.
     setScans(prev => prev.filter(s => s.scan_id !== scanId));
-    try {
-      const res = await fetch(`${API_URL}/scans/${scanId}`, {
-        method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      if (!res.ok) { const d = await res.json().catch(() => ({})); throw new Error(d.detail || 'Failed to delete scan'); }
-    } catch (e) {
-      setScans(prevScans);
-      alert(e.message);
+
+    // Render's free tier spins down when idle, so the first request after a lull
+    // can 502/time out while it wakes. Without a retry the delete silently rolls
+    // back and looks like it "did nothing" — mirror the upload flow's cold-start
+    // retry so a sleeping backend doesn't swallow the delete.
+    let lastErr;
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        const res = await fetch(`${API_URL}/scans/${scanId}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (res.status === 404) return;        // already gone — treat as deleted
+        if (!res.ok) { const d = await res.json().catch(() => ({})); throw new Error(d.detail || `Failed to delete scan (${res.status})`); }
+        return;                                 // success — stays removed
+      } catch (e) {
+        lastErr = e;
+        if (attempt < 3) await new Promise(r => setTimeout(r, 1500)); // wait, then retry the cold backend
+      }
     }
+    // Every attempt failed — restore the row so the list matches reality and say so.
+    setScans(prevScans);
+    alert(`Could not delete this scan: ${lastErr?.message || 'network error'}. Please try again in a moment.`);
   };
 
   const handleWipeAllRaw = async () => {
@@ -360,8 +373,10 @@ export default function Dashboard({ token, onLogout }) {
     });
   };
 
-  const handleFilesAdded = async (e) => {
-    const files = Array.from(e.target.files);
+  // Shared by the hidden file input and the drag-and-drop zone. Accepts any
+  // FileList/array of files so both entry points behave identically.
+  const addFiles = async (fileList) => {
+    const files = Array.from(fileList || []).filter(f => f.type.startsWith('image/'));
     if (files.length === 0) return;
 
     if (credits < files.length && credits !== -1 && token) {
@@ -380,10 +395,12 @@ export default function Dashboard({ token, onLogout }) {
         error: null
       };
     }));
-    
+
     setUploadQueue(prev => [...prev, ...newItems]);
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
+
+  const handleFilesAdded = (e) => addFiles(e.target.files);
   const runBatchProcessing = async () => {
     setIsUploadingBatch(true);
     let wakeLock = null;
@@ -482,8 +499,11 @@ export default function Dashboard({ token, onLogout }) {
     // Grading finishes asynchronously on the server. Don't rely solely on the
     // realtime subscription (it may be disabled/dropped) — poll a few times so
     // the optimistic "processing" cards reconcile to the real graded results.
-    fetchScans(0, false);
-    [3000, 7000, 12000, 20000].forEach((ms) => setTimeout(() => fetchScans(0, false), ms));
+    // Credits are debited server-side as each sheet grades, so refresh them on the
+    // same schedule; otherwise the header balance lags until a manual page refresh.
+    const reconcile = () => { fetchScans(0, false); refreshCredits(); };
+    reconcile();
+    [3000, 7000, 12000, 20000].forEach((ms) => setTimeout(reconcile, ms));
   };
 
   const goToLibrary = () => {
@@ -549,7 +569,7 @@ export default function Dashboard({ token, onLogout }) {
         <AnimatePresence mode="wait">
           {currentView === "dashboard" && <DashboardHome credits={credits} scans={scans} exams={exams} setExamCode={setExamCode} setCurrentView={setCurrentView} handleExport={handleExport} setQuestionsCount={setQuestionsCount} setAnswerKey={setAnswerKey} setNewExamCode={setNewExamCode} handleWipeAllRaw={handleWipeAllRaw} />}
           {currentView === "builder" && <ExamBuilder newExamCode={newExamCode} setNewExamCode={setNewExamCode} questionsCount={questionsCount} setQuestionsCount={setQuestionsCount} optionsCount={optionsCount} setOptionsCount={setOptionsCount} answerKey={answerKey} setAnswerKey={setAnswerKey} activeBuilderQ={activeBuilderQ} setActiveBuilderQ={setActiveBuilderQ} examSaving={examSaving} examMsg={examMsg} handleCreateExam={handleCreateExam} setCurrentView={setCurrentView} />}
-          {currentView === "upload" && <UploadQueue examCode={examCode} setExamCode={setExamCode} exams={exams} uploadQueue={uploadQueue} setUploadQueue={setUploadQueue} fileInputRef={fileInputRef} handleFilesAdded={handleFilesAdded} runBatchProcessing={runBatchProcessing} isUploadingBatch={isUploadingBatch} retryFailed={retryFailed} goToLibrary={goToLibrary} />}
+          {currentView === "upload" && <UploadQueue examCode={examCode} setExamCode={setExamCode} exams={exams} uploadQueue={uploadQueue} setUploadQueue={setUploadQueue} fileInputRef={fileInputRef} handleFilesAdded={handleFilesAdded} addFiles={addFiles} runBatchProcessing={runBatchProcessing} isUploadingBatch={isUploadingBatch} retryFailed={retryFailed} goToLibrary={goToLibrary} />}
           {currentView === "gallery" && <Gallery scans={scans} fetchScans={() => fetchScans(0, false)} loadMoreScans={loadMoreScans} hasMoreScans={hasMoreScans} wipeImage={wipeImage} deleteScan={deleteScan} expiryInfo={expiryInfo} searchQuery={searchQuery} setSearchQuery={setSearchQuery} scansError={scansError} />}
         </AnimatePresence>
       </main>

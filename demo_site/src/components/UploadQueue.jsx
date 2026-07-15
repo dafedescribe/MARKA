@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { Upload, FileText, CheckCircle, XCircle, Loader2, Play, AlertTriangle, RefreshCw, Plus, Images, Sun, Maximize, PenLine, ScanLine } from 'lucide-react';
 
@@ -11,13 +11,24 @@ const CAPTURE_TIPS = [
 
 export default function UploadQueue({
   examCode, setExamCode, exams, uploadQueue, setUploadQueue,
-  fileInputRef, handleFilesAdded, runBatchProcessing, isUploadingBatch, retryFailed, goToLibrary
+  fileInputRef, handleFilesAdded, addFiles, runBatchProcessing, isUploadingBatch, retryFailed, goToLibrary
 }) {
   const hasFailedItems = uploadQueue.some(item => item.status === 'failed');
   const queuedCount = uploadQueue.filter(item => item.status === 'queued').length;
   const completeCount = uploadQueue.filter(item => item.status === 'complete').length;
   const allSettled = uploadQueue.length > 0 && !isUploadingBatch &&
     uploadQueue.every(item => item.status === 'complete' || item.status === 'failed');
+
+  // Drag-and-drop upload. The dropzone previously only handled click, so dragging
+  // a sheet onto it did nothing despite the "Drop sheets here" copy.
+  const [isDragging, setIsDragging] = useState(false);
+  const onDragOver = (e) => { e.preventDefault(); if (!isDragging) setIsDragging(true); };
+  const onDragLeave = (e) => { e.preventDefault(); setIsDragging(false); };
+  const onDrop = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+    if (e.dataTransfer?.files?.length) addFiles(e.dataTransfer.files);
+  };
 
   return (
     <motion.div
@@ -60,15 +71,31 @@ export default function UploadQueue({
       </div>
 
       {uploadQueue.length === 0 ? (
-        <div className="bg-white border-2 border-dashed border-gray-200 hover:border-[#3B0042] rounded-3xl p-12 text-center space-y-6 transition-all shadow-sm cursor-pointer relative" onClick={() => fileInputRef.current?.click()}>
+        <div
+          onClick={() => fileInputRef.current?.click()}
+          onDragOver={onDragOver}
+          onDragLeave={onDragLeave}
+          onDrop={onDrop}
+          className={`border-2 border-dashed rounded-3xl p-12 text-center space-y-6 transition-all shadow-sm cursor-pointer relative ${isDragging ? 'border-[#3B0042] bg-purple-50 ring-2 ring-[#3B0042]/20' : 'bg-white border-gray-200 hover:border-[#3B0042]'}`}
+        >
           <div className="w-16 h-16 bg-purple-50 text-[#3B0042] rounded-full flex items-center justify-center mx-auto"><Upload className="w-8 h-8" /></div>
           <div className="space-y-2">
-            <h3 className="text-lg font-black text-gray-900">Drop sheets here or click to select</h3>
+            <h3 className="text-lg font-black text-gray-900">{isDragging ? 'Release to add these sheets' : 'Drop sheets here or click to select'}</h3>
             <p className="text-xs text-gray-400 max-w-sm mx-auto">We support high-speed batching. Upload multiple sheets at once.</p>
           </div>
         </div>
       ) : (
-        <div className="space-y-6">
+        <div
+          className="space-y-6"
+          onDragOver={onDragOver}
+          onDragLeave={onDragLeave}
+          onDrop={onDrop}
+        >
+          {isDragging && (
+            <div className="border-2 border-dashed border-[#3B0042] bg-purple-50 rounded-2xl p-4 text-center text-xs font-bold text-[#3B0042] flex items-center justify-center gap-2">
+              <Upload className="w-4 h-4" /> Release to add more sheets to the queue
+            </div>
+          )}
           <div className="flex flex-wrap justify-between items-center gap-2">
             <h3 className="text-sm font-bold text-gray-900">{uploadQueue.length} sheets in queue{completeCount > 0 && ` · ${completeCount} graded`}</h3>
             <div className="flex flex-wrap gap-2">
