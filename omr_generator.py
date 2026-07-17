@@ -246,19 +246,32 @@ class OMRGenerator:
         avail_w = safe_right - safe_left
         gap = (avail_w - total_content_w) / (len(fields_def) - 1)
         
+        # Record each box's geometry (sheet-relative mm) as we draw it, so the
+        # scanner can crop the handwriting straight from these exact rects.
+        # Coordinates are relative to the sheet origin (sx, sy) — same convention
+        # as fid_centers above.
+        fields_mm = {}
         fx = safe_left
         for label, bw, key in fields_def:
             c.setFillColor(black)
             c.setFont("Helvetica", 5)
             c.drawString(fx, row2_y + 0.5 * mm, label)
-            
+
             lbl_w = stringWidth(label, "Helvetica", 5) + 1 * mm
             box_x = fx + lbl_w
-            
+            box_y = row2_y - 0.5 * mm
+
             c.setStrokeColor(LABEL_COLOR)
             c.setLineWidth(0.4)
-            c.rect(box_x, row2_y - 0.5 * mm, bw, box_h, fill=0, stroke=1)
-            
+            c.rect(box_x, box_y, bw, box_h, fill=0, stroke=1)
+
+            fields_mm[key] = {
+                "x": round((box_x - sx) / mm, 2),
+                "y": round((box_y - sy) / mm, 2),
+                "w": round(bw / mm, 2),
+                "h": round(box_h / mm, 2),
+            }
+
             fx += lbl_w + bw + gap
 
         # ── Bubble Grid ──
@@ -377,49 +390,6 @@ class OMRGenerator:
             "Paper Exams. Instant Results. marka.com.ng")
 
         c.restoreState()
-
-        # Compute handwriting field bounding boxes (mm, relative to sheet origin)
-        # These match the exact rect() positions drawn above so the scanner can
-        # crop the handwritten text directly — pixel-perfect coordinate lifting.
-        _safe_left = FID_INSET + FID_SIZE + 3 * mm
-        _safe_right = SHEET_W - FID_INSET - FID_SIZE - 2 * mm
-        _header_top = SHEET_H - FID_INSET - FID_SIZE - 1 * mm
-        _header_bot = _header_top - HEADER_H
-        
-        _box_h = 3.5 * mm
-        _row2_y = _header_bot + 1 * mm
-        
-        _fields_def = [
-            ("Name:", 50 * mm, "name"),
-            ("ID No:", 22 * mm, "id"),
-            ("Class:", 18 * mm, "class"),
-            ("Subject:", 30 * mm, "subject"),
-            ("Date:", 22 * mm, "date"),
-        ]
-        
-        from reportlab.pdfbase.pdfmetrics import stringWidth
-        _total_content_w = 0
-        for label, bw, _ in _fields_def:
-            _total_content_w += stringWidth(label, "Helvetica", 5) + 1 * mm + bw
-            
-        _avail_w = _safe_right - _safe_left
-        _gap = (_avail_w - _total_content_w) / (len(_fields_def) - 1)
-        
-        _fx = _safe_left
-        fields_mm = {}
-        
-        for label, bw, key in _fields_def:
-            lbl_w = stringWidth(label, "Helvetica", 5) + 1 * mm
-            box_x = _fx + lbl_w
-            
-            fields_mm[key] = {
-                "x": round(box_x / mm, 2),
-                "y": round((_row2_y - 0.5 * mm) / mm, 2),
-                "w": round(bw / mm, 2),
-                "h": round(_box_h / mm, 2),
-            }
-            
-            _fx += lbl_w + bw + _gap
 
         self.sheet_layouts.append({
             "sheet_id": sheet_id,
