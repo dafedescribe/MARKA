@@ -350,6 +350,49 @@ class OMRGenerator:
 
         c.restoreState()
 
+        # Compute handwriting field bounding boxes (mm, relative to sheet origin)
+        # These let the scanner crop the handwritten text directly from the aligned
+        # image without any OCR — just pixel-perfect coordinate lifting.
+        _name_label_x = SHEET_W * 0.35
+        _id_label_x = _name_label_x + 40 * mm
+        _date_label_x = _id_label_x + 35 * mm
+        _field_right = safe_right - QR_SIZE - 2 * mm
+        _header_top = SHEET_H - FID_INSET - FID_SIZE - 1 * mm
+
+        # Field value regions start after the label text (e.g. "Name:" + 11mm)
+        # Heights are estimated from the line spacing (each field line is ~5.5mm tall)
+        _field_h = 5.0 * mm  # crop height for a single handwriting line
+
+        _name_y = _header_top - 4.5 * mm   # baseline of Name field
+        _id_y   = _header_top - 10 * mm    # baseline of ID / Class / Date row
+
+        fields_mm = {
+            "name": {
+                "x": round((_name_label_x + 11 * mm) / mm, 2),
+                "y": round((_name_y - 1 * mm) / mm, 2),           # slightly below baseline
+                "w": round((_field_right - _name_label_x - 11 * mm) / mm, 2),
+                "h": round(_field_h / mm, 2),
+            },
+            "id": {
+                "x": round((_name_label_x + 11 * mm) / mm, 2),
+                "y": round((_id_y - 1 * mm) / mm, 2),
+                "w": round((_id_label_x - 5 * mm - _name_label_x - 11 * mm) / mm, 2),
+                "h": round(_field_h / mm, 2),
+            },
+            "class": {
+                "x": round((_id_label_x + 11 * mm) / mm, 2),
+                "y": round((_id_y - 1 * mm) / mm, 2),
+                "w": round((_date_label_x - 5 * mm - _id_label_x - 11 * mm) / mm, 2),
+                "h": round(_field_h / mm, 2),
+            },
+            "date": {
+                "x": round((_date_label_x + 10 * mm) / mm, 2),
+                "y": round((_id_y - 1 * mm) / mm, 2),
+                "w": round((_field_right - _date_label_x - 10 * mm) / mm, 2),
+                "h": round(_field_h / mm, 2),
+            },
+        }
+
         self.sheet_layouts.append({
             "sheet_id": sheet_id,
             "page": page_num,
@@ -357,6 +400,7 @@ class OMRGenerator:
             "sheet_size_mm": [round(SHEET_W / mm, 2), round(SHEET_H / mm, 2)],
             "fiducial_centers_mm": fid_centers,
             "fiducial_size_mm": round(FID_SIZE / mm, 2),
+            "fields_mm": fields_mm,
             "bubbles": bubbles
         })
 

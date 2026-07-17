@@ -401,6 +401,134 @@ def read_bubbles(image_path, layout_data_or_path):
     }
 
 
+# ── Field Extraction (No OCR) ────────────────────────────────────
+
+def _crop_field(aligned_img, field_box, sheet_h_mm):
+    """
+    Crop a handwriting field from the aligned image using mm coordinates.
+    
+    The layout JSON stores field boxes as {x, y, w, h} in mm, where y is
+    measured from the BOTTOM of the sheet (ReportLab convention). The aligned
+    image has y=0 at the TOP (OpenCV convention), so we flip.
+    
+    Returns: numpy array (BGR or grayscale crop), or None if coordinates invalid.
+    """
+    x_mm = field_box["x"]
+    y_mm = field_box["y"]
+    w_mm = field_box["w"]
+    h_mm = field_box["h"]
+    
+    # Convert mm → pixels
+    x1 = int(x_mm * PX_PER_MM)
+    x2 = int((x_mm + w_mm) * PX_PER_MM)
+    
+    # Flip Y: ReportLab y=0 is bottom; OpenCV y=0 is top
+    y_bottom = int((sheet_h_mm - y_mm) * PX_PER_MM)
+    y_top    = int((sheet_h_mm - y_mm - h_mm) * PX_PER_MM)
+    
+    # Bounds check
+    if len(aligned_img.shape) == 2:
+        img_h, img_w = aligned_img.shape
+    else:
+        img_h, img_w = aligned_img.shape[:2]
+    
+    y_top  = max(0, min(y_top, img_h))
+    y_bottom = max(0, min(y_bottom, img_h))
+    x1 = max(0, min(x1, img_w))
+    x2 = max(0, min(x2, img_w))
+    
+    if y_bottom <= y_top or x2 <= x1:
+        return None
+    
+    return aligned_img[y_top:y_bottom, x1:x2]
+
+
+def extract_fields(image_path, layout_data_or_path, output_dir=None):
+    """
+    Extract handwritten field images (Name, ID, Class, Date) from a scanned
+    OMR sheet using coordinate-based cropping. No OCR required.
+    
+    The scanner aligns the image to the layout's coordinate system via
+    perspective transform, then crops the exact pixel regions where
+    handwriting was written.
+    
+    Args:
+        image_path: Path to the scanned OMR sheet photo
+        layout_data_or_path: Layout JSON (dict or path to file)
+        output_dir: If provided, saves cropped images as PNGs here
+        
+    Returns:
+        {
+            "name_img":  numpy array (or None),
+            "id_img":    numpy array (or None),
+            "class_img": numpy array (or None),
+            "date_img":  numpy array (or None),
+            "fields_b64": {           # base64-encoded PNGs for embedding
+                "name":  "data:image/png;base64,...",
+                "id":    "data:image/png;base64,...",
+                "class": "data:image/png;base64,...",
+                "date":  "data:image/png;base64,...",
+            }
+        }
+    """
+    import base64
+    
+    # Load layout
+    if isinstance(layout_data_or_path, str):
+        with open(layout_data_or_path, "r") as f:
+            layout_data = json.load(f)
+    else:
+        layout_data = layout_data_or_path
+
+    sheet = layout_data["sheets"][0]
+    sheet_h_mm = sheet["sheet_size_mm"][1]
+    fields_mm = sheet.get("fields_mm", {})
+    
+    if not fields_mm:
+        raise ValueError("Layout JSON does not contain 'fields_mm'. "
+                         "Regenerate sheets with the latest omr_generator.py.")
+
+    # Load and align (reuse the scanner's alignment pipeline)
+    gray = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+    if gray is None:
+        raise ValueError(f"Could not load image: {image_path}")
+    
+    src_pts = _find_fiducials(gray)
+    
+    # Align in colour so the handwriting crops look natural
+    color_img = cv2.imread(image_path)
+    aligned_color, w, h = _perspective_transform(color_img, src_pts, sheet)
+    
+    result = {
+        "name_img": None, "id_img": None,
+        "class_img": None, "date_img": None,
+        "fields_b64": {}
+    }
+    
+    for field_name in ["name", "id", "class", "date"]:
+        if field_name not in fields_mm:
+            continue
+        
+        crop = _crop_field(aligned_color, fields_mm[field_name], sheet_h_mm)
+        if crop is None:
+            continue
+        
+        result[f"{field_name}_img"] = crop
+        
+        # Encode to base64 PNG for embedding in receipts / API responses
+        _, buf = cv2.imencode(".png", crop)
+        b64 = base64.b64encode(buf).decode("utf-8")
+        result["fields_b64"][field_name] = f"data:image/png;base64,{b64}"
+        
+        # Optionally save to disk
+        if output_dir:
+            os.makedirs(output_dir, exist_ok=True)
+            out_path = os.path.join(output_dir, f"field_{field_name}.png")
+            cv2.imwrite(out_path, crop)
+    
+    return result
+
+
 def grade_and_render(marks_data, answers, image_path, layout_data_or_path, output_path):
     """
     Apply answer key to extracted marks. Draw visual feedback.
