@@ -54,6 +54,13 @@ CONFIDENCE_THRESHOLD = 0.5
 # Blur detection
 MIN_SHARPNESS = 15.0  # Reduced due to downscaling optimization
 
+# Orientation: how much busier the bottom-left QR window must be than the
+# top-right one before we treat the sheet as upside-down and rotate it 180°.
+# Genuine flips show a strong asymmetry (~2.5x on real photos); requiring a
+# clear margin means content noise on a correctly-oriented sheet never triggers
+# an erroneous flip.
+FLIP_MARGIN = 1.3
+
 
 def _find_fiducials(gray):
     """Detect the 4 corner fiducial squares. Returns sorted corners."""
@@ -170,6 +177,97 @@ def _perspective_transform(image, src_pts, layout):
     M = cv2.getPerspectiveTransform(src_pts, dst_pts)
     aligned = cv2.warpPerspective(image, M, (width, height))
     return aligned, width, height
+
+
+def _qr_bottom_left_score(aligned_gray):
+    """
+    Decide whether the sheet is flipped 180° by locating the QR block.
+
+    The QR is always printed in the sheet's physical TOP-RIGHT corner. After a
+    correct warp it sits top-right; after a 180° flip it lands bottom-left. We
+    probe two tight windows — the expected QR spot (top-right header) and its
+    180° opposite (bottom-left) — and compare edge density (Canny). The QR is a
+    dense, high-frequency block, so whichever window is busier holds the QR.
+
+    Targeting a tight window at the QR's known location is far more reliable than
+    comparing whole corners, whose texture is polluted by student marks/writing.
+
+    Returns (is_flipped, confidence_margin). confidence_margin is the ratio of
+    the busier window to the quieter one (1.0 = indistinguishable).
+    """
+    h, w = aligned_gray.shape[:2]
+
+    def edge_density(patch):
+        if patch.size == 0:
+            return 0.0
+        return float(cv2.Canny(patch, 50, 150).mean())
+
+    tr = aligned_gray[int(0.02 * h):int(0.16 * h), int(0.80 * w):int(0.97 * w)]
+    bl = aligned_gray[int(0.84 * h):int(0.98 * h), int(0.03 * w):int(0.20 * w)]
+
+    tr_e = edge_density(tr)
+    bl_e = edge_density(bl)
+
+    hi, lo = max(tr_e, bl_e), min(tr_e, bl_e)
+    margin = (hi / lo) if lo > 1e-3 else (hi if hi > 0 else 1.0)
+    return bl_e > tr_e, margin
+
+
+def _align_sheet(image, sheet):
+    """
+    Find the sheet, correct its perspective AND its orientation, and return the
+    upright aligned image. Handles all four rotations (0/90/180/270) so a photo
+    taken sideways or upside-down still grades correctly.
+
+    Two phases:
+      1. Sideways (90°/270°): the sheet is non-square, so if the fiducial bounding
+         box comes out portrait when the layout is landscape (or vice-versa), the
+         photo is rotated a quarter turn — rotate the source 90° and re-detect so
+         the warp maps a same-shaped quad (no aspect distortion).
+      2. Upside-down (180°): after warping, if the QR block is in the bottom-left
+         instead of the top-right, rotate the aligned image 180°.
+
+    Works on grayscale or colour images (the same transforms are applied to
+    whichever is passed, so marks and rendered overlays stay consistent).
+
+    Returns (aligned_image, info) where info = {
+        "corrected_degrees": 0|90|180|270,   # how much the source was rotated
+        "flip_confidence": float,            # >1; closer to 1 = less certain
+    }.
+    """
+    gray = image if image.ndim == 2 else cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    src_pts = _find_fiducials(gray)
+
+    # ── Phase 1: quarter-turn (aspect) correction ──
+    sheet_w_mm, sheet_h_mm = sheet["sheet_size_mm"][0], sheet["sheet_size_mm"][1]
+    expected_landscape = sheet_w_mm >= sheet_h_mm
+    xs, ys = src_pts[:, 0], src_pts[:, 1]
+    measured_landscape = (xs.max() - xs.min()) >= (ys.max() - ys.min())
+
+    quarter_turn = False
+    if expected_landscape != measured_landscape:
+        # Rotate the source a quarter turn so its long axis matches the layout,
+        # then re-detect the fiducials on the now-upright-shaped sheet.
+        image = cv2.rotate(image, cv2.ROTATE_90_CLOCKWISE)
+        gray = cv2.rotate(gray, cv2.ROTATE_90_CLOCKWISE)
+        src_pts = _find_fiducials(gray)
+        quarter_turn = True
+
+    aligned, w, h = _perspective_transform(image, src_pts, sheet)
+
+    # ── Phase 2: 180° (upside-down) correction ──
+    # Only act on a clear signal: a genuinely upside-down sheet shows a strong
+    # QR-density asymmetry, whereas a weak margin means the QR wasn't cleanly
+    # located, so we trust the as-warped orientation rather than risk flipping a
+    # correct sheet into a silently-wrong score.
+    aligned_gray = aligned if aligned.ndim == 2 else cv2.cvtColor(aligned, cv2.COLOR_BGR2GRAY)
+    bl_busier, margin = _qr_bottom_left_score(aligned_gray)
+    flipped = bl_busier and margin >= FLIP_MARGIN
+    if flipped:
+        aligned = cv2.rotate(aligned, cv2.ROTATE_180)
+
+    corrected = (90 if quarter_turn else 0) + (180 if flipped else 0)
+    return aligned, {"corrected_degrees": corrected % 360, "flip_confidence": round(margin, 2)}
 
 
 def _check_image_quality(gray):
@@ -298,21 +396,11 @@ def read_bubbles(image_path, layout_data_or_path):
     sharpness = _check_image_quality(gray)
     quality_ok = sharpness >= MIN_SHARPNESS
 
-    # Find fiducials and align (all grayscale)
-    src_pts = _find_fiducials(gray)
-    aligned_gray, w, h = _perspective_transform(gray, src_pts, sheet)
-
-    # Orientation check via the QR block, which is always printed in the sheet's
-    # TOP-RIGHT corner. Brightness comparisons are unreliable — real photos have
-    # lighting gradients (a shadowed bottom edge) that swamp the sheet's own ink —
-    # but the QR's dense high-frequency texture survives shadows. Compare texture
-    # (variance) of the top-right vs bottom-left corner: if the bottom-left is much
-    # busier, the QR has moved there and the sheet was scanned upside down.
-    # Validated on real photos: upright tr_var >> bl_var; flipped bl_var >> tr_var.
-    tr_var = float(aligned_gray[: int(h * 0.18), int(w * 0.75):].astype(np.float32).var())
-    bl_var = float(aligned_gray[int(h * 0.82):, : int(w * 0.25)].astype(np.float32).var())
-    if bl_var > 300 and bl_var > tr_var * 1.6:
-        raise ValueError("Image appears to be upside down. Please rotate 180 degrees and rescan.")
+    # Find fiducials, correct perspective AND auto-correct orientation. A photo
+    # taken sideways or upside-down is rotated back to upright here, so it grades
+    # correctly instead of silently producing a wrong score (or erroring out).
+    aligned_gray, orientation = _align_sheet(gray, sheet)
+    h, w = aligned_gray.shape[:2]
 
     # Normalize local contrast. On evenly-lit scans this is nearly a no-op; on
     # shadowed / yellow-lit phone photos it lifts faint marks out of the paper
@@ -395,6 +483,7 @@ def read_bubbles(image_path, layout_data_or_path):
             "sharpness": round(sharpness, 1),
             "ok": quality_ok
         },
+        "orientation": orientation,
         "threshold_used": round(threshold, 1),
         "blank_median": round(blank_median, 1),
         "time_ms": round(elapsed, 2)
@@ -488,17 +577,14 @@ def extract_fields(image_path, layout_data_or_path, output_dir=None):
         raise ValueError("Layout JSON does not contain 'fields_mm'. "
                          "Regenerate sheets with the latest omr_generator.py.")
 
-    # Load and align (reuse the scanner's alignment pipeline)
-    gray = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
-    if gray is None:
-        raise ValueError(f"Could not load image: {image_path}")
-    
-    src_pts = _find_fiducials(gray)
-    
-    # Align in colour so the handwriting crops look natural
+    # Load and align (reuse the scanner's alignment pipeline). Align in colour so
+    # the handwriting crops look natural; orientation is auto-corrected so fields
+    # crop from the right place even on a rotated photo.
     color_img = cv2.imread(image_path)
-    aligned_color, w, h = _perspective_transform(color_img, src_pts, sheet)
-    
+    if color_img is None:
+        raise ValueError(f"Could not load image: {image_path}")
+    aligned_color, _ = _align_sheet(color_img, sheet)
+
     result = {
         "name_img": None, "id_img": None,
         "class_img": None, "subject_img": None, "date_img": None,
@@ -544,9 +630,10 @@ def grade_and_render(marks_data, answers, image_path, layout_data_or_path, outpu
     sheet_h_mm = sheet["sheet_size_mm"][1]
 
     image = cv2.imread(image_path)
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    src_pts = _find_fiducials(gray)
-    aligned, w, h = _perspective_transform(image, src_pts, sheet)
+    # Same orientation-correcting alignment as read_bubbles, so the graded
+    # overlay matches the marks that were read (both end up upright).
+    aligned, _ = _align_sheet(image, sheet)
+    h, w = aligned.shape[:2]
 
     marks = marks_data["marks"]
     conf = marks_data.get("confidence", {})
