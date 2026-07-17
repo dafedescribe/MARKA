@@ -119,20 +119,42 @@ def _draw_slip(c, ox, oy, d):
         c.setFont("Helvetica", 4.5)
         c.drawString(text_x + 32*mm, y - 5*mm, f"ID: {d['receipt_id']}")
         
-    # Line 3: Student Name
-    c.setFillColor(INK)
-    c.setFont("Helvetica-Bold", 9)
-    name = str(d.get("student_name", "—")).strip()
-    if len(name) > 28: name = name[:26] + "…"
-    c.drawString(text_x, y - 9*mm, name)
+    # Line 3 & 4: Student Details (Handwriting Crops or Text)
+    fields_b64 = d.get("fields_b64", {})
     
-    # Line 4: Meta (Class/Subject)
-    c.setFillColor(DARK_GREY)
-    c.setFont("Helvetica", 6)
-    meta = []
-    if d.get("class_name"): meta.append(d["class_name"])
-    if d.get("subject"): meta.append(d["subject"])
-    c.drawString(text_x, y - 11.5*mm, "  |  ".join(meta))
+    if "name" in fields_b64:
+        import base64
+        import io
+        from reportlab.lib.utils import ImageReader
+        
+        # Name
+        img_data = base64.b64decode(fields_b64["name"].split(",")[1])
+        # scale down slightly to fit gracefully (max 40mm wide)
+        c.drawImage(ImageReader(io.BytesIO(img_data)), text_x, y - 9*mm, width=40*mm, height=2.8*mm, preserveAspectRatio=True)
+        
+        # Class / Subject
+        meta_x = text_x
+        if "class" in fields_b64:
+            cls_data = base64.b64decode(fields_b64["class"].split(",")[1])
+            c.drawImage(ImageReader(io.BytesIO(cls_data)), meta_x, y - 12.5*mm, width=15*mm, height=2.8*mm, preserveAspectRatio=True)
+            meta_x += 16 * mm
+        if "subject" in fields_b64:
+            sub_data = base64.b64decode(fields_b64["subject"].split(",")[1])
+            c.drawImage(ImageReader(io.BytesIO(sub_data)), meta_x, y - 12.5*mm, width=25*mm, height=2.8*mm, preserveAspectRatio=True)
+    else:
+        # Fallback to Text
+        c.setFillColor(INK)
+        c.setFont("Helvetica-Bold", 9)
+        name = str(d.get("student_name", "—")).strip()
+        if len(name) > 28: name = name[:26] + "…"
+        c.drawString(text_x, y - 9*mm, name)
+        
+        c.setFillColor(DARK_GREY)
+        c.setFont("Helvetica", 6)
+        meta = []
+        if d.get("class_name"): meta.append(d["class_name"])
+        if d.get("subject"): meta.append(d["subject"])
+        c.drawString(text_x, y - 11.5*mm, "  |  ".join(meta))
 
     # -- Right Side: Double-Bordered Score Box
     score = d.get("score", 0)
