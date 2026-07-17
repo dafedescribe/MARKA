@@ -191,7 +191,7 @@ class OMRGenerator:
         c.drawString(safe_left, header_top - 9.5 * mm,
                      f"{self.num_questions} Questions  •  {self.num_choices} Choices ({chr(65)}–{chr(64 + self.num_choices)})")
 
-        # Name / ID fields — right-aligned, clean
+        # Name / ID fields — bounded boxes so handwriting stays contained
         field_right = safe_right - QR_SIZE - 2 * mm
         name_label_x = sx + SHEET_W * 0.35
         id_label_x = name_label_x + 40 * mm
@@ -200,25 +200,43 @@ class OMRGenerator:
         c.setFont("Helvetica", 6)
         c.setFillColor(black)
 
-        # Name field
+        # Shared box dimensions
+        box_h = 5.0 * mm   # height of each input box
+        label_offset = 11 * mm  # space after label text
+
+        # ── Name field (full width top row) ──
         name_y = header_top - 4.5 * mm
         c.drawString(name_label_x, name_y, "Name:")
+        name_box_x = name_label_x + label_offset
+        name_box_w = field_right - name_box_x
         c.setStrokeColor(LABEL_COLOR)
-        c.setLineWidth(0.4)
-        c.line(name_label_x + 11 * mm, name_y - 0.5 * mm, field_right, name_y - 0.5 * mm)
+        c.setLineWidth(0.5)
+        c.rect(name_box_x, name_y - 1.5 * mm, name_box_w, box_h, fill=0, stroke=1)
 
-        # ID field
+        # ── ID field ──
         id_y = header_top - 10 * mm
+        c.setFillColor(black)
         c.drawString(name_label_x, id_y, "ID No:")
-        c.line(name_label_x + 11 * mm, id_y - 0.5 * mm, id_label_x - 5 * mm, id_y - 0.5 * mm)
+        id_box_x = name_label_x + label_offset
+        id_box_w = id_label_x - 5 * mm - id_box_x
+        c.setStrokeColor(LABEL_COLOR)
+        c.rect(id_box_x, id_y - 1.5 * mm, id_box_w, box_h, fill=0, stroke=1)
 
-        # Class field
+        # ── Class field ──
+        c.setFillColor(black)
         c.drawString(id_label_x, id_y, "Class:")
-        c.line(id_label_x + 11 * mm, id_y - 0.5 * mm, date_label_x - 5 * mm, id_y - 0.5 * mm)
+        class_box_x = id_label_x + label_offset
+        class_box_w = date_label_x - 5 * mm - class_box_x
+        c.setStrokeColor(LABEL_COLOR)
+        c.rect(class_box_x, id_y - 1.5 * mm, class_box_w, box_h, fill=0, stroke=1)
 
-        # Date field
+        # ── Date field ──
+        c.setFillColor(black)
         c.drawString(date_label_x, id_y, "Date:")
-        c.line(date_label_x + 10 * mm, id_y - 0.5 * mm, field_right, id_y - 0.5 * mm)
+        date_box_x = date_label_x + 10 * mm
+        date_box_w = field_right - date_box_x
+        c.setStrokeColor(LABEL_COLOR)
+        c.rect(date_box_x, id_y - 1.5 * mm, date_box_w, box_h, fill=0, stroke=1)
 
         # ── QR — subtle, inside header right edge ──
         qr_data = f"MARKA|{sheet_id}|Q{self.num_questions}|C{self.num_choices}"
@@ -351,43 +369,42 @@ class OMRGenerator:
         c.restoreState()
 
         # Compute handwriting field bounding boxes (mm, relative to sheet origin)
-        # These let the scanner crop the handwritten text directly from the aligned
-        # image without any OCR — just pixel-perfect coordinate lifting.
+        # These match the exact rect() positions drawn above so the scanner can
+        # crop the handwritten text directly — pixel-perfect coordinate lifting.
         _name_label_x = SHEET_W * 0.35
         _id_label_x = _name_label_x + 40 * mm
         _date_label_x = _id_label_x + 35 * mm
         _field_right = safe_right - QR_SIZE - 2 * mm
         _header_top = SHEET_H - FID_INSET - FID_SIZE - 1 * mm
+        _label_offset = 11 * mm
 
-        # Field value regions start after the label text (e.g. "Name:" + 11mm)
-        # Heights are estimated from the line spacing (each field line is ~5.5mm tall)
-        _field_h = 5.0 * mm  # crop height for a single handwriting line
+        _field_h = 5.0 * mm  # matches box_h in drawing code
 
         _name_y = _header_top - 4.5 * mm   # baseline of Name field
         _id_y   = _header_top - 10 * mm    # baseline of ID / Class / Date row
 
         fields_mm = {
             "name": {
-                "x": round((_name_label_x + 11 * mm) / mm, 2),
-                "y": round((_name_y - 1 * mm) / mm, 2),           # slightly below baseline
-                "w": round((_field_right - _name_label_x - 11 * mm) / mm, 2),
+                "x": round((_name_label_x + _label_offset) / mm, 2),
+                "y": round((_name_y - 1.5 * mm) / mm, 2),
+                "w": round((_field_right - _name_label_x - _label_offset) / mm, 2),
                 "h": round(_field_h / mm, 2),
             },
             "id": {
-                "x": round((_name_label_x + 11 * mm) / mm, 2),
-                "y": round((_id_y - 1 * mm) / mm, 2),
-                "w": round((_id_label_x - 5 * mm - _name_label_x - 11 * mm) / mm, 2),
+                "x": round((_name_label_x + _label_offset) / mm, 2),
+                "y": round((_id_y - 1.5 * mm) / mm, 2),
+                "w": round((_id_label_x - 5 * mm - _name_label_x - _label_offset) / mm, 2),
                 "h": round(_field_h / mm, 2),
             },
             "class": {
-                "x": round((_id_label_x + 11 * mm) / mm, 2),
-                "y": round((_id_y - 1 * mm) / mm, 2),
-                "w": round((_date_label_x - 5 * mm - _id_label_x - 11 * mm) / mm, 2),
+                "x": round((_id_label_x + _label_offset) / mm, 2),
+                "y": round((_id_y - 1.5 * mm) / mm, 2),
+                "w": round((_date_label_x - 5 * mm - _id_label_x - _label_offset) / mm, 2),
                 "h": round(_field_h / mm, 2),
             },
             "date": {
                 "x": round((_date_label_x + 10 * mm) / mm, 2),
-                "y": round((_id_y - 1 * mm) / mm, 2),
+                "y": round((_id_y - 1.5 * mm) / mm, 2),
                 "w": round((_field_right - _date_label_x - 10 * mm) / mm, 2),
                 "h": round(_field_h / mm, 2),
             },
