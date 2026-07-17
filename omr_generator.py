@@ -33,7 +33,7 @@ FID_INSET = 2.5 * mm
 
 # ── Layout zones ──────────────────────────────────────────────────
 
-HEADER_H = 22 * mm     # header band: school branding + student fields
+HEADER_H = 19 * mm     # header band: school branding + compact fields
 FOOTER_H = 10 * mm     # instructions zone
 
 # ── Bubbles ───────────────────────────────────────────────────────
@@ -185,29 +185,29 @@ class OMRGenerator:
         # ══════════════════════════════════════════════════════════
         
         # School logo placeholder (square, dashed border)
-        logo_size = 10 * mm
+        logo_size = 13 * mm
         logo_x = safe_left
-        logo_y = header_top - logo_size - 0.5 * mm
+        logo_y = header_top - logo_size - 1 * mm
         c.setStrokeColor(MUTED_COLOR)
         c.setLineWidth(0.4)
         c.setDash(1.5, 1.5)
         c.rect(logo_x, logo_y, logo_size, logo_size, fill=0, stroke=1)
         c.setDash()
-        c.setFont("Helvetica", 3.5)
+        c.setFont("Helvetica", 4)
         c.setFillColor(MUTED_COLOR)
         c.drawCentredString(logo_x + logo_size / 2, logo_y + logo_size / 2 - 1 * mm, "SCHOOL")
-        c.drawCentredString(logo_x + logo_size / 2, logo_y + logo_size / 2 - 3.5 * mm, "LOGO")
+        c.drawCentredString(logo_x + logo_size / 2, logo_y + logo_size / 2 - 4 * mm, "LOGO")
 
         # School name (large, bold)
-        text_x = logo_x + logo_size + 3 * mm
-        c.setFont("Helvetica-Bold", 8)
+        text_x = logo_x + logo_size + 4 * mm
+        c.setFont("Helvetica-Bold", 10)
         c.setFillColor(LABEL_COLOR)
-        c.drawString(text_x, header_top - 4 * mm, "SCHOOL NAME")
+        c.drawString(text_x, header_top - 5 * mm, "SCHOOL NAME")
 
         # Contact info line (address, phone)
-        c.setFont("Helvetica", 5)
+        c.setFont("Helvetica", 6)
         c.setFillColor(MUTED_COLOR)
-        c.drawString(text_x, header_top - 7.5 * mm, "Address / Contact Info")
+        c.drawString(text_x, header_top - 9 * mm, "Address / Contact Info")
 
         # ── QR — inside header right edge ──
         qr_data = f"MARKA|{sheet_id}|Q{self.num_questions}|C{self.num_choices}"
@@ -218,76 +218,48 @@ class OMRGenerator:
         buf = io.BytesIO()
         img.save(buf, format="PNG")
         buf.seek(0)
-        qr_x = fx2 - QR_SIZE + FID_SIZE
-        qr_y = header_top - QR_SIZE + 1 * mm
+        qr_x = safe_right - QR_SIZE
+        qr_y = header_top - QR_SIZE - 1 * mm
         c.drawImage(ImageReader(buf), qr_x, qr_y, width=QR_SIZE, height=QR_SIZE)
 
         # ══════════════════════════════════════════════════════════
-        # DIVIDER: "ANSWER SHEET" separator between branding and fields
+        # ROW 2: Student Input Fields (compact bounded boxes in ONE ROW)
         # ══════════════════════════════════════════════════════════
-        divider_y = header_top - 12 * mm
-        c.setStrokeColor(DIVIDER_COLOR)
-        c.setLineWidth(0.3)
-        c.line(safe_left, divider_y, safe_right, divider_y)
+        box_h = 3.5 * mm
+        row2_y = header_bot + 1 * mm
         
-        c.setFont("Helvetica-Bold", 5.5)
-        c.setFillColor(LABEL_COLOR)
-        c.drawString(safe_left, divider_y - 3.5 * mm, "ANSWER SHEET")
-
-        c.setFont("Helvetica", 5)
-        c.setFillColor(MUTED_COLOR)
-        c.drawString(safe_left + 22 * mm, divider_y - 3.5 * mm,
-                     f"{self.num_questions}Q × {self.num_choices} Choices ({chr(65)}–{chr(64 + self.num_choices)})")
-
-        # ══════════════════════════════════════════════════════════
-        # ROW 2: Student Input Fields (compact bounded boxes)
-        # ══════════════════════════════════════════════════════════
-        field_right = safe_right - QR_SIZE - 2 * mm
-        name_label_x = safe_left
-        
-        # Compact layout: Name spans full width, then ID | Class | Subject | Date on row 2
-        label_offset = 9 * mm
-        box_h = 3.5 * mm  # Compact — crops tightly onto receipts
-
-        c.setFont("Helvetica", 5)
-        c.setFillColor(black)
-
-        # ── Name field (full width) ──
-        name_y = divider_y - 7.5 * mm
-        c.drawString(name_label_x, name_y + 0.5 * mm, "Name:")
-        name_box_x = name_label_x + label_offset
-        name_box_w = field_right - name_box_x
-        c.setStrokeColor(LABEL_COLOR)
-        c.setLineWidth(0.4)
-        c.rect(name_box_x, name_y - 0.5 * mm, name_box_w, box_h, fill=0, stroke=1)
-
-        # ── Bottom row: ID | Class | Subject | Date ──
-        row2_y = name_y - box_h - 2.5 * mm
-        
-        # Calculate even spacing for 4 fields
-        total_field_w = field_right - name_label_x
-        field_gap = 3 * mm
-        single_field_w = (total_field_w - 3 * field_gap) / 4  # 4 fields, 3 gaps
-        
-        row2_fields = [
-            ("ID No:", 0),
-            ("Class:", 1),
-            ("Subject:", 2),
-            ("Date:", 3),
+        # Define fields and their explicit box widths to fit on one line
+        fields_def = [
+            ("Name:", 50 * mm, "name"),
+            ("ID No:", 22 * mm, "id"),
+            ("Class:", 18 * mm, "class"),
+            ("Subject:", 30 * mm, "subject"),
+            ("Date:", 22 * mm, "date"),
         ]
         
-        for label, idx in row2_fields:
-            fx = name_label_x + idx * (single_field_w + field_gap)
+        # Calculate spacing
+        from reportlab.pdfbase.pdfmetrics import stringWidth
+        total_content_w = 0
+        for label, bw, _ in fields_def:
+            total_content_w += stringWidth(label, "Helvetica", 5) + 1 * mm + bw
+            
+        avail_w = safe_right - safe_left
+        gap = (avail_w - total_content_w) / (len(fields_def) - 1)
+        
+        fx = safe_left
+        for label, bw, key in fields_def:
             c.setFillColor(black)
             c.setFont("Helvetica", 5)
             c.drawString(fx, row2_y + 0.5 * mm, label)
             
-            lbl_w = c.stringWidth(label, "Helvetica", 5) + 1.5 * mm
+            lbl_w = stringWidth(label, "Helvetica", 5) + 1 * mm
             box_x = fx + lbl_w
-            box_w = single_field_w - lbl_w
+            
             c.setStrokeColor(LABEL_COLOR)
             c.setLineWidth(0.4)
-            c.rect(box_x, row2_y - 0.5 * mm, box_w, box_h, fill=0, stroke=1)
+            c.rect(box_x, row2_y - 0.5 * mm, bw, box_h, fill=0, stroke=1)
+            
+            fx += lbl_w + bw + gap
 
         # ── Bubble Grid ──
         grid_top = header_bot - 2.5 * mm
@@ -409,52 +381,45 @@ class OMRGenerator:
         # Compute handwriting field bounding boxes (mm, relative to sheet origin)
         # These match the exact rect() positions drawn above so the scanner can
         # crop the handwritten text directly — pixel-perfect coordinate lifting.
-        _header_top = SHEET_H - FID_INSET - FID_SIZE - 1 * mm
         _safe_left = FID_INSET + FID_SIZE + 3 * mm
         _safe_right = SHEET_W - FID_INSET - FID_SIZE - 2 * mm
-        _field_right = _safe_right - QR_SIZE - 2 * mm
-        _label_offset = 9 * mm
+        _header_top = SHEET_H - FID_INSET - FID_SIZE - 1 * mm
+        _header_bot = _header_top - HEADER_H
+        
         _box_h = 3.5 * mm
-        _divider_y = _header_top - 12 * mm
-
-        # Name field position
-        _name_y = _divider_y - 7.5 * mm
-        _name_box_x = _safe_left + _label_offset
-        _name_box_w = _field_right - _name_box_x
-
-        # Row 2 field positions (evenly spaced)
-        _row2_y = _name_y - _box_h - 2.5 * mm
-        _total_field_w = _field_right - _safe_left
-        _field_gap = 3 * mm
-        _single_field_w = (_total_field_w - 3 * _field_gap) / 4
-
-        # Compute each row2 field box x and w dynamically (matching the drawing loop)
-        _row2_labels = ["ID No:", "Class:", "Subject:", "Date:"]
-        _row2_boxes = {}
-        for idx, label in enumerate(_row2_labels):
-            from reportlab.pdfbase.pdfmetrics import stringWidth
-            fx = _safe_left + idx * (_single_field_w + _field_gap)
-            lbl_w = stringWidth(label, "Helvetica", 5) + 1.5 * mm
-            box_x = fx + lbl_w
-            box_w = _single_field_w - lbl_w
-            key = ["id", "class", "subject", "date"][idx]
-            _row2_boxes[key] = (box_x, box_w)
-
-        fields_mm = {
-            "name": {
-                "x": round(_name_box_x / mm, 2),
-                "y": round((_name_y - 0.5 * mm) / mm, 2),
-                "w": round(_name_box_w / mm, 2),
-                "h": round(_box_h / mm, 2),
-            },
-        }
-        for key, (bx, bw) in _row2_boxes.items():
+        _row2_y = _header_bot + 1 * mm
+        
+        _fields_def = [
+            ("Name:", 50 * mm, "name"),
+            ("ID No:", 22 * mm, "id"),
+            ("Class:", 18 * mm, "class"),
+            ("Subject:", 30 * mm, "subject"),
+            ("Date:", 22 * mm, "date"),
+        ]
+        
+        from reportlab.pdfbase.pdfmetrics import stringWidth
+        _total_content_w = 0
+        for label, bw, _ in _fields_def:
+            _total_content_w += stringWidth(label, "Helvetica", 5) + 1 * mm + bw
+            
+        _avail_w = _safe_right - _safe_left
+        _gap = (_avail_w - _total_content_w) / (len(_fields_def) - 1)
+        
+        _fx = _safe_left
+        fields_mm = {}
+        
+        for label, bw, key in _fields_def:
+            lbl_w = stringWidth(label, "Helvetica", 5) + 1 * mm
+            box_x = _fx + lbl_w
+            
             fields_mm[key] = {
-                "x": round(bx / mm, 2),
+                "x": round(box_x / mm, 2),
                 "y": round((_row2_y - 0.5 * mm) / mm, 2),
                 "w": round(bw / mm, 2),
                 "h": round(_box_h / mm, 2),
             }
+            
+            _fx += lbl_w + bw + _gap
 
         self.sheet_layouts.append({
             "sheet_id": sheet_id,
