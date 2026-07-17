@@ -33,7 +33,7 @@ FID_INSET = 2.5 * mm
 
 # ── Layout zones ──────────────────────────────────────────────────
 
-HEADER_H = 14 * mm     # header band with fields
+HEADER_H = 22 * mm     # header band: school branding + student fields
 FOOTER_H = 10 * mm     # instructions zone
 
 # ── Bubbles ───────────────────────────────────────────────────────
@@ -180,65 +180,36 @@ class OMRGenerator:
         c.setLineWidth(0.6)
         c.line(sx + 1 * mm, header_bot, sx + SHEET_W - 1 * mm, header_bot)
 
-        # "ANSWER SHEET" title — left side, understated
+        # ══════════════════════════════════════════════════════════
+        # ROW 1: School Branding (Logo + Name + Contact Info)
+        # ══════════════════════════════════════════════════════════
+        
+        # School logo placeholder (square, dashed border)
+        logo_size = 10 * mm
+        logo_x = safe_left
+        logo_y = header_top - logo_size - 0.5 * mm
+        c.setStrokeColor(MUTED_COLOR)
+        c.setLineWidth(0.4)
+        c.setDash(1.5, 1.5)
+        c.rect(logo_x, logo_y, logo_size, logo_size, fill=0, stroke=1)
+        c.setDash()
+        c.setFont("Helvetica", 3.5)
+        c.setFillColor(MUTED_COLOR)
+        c.drawCentredString(logo_x + logo_size / 2, logo_y + logo_size / 2 - 1 * mm, "SCHOOL")
+        c.drawCentredString(logo_x + logo_size / 2, logo_y + logo_size / 2 - 3.5 * mm, "LOGO")
+
+        # School name (large, bold)
+        text_x = logo_x + logo_size + 3 * mm
         c.setFont("Helvetica-Bold", 8)
         c.setFillColor(LABEL_COLOR)
-        c.drawString(safe_left, header_top - 5 * mm, "ANSWER SHEET")
+        c.drawString(text_x, header_top - 4 * mm, "SCHOOL NAME")
 
-        # Total questions badge
-        c.setFont("Helvetica", 5.5)
+        # Contact info line (address, phone)
+        c.setFont("Helvetica", 5)
         c.setFillColor(MUTED_COLOR)
-        c.drawString(safe_left, header_top - 9.5 * mm,
-                     f"{self.num_questions} Questions  •  {self.num_choices} Choices ({chr(65)}–{chr(64 + self.num_choices)})")
+        c.drawString(text_x, header_top - 7.5 * mm, "Address / Contact Info")
 
-        # Name / ID fields — bounded boxes so handwriting stays contained
-        field_right = safe_right - QR_SIZE - 2 * mm
-        name_label_x = sx + SHEET_W * 0.35
-        id_label_x = name_label_x + 40 * mm
-        date_label_x = id_label_x + 35 * mm
-
-        c.setFont("Helvetica", 6)
-        c.setFillColor(black)
-
-        # Shared box dimensions
-        box_h = 5.0 * mm   # height of each input box
-        label_offset = 11 * mm  # space after label text
-
-        # ── Name field (full width top row) ──
-        name_y = header_top - 4.5 * mm
-        c.drawString(name_label_x, name_y, "Name:")
-        name_box_x = name_label_x + label_offset
-        name_box_w = field_right - name_box_x
-        c.setStrokeColor(LABEL_COLOR)
-        c.setLineWidth(0.5)
-        c.rect(name_box_x, name_y - 1.5 * mm, name_box_w, box_h, fill=0, stroke=1)
-
-        # ── ID field ──
-        id_y = header_top - 10 * mm
-        c.setFillColor(black)
-        c.drawString(name_label_x, id_y, "ID No:")
-        id_box_x = name_label_x + label_offset
-        id_box_w = id_label_x - 5 * mm - id_box_x
-        c.setStrokeColor(LABEL_COLOR)
-        c.rect(id_box_x, id_y - 1.5 * mm, id_box_w, box_h, fill=0, stroke=1)
-
-        # ── Class field ──
-        c.setFillColor(black)
-        c.drawString(id_label_x, id_y, "Class:")
-        class_box_x = id_label_x + label_offset
-        class_box_w = date_label_x - 5 * mm - class_box_x
-        c.setStrokeColor(LABEL_COLOR)
-        c.rect(class_box_x, id_y - 1.5 * mm, class_box_w, box_h, fill=0, stroke=1)
-
-        # ── Date field ──
-        c.setFillColor(black)
-        c.drawString(date_label_x, id_y, "Date:")
-        date_box_x = date_label_x + 10 * mm
-        date_box_w = field_right - date_box_x
-        c.setStrokeColor(LABEL_COLOR)
-        c.rect(date_box_x, id_y - 1.5 * mm, date_box_w, box_h, fill=0, stroke=1)
-
-        # ── QR — subtle, inside header right edge ──
+        # ── QR — inside header right edge ──
         qr_data = f"MARKA|{sheet_id}|Q{self.num_questions}|C{self.num_choices}"
         qr = qrcode.QRCode(version=1, box_size=8, border=1)
         qr.add_data(qr_data)
@@ -250,6 +221,73 @@ class OMRGenerator:
         qr_x = fx2 - QR_SIZE + FID_SIZE
         qr_y = header_top - QR_SIZE + 1 * mm
         c.drawImage(ImageReader(buf), qr_x, qr_y, width=QR_SIZE, height=QR_SIZE)
+
+        # ══════════════════════════════════════════════════════════
+        # DIVIDER: "ANSWER SHEET" separator between branding and fields
+        # ══════════════════════════════════════════════════════════
+        divider_y = header_top - 12 * mm
+        c.setStrokeColor(DIVIDER_COLOR)
+        c.setLineWidth(0.3)
+        c.line(safe_left, divider_y, safe_right, divider_y)
+        
+        c.setFont("Helvetica-Bold", 5.5)
+        c.setFillColor(LABEL_COLOR)
+        c.drawString(safe_left, divider_y - 3.5 * mm, "ANSWER SHEET")
+
+        c.setFont("Helvetica", 5)
+        c.setFillColor(MUTED_COLOR)
+        c.drawString(safe_left + 22 * mm, divider_y - 3.5 * mm,
+                     f"{self.num_questions}Q × {self.num_choices} Choices ({chr(65)}–{chr(64 + self.num_choices)})")
+
+        # ══════════════════════════════════════════════════════════
+        # ROW 2: Student Input Fields (compact bounded boxes)
+        # ══════════════════════════════════════════════════════════
+        field_right = safe_right - QR_SIZE - 2 * mm
+        name_label_x = safe_left
+        
+        # Compact layout: Name spans full width, then ID | Class | Subject | Date on row 2
+        label_offset = 9 * mm
+        box_h = 3.5 * mm  # Compact — crops tightly onto receipts
+
+        c.setFont("Helvetica", 5)
+        c.setFillColor(black)
+
+        # ── Name field (full width) ──
+        name_y = divider_y - 7.5 * mm
+        c.drawString(name_label_x, name_y + 0.5 * mm, "Name:")
+        name_box_x = name_label_x + label_offset
+        name_box_w = field_right - name_box_x
+        c.setStrokeColor(LABEL_COLOR)
+        c.setLineWidth(0.4)
+        c.rect(name_box_x, name_y - 0.5 * mm, name_box_w, box_h, fill=0, stroke=1)
+
+        # ── Bottom row: ID | Class | Subject | Date ──
+        row2_y = name_y - box_h - 2.5 * mm
+        
+        # Calculate even spacing for 4 fields
+        total_field_w = field_right - name_label_x
+        field_gap = 3 * mm
+        single_field_w = (total_field_w - 3 * field_gap) / 4  # 4 fields, 3 gaps
+        
+        row2_fields = [
+            ("ID No:", 0),
+            ("Class:", 1),
+            ("Subject:", 2),
+            ("Date:", 3),
+        ]
+        
+        for label, idx in row2_fields:
+            fx = name_label_x + idx * (single_field_w + field_gap)
+            c.setFillColor(black)
+            c.setFont("Helvetica", 5)
+            c.drawString(fx, row2_y + 0.5 * mm, label)
+            
+            lbl_w = c.stringWidth(label, "Helvetica", 5) + 1.5 * mm
+            box_x = fx + lbl_w
+            box_w = single_field_w - lbl_w
+            c.setStrokeColor(LABEL_COLOR)
+            c.setLineWidth(0.4)
+            c.rect(box_x, row2_y - 0.5 * mm, box_w, box_h, fill=0, stroke=1)
 
         # ── Bubble Grid ──
         grid_top = header_bot - 2.5 * mm
@@ -371,44 +409,52 @@ class OMRGenerator:
         # Compute handwriting field bounding boxes (mm, relative to sheet origin)
         # These match the exact rect() positions drawn above so the scanner can
         # crop the handwritten text directly — pixel-perfect coordinate lifting.
-        _name_label_x = SHEET_W * 0.35
-        _id_label_x = _name_label_x + 40 * mm
-        _date_label_x = _id_label_x + 35 * mm
-        _field_right = safe_right - QR_SIZE - 2 * mm
         _header_top = SHEET_H - FID_INSET - FID_SIZE - 1 * mm
-        _label_offset = 11 * mm
+        _safe_left = FID_INSET + FID_SIZE + 3 * mm
+        _safe_right = SHEET_W - FID_INSET - FID_SIZE - 2 * mm
+        _field_right = _safe_right - QR_SIZE - 2 * mm
+        _label_offset = 9 * mm
+        _box_h = 3.5 * mm
+        _divider_y = _header_top - 12 * mm
 
-        _field_h = 5.0 * mm  # matches box_h in drawing code
+        # Name field position
+        _name_y = _divider_y - 7.5 * mm
+        _name_box_x = _safe_left + _label_offset
+        _name_box_w = _field_right - _name_box_x
 
-        _name_y = _header_top - 4.5 * mm   # baseline of Name field
-        _id_y   = _header_top - 10 * mm    # baseline of ID / Class / Date row
+        # Row 2 field positions (evenly spaced)
+        _row2_y = _name_y - _box_h - 2.5 * mm
+        _total_field_w = _field_right - _safe_left
+        _field_gap = 3 * mm
+        _single_field_w = (_total_field_w - 3 * _field_gap) / 4
+
+        # Compute each row2 field box x and w dynamically (matching the drawing loop)
+        _row2_labels = ["ID No:", "Class:", "Subject:", "Date:"]
+        _row2_boxes = {}
+        for idx, label in enumerate(_row2_labels):
+            from reportlab.pdfbase.pdfmetrics import stringWidth
+            fx = _safe_left + idx * (_single_field_w + _field_gap)
+            lbl_w = stringWidth(label, "Helvetica", 5) + 1.5 * mm
+            box_x = fx + lbl_w
+            box_w = _single_field_w - lbl_w
+            key = ["id", "class", "subject", "date"][idx]
+            _row2_boxes[key] = (box_x, box_w)
 
         fields_mm = {
             "name": {
-                "x": round((_name_label_x + _label_offset) / mm, 2),
-                "y": round((_name_y - 1.5 * mm) / mm, 2),
-                "w": round((_field_right - _name_label_x - _label_offset) / mm, 2),
-                "h": round(_field_h / mm, 2),
-            },
-            "id": {
-                "x": round((_name_label_x + _label_offset) / mm, 2),
-                "y": round((_id_y - 1.5 * mm) / mm, 2),
-                "w": round((_id_label_x - 5 * mm - _name_label_x - _label_offset) / mm, 2),
-                "h": round(_field_h / mm, 2),
-            },
-            "class": {
-                "x": round((_id_label_x + _label_offset) / mm, 2),
-                "y": round((_id_y - 1.5 * mm) / mm, 2),
-                "w": round((_date_label_x - 5 * mm - _id_label_x - _label_offset) / mm, 2),
-                "h": round(_field_h / mm, 2),
-            },
-            "date": {
-                "x": round((_date_label_x + 10 * mm) / mm, 2),
-                "y": round((_id_y - 1.5 * mm) / mm, 2),
-                "w": round((_field_right - _date_label_x - 10 * mm) / mm, 2),
-                "h": round(_field_h / mm, 2),
+                "x": round(_name_box_x / mm, 2),
+                "y": round((_name_y - 0.5 * mm) / mm, 2),
+                "w": round(_name_box_w / mm, 2),
+                "h": round(_box_h / mm, 2),
             },
         }
+        for key, (bx, bw) in _row2_boxes.items():
+            fields_mm[key] = {
+                "x": round(bx / mm, 2),
+                "y": round((_row2_y - 0.5 * mm) / mm, 2),
+                "w": round(bw / mm, 2),
+                "h": round(_box_h / mm, 2),
+            }
 
         self.sheet_layouts.append({
             "sheet_id": sheet_id,

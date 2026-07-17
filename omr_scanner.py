@@ -501,11 +501,11 @@ def extract_fields(image_path, layout_data_or_path, output_dir=None):
     
     result = {
         "name_img": None, "id_img": None,
-        "class_img": None, "date_img": None,
+        "class_img": None, "subject_img": None, "date_img": None,
         "fields_b64": {}
     }
     
-    for field_name in ["name", "id", "class", "date"]:
+    for field_name in ["name", "id", "class", "subject", "date"]:
         if field_name not in fields_mm:
             continue
         
