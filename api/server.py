@@ -17,7 +17,7 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 sys.path.insert(0, os.path.dirname(__file__))
 
-from fastapi import FastAPI, HTTPException, BackgroundTasks, Request, Header, Depends
+from fastapi import FastAPI, HTTPException, BackgroundTasks, Request, Header, Depends, Response
 from fastapi.security import OAuth2PasswordBearer
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
@@ -43,7 +43,6 @@ import queue
 import threading
 import hmac
 import hashlib
-import zipfile
 import csv
 import io
 import cv2
@@ -656,79 +655,107 @@ def trigger_process_scan(request: Request, req: ProcessScanRequest, user_id: str
     }
 
 
-@app.get("/export/{exam_code}")
-@limiter.limit("10/second")
-def export_results(request: Request, exam_code: str, user_id: str = Depends(get_current_user)):
-    """Generates a CSV and ZIP of graded images, uploads to exports bucket, returns signed URL."""
+def _fetch_export_scans(user_id: str, exam_code: str):
+    """Shared by the CSV and PDF exports: return (code, scans, answer_key) for
+    this user's successful scans, scoped to the exam when an exam row exists."""
     if not supabase:
         raise HTTPException(500, "Supabase not configured")
 
-    # Fetch this user's successful scans. If they have an exam row for this
-    # exam_code, scope the export to that exam via exam_id.
     code = (exam_code or "").strip().upper()
     query = supabase.table("scans").select("*").eq("user_id", user_id).eq("status", "success")
-    exam_res = supabase.table("exams").select("id").eq("user_id", user_id).eq("exam_code", code).execute()
+    exam_res = supabase.table("exams").select("id, answer_key").eq(
+        "user_id", user_id).eq("exam_code", code).execute()
+    answer_key = {}
     if exam_res.data:
         query = query.eq("exam_id", exam_res.data[0]["id"])
+        answer_key = exam_res.data[0].get("answer_key") or {}
     res = query.execute()
     if not res.data:
         raise HTTPException(404, "No successful scans found to export.")
+    return code, res.data, answer_key
 
-    scans = res.data
 
-    # Generate CSV
-    csv_io = io.StringIO()
-    writer = csv.writer(csv_io)
-    
+def _missed_answers(marks: dict, answer_key: dict) -> dict:
+    """Questions the student did NOT get right, mapped to the correct answer.
+    Mirrors grade_and_render's rules: "A" single, ["A","C"] any-accepted, "*"
+    bonus (never missed). A blank/None student answer counts as missed."""
+    missed = {}
+    for q, correct in (answer_key or {}).items():
+        if correct == "*" or correct == ["*"]:
+            continue  # bonus — cannot be missed
+        accepted = {str(c).strip().upper() for c in (correct if isinstance(correct, list) else [correct])}
+        student = marks.get(str(q))
+        if student not in accepted:
+            missed[str(q)] = sorted(accepted)[0] if accepted else "?"
+    return missed
+
+
+@app.get("/export/{exam_code}/csv")
+@limiter.limit("10/second")
+def export_results_csv(request: Request, exam_code: str, user_id: str = Depends(get_current_user)):
+    """Download the results as a single CSV (one row per scan, per-question marks)."""
+    code, scans, _ = _fetch_export_scans(user_id, exam_code)
+
     all_questions = set()
     for s in scans:
-        marks = s.get("raw_marks", {}).get("marks", {})
-        if marks:
-            all_questions.update(marks.keys())
-            
-    q_keys = sorted(list(all_questions), key=lambda x: int(x) if str(x).isdigit() else x)
-    header = ["Scan ID", "Score", "Total", "Percentage"] + [f"Q{k}" for k in q_keys]
-    writer.writerow(header)
-    
+        marks = (s.get("raw_marks") or {}).get("marks", {})
+        all_questions.update(marks.keys())
+
+    q_keys = sorted(all_questions, key=lambda x: int(x) if str(x).isdigit() else x)
+
+    csv_io = io.StringIO()
+    writer = csv.writer(csv_io)
+    writer.writerow(["Scan ID", "Score", "Total", "Percentage"] + [f"Q{k}" for k in q_keys])
     for s in scans:
-        row = [s["scan_id"], s["score"], s["total"], s["percentage"]]
-        marks = s.get("raw_marks", {}).get("marks", {})
-        for k in q_keys:
-            row.append(marks.get(str(k), ""))
-        writer.writerow(row)
+        marks = (s.get("raw_marks") or {}).get("marks", {})
+        writer.writerow(
+            [s["scan_id"], s["score"], s["total"], s["percentage"]]
+            + [marks.get(str(k), "") for k in q_keys]
+        )
 
-    csv_content = csv_io.getvalue()
+    return Response(
+        content=csv_io.getvalue(),
+        media_type="text/csv",
+        headers={"Content-Disposition": f'attachment; filename="{code}_results.csv"'},
+    )
 
-    # Create ZIP
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".zip") as tmp_zip:
-        zip_path = tmp_zip.name
-    
-    with zipfile.ZipFile(zip_path, 'w') as zipf:
-        zipf.writestr(f"{exam_code}_results.csv", csv_content)
-        
-        for s in scans:
-            img_path = s.get("graded_image_path")
-            if img_path:
-                try:
-                    img_bytes = supabase.storage.from_("graded_images").download(img_path)
-                    zipf.writestr(f"images/{s['scan_id']}_graded.webp", img_bytes)
-                except Exception as e:
-                    print(f"Failed to zip image {img_path}: {e}")
 
-    # Upload ZIP to exports bucket
-    export_path = f"{user_id}/{exam_code}_{int(time.time())}.zip"
+@app.get("/export/{exam_code}/pdf")
+@limiter.limit("10/second")
+def export_results_pdf(request: Request, exam_code: str, user_id: str = Depends(get_current_user)):
+    """Download printable assessment receipts (one slip per scan: score + the
+    corrections the student needs). Replaces the old graded-image ZIP."""
+    from receipt_generator import generate_receipts_pdf
+
+    code, scans, answer_key = _fetch_export_scans(user_id, exam_code)
+
+    results_list = []
+    for s in scans:
+        marks = (s.get("raw_marks") or {}).get("marks", {})
+        results_list.append({
+            "subject": code,
+            "student_name": s["scan_id"],
+            "score": s.get("score") or 0,
+            "total": s.get("total") or 0,
+            "missed": _missed_answers(marks, answer_key),
+            "receipt_id": s["scan_id"],
+        })
+
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp_pdf:
+        pdf_path = tmp_pdf.name
     try:
-        with open(zip_path, "rb") as f:
-            supabase.storage.from_("exports").upload(export_path, f, {"content-type": "application/zip"})
-    except Exception as e:
-        os.unlink(zip_path)
-        raise HTTPException(500, f"Failed to upload export: {e}")
+        generate_receipts_pdf(results_list, pdf_path)
+        with open(pdf_path, "rb") as f:
+            pdf_bytes = f.read()
+    finally:
+        if os.path.exists(pdf_path):
+            os.unlink(pdf_path)
 
-    os.unlink(zip_path)
-
-    # Return signed URL (valid 1 hour)
-    url_res = supabase.storage.from_("exports").create_signed_url(export_path, 3600)
-    return {"export_url": url_res['signedURL']}
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f'attachment; filename="{code}_receipts.pdf"'},
+    )
 
 
 # ── Retention: 7-day image wipe ───────────────────────────────────

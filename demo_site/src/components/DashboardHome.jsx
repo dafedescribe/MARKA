@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { Coins, HardDrive, PlusCircle, History, ClipboardList, Download, Eye } from 'lucide-react';
+import { Coins, HardDrive, PlusCircle, History, ClipboardList, Download, Eye, FileText } from 'lucide-react';
 
 export default function DashboardHome({ credits, scans, exams, setExamCode, setCurrentView, handleExport, setQuestionsCount, setAnswerKey, setNewExamCode, handleWipeAllRaw }) {
   return (
@@ -81,7 +81,8 @@ export default function DashboardHome({ credits, scans, exams, setExamCode, setC
                     <td className="py-4 text-right space-x-2">
                       <button onClick={() => { setExamCode(ex.exam_code); setCurrentView("upload"); }} className="px-3 py-1.5 bg-purple-50 hover:bg-purple-100 text-[#3B0042] font-bold rounded-lg transition-all">Scan Papers</button>
                       <button onClick={() => { setQuestionsCount(ex.num_questions); setAnswerKey(ex.answer_key || {}); setNewExamCode(ex.exam_code); setCurrentView("builder"); }} className="px-2.5 py-1.5 border border-gray-200 hover:bg-purple-50 hover:border-purple-200 hover:text-purple-700 text-gray-500 rounded-lg transition-all" title="View / Edit Key"><Eye className="w-3.5 h-3.5" /></button>
-                      <button onClick={() => handleExport(ex.exam_code)} className="px-2.5 py-1.5 border border-gray-200 hover:bg-gray-50 text-gray-500 rounded-lg transition-all" title="Download CSV"><Download className="w-3.5 h-3.5" /></button>
+                      <button onClick={() => handleExport(ex.exam_code, "csv")} className="px-2.5 py-1.5 border border-gray-200 hover:bg-gray-50 text-gray-500 rounded-lg transition-all inline-flex items-center gap-1 text-xs font-bold" title="Export results as CSV"><Download className="w-3.5 h-3.5" /> CSV</button>
+                      <button onClick={() => handleExport(ex.exam_code, "pdf")} className="px-2.5 py-1.5 border border-gray-200 hover:bg-purple-50 hover:border-purple-200 hover:text-purple-700 text-gray-500 rounded-lg transition-all inline-flex items-center gap-1 text-xs font-bold" title="Export assessment receipts as PDF"><FileText className="w-3.5 h-3.5" /> PDF</button>
                     </td>
                   </tr>
                 ))}

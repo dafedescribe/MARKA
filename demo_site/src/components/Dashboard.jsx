@@ -511,14 +511,25 @@ export default function Dashboard({ token, onLogout }) {
     setCurrentView('gallery');
   };
 
-  const handleExport = async (exportExamCode) => {
+  const handleExport = async (exportExamCode, format = "csv") => {
     try {
-      const res = await fetch(`${API_URL}/export/${exportExamCode}`, {
+      const res = await fetch(`${API_URL}/export/${exportExamCode}/${format}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
-      if (!res.ok) throw new Error("Failed to export");
-      const { export_url } = await res.json();
-      window.location.href = export_url;
+      if (!res.ok) {
+        let msg = "Failed to export";
+        try { msg = (await res.json()).detail || msg; } catch { /* non-JSON */ }
+        throw new Error(msg);
+      }
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${exportExamCode}_${format === "pdf" ? "receipts.pdf" : "results.csv"}`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
     } catch (e) {
       alert(e.message);
     }
