@@ -203,10 +203,10 @@ export default function Landing({ onGetStarted }) {
 
             <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
               {[
-                { count: 100, price: "₦5,000", desc: "For quick assessments" },
-                { count: 250, price: "₦11,250", desc: "Best for regular testing" },
-                { count: 500, price: "₦20,000", desc: "Perfect for organizations" },
-                { count: 1000, price: "₦35,000", desc: "For mass screening & exams" }
+                { name: "Starter", count: 50, price: "₦500", desc: "For quick assessments" },
+                { name: "Growth", count: 1000, price: "₦5,000", desc: "Best for regular testing" },
+                { name: "Pro", count: 3000, price: "₦12,500", desc: "Perfect for organizations" },
+                { name: "Enterprise", count: 10000, price: "₦25,000", desc: "For mass screening & exams" }
               ].map((p, idx) => (
                 <div
                   key={idx}
@@ -219,7 +219,7 @@ export default function Landing({ onGetStarted }) {
                   )}
                   <div className="space-y-4 mt-2">
                     <span className="text-xs font-bold text-gray-400 uppercase tracking-widest block">
-                      PACKAGE
+                      {p.name}
                     </span>
                     <h3 className="text-3xl font-black text-purple-950">{p.count} Credits</h3>
                     <p className="text-xs text-gray-400 leading-snug">{p.desc}</p>
@@ -235,7 +235,7 @@ export default function Landing({ onGetStarted }) {
               ))}
             </div>
             <p className="text-center text-sm font-semibold text-gray-500">
-              Need 5,000+ credits? <a href="mailto:hello@marka.com.ng" className="text-[#3B0042] hover:underline">Contact us for Enterprise pricing.</a>
+              Need more than 10,000 credits? <a href="mailto:hello@marka.com.ng" className="text-[#3B0042] hover:underline">Contact us for custom pricing.</a>
             </p>
           </div>
 

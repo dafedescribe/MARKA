@@ -216,7 +216,7 @@ app.post("/api/register-credits", (req, res) => {
   const { markaId, creditsPackage } = req.body;
   const creditsToAdd = parseInt(creditsPackage, 10);
 
-  if (isNaN(creditsToAdd) || ![100, 250, 500, 1000].includes(creditsToAdd)) {
+  if (isNaN(creditsToAdd) || ![50, 1000, 3000, 10000].includes(creditsToAdd)) {
     return res.status(400).json({ error: "Invalid credits package selector." });
   }
 
