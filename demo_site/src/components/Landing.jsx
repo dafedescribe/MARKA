@@ -203,10 +203,10 @@ export default function Landing({ onGetStarted }) {
 
             <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
               {[
-                { name: "Starter", count: 50, price: "₦500", desc: "For quick assessments" },
-                { name: "Growth", count: 1000, price: "₦5,000", desc: "Best for regular testing" },
-                { name: "Pro", count: 3000, price: "₦12,500", desc: "Perfect for organizations" },
-                { name: "Enterprise", count: 10000, price: "₦25,000", desc: "For mass screening & exams" }
+                { count: 50, price: "₦500", desc: "For quick assessments" },
+                { count: 1000, price: "₦5,000", desc: "Best for regular testing" },
+                { count: 3000, price: "₦12,500", desc: "Perfect for organizations" },
+                { count: 10000, price: "₦25,000", desc: "For mass screening & exams" }
               ].map((p, idx) => (
                 <div
                   key={idx}
@@ -219,11 +219,11 @@ export default function Landing({ onGetStarted }) {
                   )}
                   <div className="space-y-4 mt-2">
                     <span className="text-xs font-bold text-gray-400 uppercase tracking-widest block">
-                      {p.name}
+                      PACKAGE
                     </span>
-                    <h3 className="text-3xl font-black text-purple-950">{p.count} Credits</h3>
+                    <h3 className="text-3xl font-black text-purple-950">{p.price}</h3>
+                    <p className="text-sm font-bold text-gray-700">{p.count.toLocaleString()} Credits</p>
                     <p className="text-xs text-gray-400 leading-snug">{p.desc}</p>
-                    <div className="text-2xl font-black text-gray-900 py-2">{p.price}</div>
                   </div>
                   <button
                     onClick={() => onGetStarted('buy')}

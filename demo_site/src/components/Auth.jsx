@@ -8,7 +8,7 @@ export default function Auth({ onLogin, initialTab = 'login' }) {
   const [markaId, setMarkaId] = useState('');
   const [pin, setPin] = useState('');
   const [email, setEmail] = useState('');
-  const [amount, setAmount] = useState(500); // Naira; matches the Starter pack
+  const [amount, setAmount] = useState(500); // Naira; default credit pack
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [successData, setSuccessData] = useState(null);
@@ -391,10 +391,10 @@ export default function Auth({ onLogin, initialTab = 'login' }) {
                     </label>
                     <div className="grid grid-cols-2 gap-3">
                       {[
-                        { label: 'Starter', price: 500, credits: 50 },
-                        { label: 'Growth', price: 5000, credits: 1000 },
-                        { label: 'Pro', price: 12500, credits: 3000 },
-                        { label: 'Enterprise', price: 25000, credits: 10000 }
+                        { price: 500, credits: 50 },
+                        { price: 5000, credits: 1000 },
+                        { price: 12500, credits: 3000 },
+                        { price: 25000, credits: 10000 }
                       ].map((pkg) => (
                         <div
                           key={pkg.price}
@@ -405,12 +405,9 @@ export default function Auth({ onLogin, initialTab = 'login' }) {
                               : "border-gray-200 hover:border-gray-300"
                           }`}
                         >
-                          <span className="block text-base font-black">{pkg.credits}</span>
+                          <span className="block text-base font-black">₦{pkg.price.toLocaleString()}</span>
                           <span className="block text-[10px] text-gray-400 font-bold uppercase mt-0.5">
-                            {pkg.label}
-                          </span>
-                          <span className="block text-[10px] text-gray-400 font-bold uppercase mt-0.5">
-                            ₦{pkg.price.toLocaleString()}
+                            {pkg.credits.toLocaleString()} Credits
                           </span>
                         </div>
                       ))}
