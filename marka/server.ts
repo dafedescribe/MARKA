@@ -31,8 +31,8 @@ function initDb() {
   const defaultDb = {
     users: [
       {
-        markaId: "MARKA-DEMO",
-        pin: "1234",
+        markaId: "DEMO-TEST",
+        pin: "0000",
         credits: 382,
         createdAt: "2026-07-10T12:00:00Z"
       }

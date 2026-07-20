@@ -193,9 +193,9 @@ export default function LandingPage({
       {serverStatus === "checking" && (
         <div className="fixed inset-0 bg-[#3B0042]/95 flex flex-col items-center justify-center z-50 p-6 text-white">
           <Loader2 className="w-12 h-12 animate-spin text-purple-200 mb-4" />
-          <h2 className="text-xl font-bold tracking-tight">Starting MARKA Server...</h2>
+          <h2 className="text-xl font-bold tracking-tight">Starting MARKA...</h2>
           <p className="text-sm text-purple-200/80 mt-2 max-w-sm text-center">
-            Establishing server environment. This usually takes less than a minute. Please stand by.
+            Waking up the server. This usually takes less than a minute.
           </p>
         </div>
       )}
@@ -213,7 +213,7 @@ export default function LandingPage({
             <div>
               <span className="text-xl font-black text-[#3B0042] tracking-wider">MARKA</span>
               <span className="block text-[9px] font-bold text-gray-400 tracking-widest uppercase font-mono">
-                OMR Grading Scanner
+                Exam Grading Software
               </span>
             </div>
           </div>
@@ -240,7 +240,7 @@ export default function LandingPage({
                 activeTab === "demo" ? "text-[#3B0042]" : "text-gray-500 hover:text-[#3B0042]"
               }`}
             >
-              Demo Credentials
+              Try Free Demo
             </button>
             <a
               href="#faq-section"
@@ -284,19 +284,16 @@ export default function LandingPage({
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
                 <div className="lg:col-span-7 space-y-8 pr-4">
                   <div className="inline-flex items-center gap-2 bg-purple-50 border border-purple-100 text-[#3B0042] px-4 py-1.5 rounded-full text-xs font-bold tracking-wide uppercase">
-                    <Sparkles className="w-3.5 h-3.5 text-amber-500 animate-spin" />
-                    First-of-its-kind Instant OMR Scanner
+                    A Paperworked product
                   </div>
                   <h1 className="text-4xl md:text-6xl font-black text-gray-900 leading-tight tracking-tight">
-                    Stop Marking <br />
+                    Stop grading <br />
                     <span className="text-[#3B0042] underline decoration-amber-400 decoration-wavy">
-                      Objective Exams
-                    </span>{" "}
-                    Manually.
+                      by hand.
+                    </span>
                   </h1>
                   <p className="text-lg md:text-xl text-gray-500 leading-relaxed max-w-2xl">
-                    Deploy MARKA in your school. Upload a batch of up to 50 scanned student sheets,
-                    and watch them grade in seconds. Credits are deducted only on success.
+                    Snap a photo of printed exam papers. Get instant scores, student results, and spreadsheets. No special scanner needed — just your phone.
                   </p>
                   <div className="flex flex-wrap gap-4 pt-2">
                     <button
@@ -320,19 +317,19 @@ export default function LandingPage({
                   <div className="relative z-10 space-y-6">
                     <div className="flex justify-between items-center pb-4 border-b border-gray-100">
                       <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">
-                        Live Preview Engine
+                        Sample Result
                       </span>
                       <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600 text-[10px] font-bold">
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                        Ready to scan
+                        Graded in 2 sec
                       </span>
                     </div>
 
                     {/* Simple Vector OMR Mockup inside card */}
                     <div className="space-y-4 p-4 bg-gray-50 rounded-xl border border-gray-100 font-mono text-xs">
                       <div className="flex justify-between font-bold border-b pb-2 text-purple-950">
-                        <span>OMR CARD #01</span>
-                        <span>CONFIDENCE 99%</span>
+                        <span>STUDENT CARD #01</span>
+                        <span>READY TO EXPORT</span>
                       </div>
                       <div className="space-y-2">
                         <div className="flex justify-between">
@@ -352,7 +349,7 @@ export default function LandingPage({
 
                     <div className="text-center p-3 bg-purple-50/50 rounded-xl">
                       <span className="text-xs font-semibold text-[#3B0042]">
-                        Try the instant live grading with our Demo credentials
+                        Print → Snap with phone → Scores, results & spreadsheets
                       </span>
                     </div>
                   </div>
@@ -364,7 +361,7 @@ export default function LandingPage({
                 <div className="text-center space-y-4">
                   <h2 className="text-3xl font-black text-gray-900">How It Works</h2>
                   <p className="text-gray-500 max-w-lg mx-auto">
-                    Three incredibly obvious steps. No manual or registration required.
+                    Three simple steps. No training required.
                   </p>
                 </div>
 
@@ -373,9 +370,9 @@ export default function LandingPage({
                     <div className="w-14 h-14 rounded-full bg-purple-50 text-[#3B0042] flex items-center justify-center mx-auto text-2xl font-bold">
                       1
                     </div>
-                    <h3 className="text-lg font-bold text-gray-900">Print Sheets</h3>
+                    <h3 className="text-lg font-bold text-gray-900">Print on Any A4 Paper</h3>
                     <p className="text-sm text-gray-500 leading-relaxed">
-                      Download and print our standard OMR bubble templates for your students.
+                      Download free answer sheets and print them on normal paper. No special supplies needed.
                     </p>
                   </div>
 
@@ -383,9 +380,9 @@ export default function LandingPage({
                     <div className="w-14 h-14 rounded-full bg-purple-50 text-[#3B0042] flex items-center justify-center mx-auto text-2xl font-bold">
                       2
                     </div>
-                    <h3 className="text-lg font-bold text-gray-900">Upload Photos</h3>
+                    <h3 className="text-lg font-bold text-gray-900">Snap With Your Phone</h3>
                     <p className="text-sm text-gray-500 leading-relaxed">
-                      Snap pictures of the sheets with your mobile phone or scan them in batches.
+                      After the exam, take a photo of each completed sheet. No scanner. No special app.
                     </p>
                   </div>
 
@@ -393,10 +390,36 @@ export default function LandingPage({
                     <div className="w-14 h-14 rounded-full bg-purple-50 text-[#3B0042] flex items-center justify-center mx-auto text-2xl font-bold">
                       3
                     </div>
-                    <h3 className="text-lg font-bold text-gray-900">Get Results</h3>
+                    <h3 className="text-lg font-bold text-gray-900">Get Results Instantly</h3>
                     <p className="text-sm text-gray-500 leading-relaxed">
-                      Instantly download individual scores, visual diagnostic analytics, or CSV exports.
+                      Download scores, student results, and spreadsheets ready for your records.
                     </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Built by Paperworked */}
+              <div className="bg-white border border-gray-100 rounded-2xl p-8 md:p-10 shadow-sm">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                  <div className="lg:col-span-5 space-y-3">
+                    <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">
+                      By Paperworked
+                    </span>
+                    <h2 className="text-2xl md:text-3xl font-black text-gray-900">
+                      Keep the paper. Lose the manual work.
+                    </h2>
+                  </div>
+                  <div className="lg:col-span-7 space-y-5">
+                    <p className="text-sm md:text-base text-gray-500 leading-relaxed">
+                      MARKA is built by Paperworked — a company that creates software for organisations that still rely on paper. We believe you shouldn't have to change the way you work to get the benefits of digital tools. Paper stays. The tedious parts disappear.
+                    </p>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
+                      {["Print exams", "Snap with phone", "Instant scores", "Export reports"].map((item) => (
+                        <div key={item} className="rounded-xl border border-gray-100 bg-gray-50 px-3 py-4 text-xs font-bold text-gray-600 uppercase tracking-wide">
+                          {item}
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -407,20 +430,18 @@ export default function LandingPage({
                 <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                   <div className="space-y-6">
                     <span className="text-xs font-bold text-amber-400 tracking-widest uppercase">
-                      PILOT SCHOOLS FEEDBACK
+                      What Schools Are Saying
                     </span>
                     <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight leading-tight">
-                      Trusted by 45+ schools during our private beta
+                      Teachers are saving hours every exam season
                     </h2>
                     <p className="text-purple-100 leading-relaxed">
-                      Teachers reported saving over 6 hours per exam batch, eliminating fatigue, and
-                      focusing more time on student interventions.
+                      Schools using MARKA report faster result delivery, less fatigue, and more time to focus on teaching instead of marking.
                     </p>
                   </div>
                   <div className="space-y-6 bg-white/5 p-8 rounded-2xl border border-white/10 backdrop-blur-md">
                     <p className="italic text-purple-50 text-sm leading-relaxed">
-                      "We scanned 480 biology exam papers using MARKA. The results were finished within 10
-                      minutes. The best part is there's no learning curve. Our teachers understood it instantly."
+                      "We scanned 480 biology exam papers using MARKA. The results were ready in 10 minutes. Our teachers picked it up instantly — no training needed."
                     </p>
                     <div className="flex items-center gap-4">
                       <div className="w-10 h-10 rounded-full bg-amber-400 flex items-center justify-center text-purple-950 font-bold">
@@ -438,10 +459,10 @@ export default function LandingPage({
               {/* Pricing Cards */}
               <div id="pricing-section" className="space-y-12">
                 <div className="text-center space-y-4">
-                  <h2 className="text-3xl font-black text-gray-900">Simple Pay-As-You-Go Credits</h2>
+                  <h2 className="text-3xl font-black text-gray-900">Pay Only for What You Use</h2>
                   <p className="text-gray-500 max-w-md mx-auto">
-                    No recurring plans. No monthly subscriptions. Buy credits when you need them.
-                    1 Credit = 1 Exam Sheet graded.
+                    No subscriptions. No monthly fees. Buy credits when you need them.
+                    1 credit = 1 exam sheet graded.
                   </p>
                 </div>
 
@@ -487,23 +508,28 @@ export default function LandingPage({
                       <div>
                         <h4 className="font-bold text-gray-900">Do my credits expire?</h4>
                         <p className="text-sm text-gray-500 mt-1">
-                          Never. Your purchased credits remain active in your account indefinitely.
+                          No. Your credits stay in your account until you use them.
                         </p>
                       </div>
                       <div>
-                        <h4 className="font-bold text-gray-900">What happens if a scan fails?</h4>
+                        <h4 className="font-bold text-gray-900">What if a photo comes out blurry?</h4>
                         <p className="text-sm text-gray-500 mt-1">
-                          No credits are deducted for blurry or failed scans. You can retry as many times as you like.
+                          No problem — blurry scans don't cost any credits. Retake the photo and try again.
+                        </p>
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-gray-900">Do teachers need training to use it?</h4>
+                        <p className="text-sm text-gray-500 mt-1">
+                          No. If you can take a photo with your phone, you can use MARKA.
                         </p>
                       </div>
                     </div>
                   </div>
 
                   <div className="space-y-6">
-                    <h3 className="text-xl font-bold text-gray-900">Contact & Support</h3>
+                    <h3 className="text-xl font-bold text-gray-900">Need Help?</h3>
                     <p className="text-sm text-gray-500">
-                      Need help setting up OMR templates or custom bulk credits for your district?
-                      Our support team is active.
+                      Got questions about setting up MARKA for your school? We're happy to help.
                     </p>
                     <div className="flex flex-wrap gap-4">
                       <a
@@ -518,7 +544,7 @@ export default function LandingPage({
                 </div>
 
                 <div className="border-t border-gray-100 pt-8 flex flex-col md:flex-row justify-between items-center text-xs text-gray-400 gap-4">
-                  <span>© 2026 MARKA OMR. Built for premium teacher confidence.</span>
+                  <span>© 2026 MARKA. A Paperworked product.</span>
                   <div className="flex gap-6">
                     <a href="#" className="hover:underline">Privacy Policy</a>
                     <a href="#" className="hover:underline">Terms of Service</a>
@@ -541,9 +567,9 @@ export default function LandingPage({
                 <div className="w-12 h-12 bg-purple-50 text-[#3B0042] rounded-full flex items-center justify-center mx-auto mb-2">
                   <Coins className="w-6 h-6" />
                 </div>
-                <h2 className="text-2xl font-black text-gray-900">Purchase Credits</h2>
+                <h2 className="text-2xl font-black text-gray-900">Buy Credits</h2>
                 <p className="text-xs text-gray-500">
-                  Instant activation via Paystack simulation. No account registration required.
+                  Secure payment via Paystack. Credits are added instantly.
                 </p>
               </div>
 
@@ -719,9 +745,9 @@ export default function LandingPage({
                 <div className="w-12 h-12 bg-purple-50 text-[#3B0042] rounded-full flex items-center justify-center mx-auto mb-2">
                   <KeyRound className="w-6 h-6" />
                 </div>
-                <h2 className="text-2xl font-black text-gray-900">Access Your Credits</h2>
+                <h2 className="text-2xl font-black text-gray-900">Log In to Your Account</h2>
                 <p className="text-xs text-gray-500">
-                  No email or password registration is required.
+                  Use your MARKA ID and PIN. No email or password needed.
                 </p>
               </div>
 
@@ -740,7 +766,7 @@ export default function LandingPage({
                   <input
                     type="text"
                     required
-                    placeholder="e.g. MARKA-DEMO or M-123456"
+                    placeholder="e.g. MK-123456"
                     value={loginId}
                     onChange={(e) => setLoginId(e.target.value)}
                     className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:border-[#3B0042] font-mono text-sm uppercase"
@@ -778,18 +804,6 @@ export default function LandingPage({
                 </button>
               </form>
 
-              <div className="text-center pt-2">
-                <button
-                  onClick={() => {
-                    setLoginId("MARKA-DEMO");
-                    setLoginPin("1234");
-                  }}
-                  className="text-xs text-purple-700 hover:underline font-bold inline-flex items-center gap-1 bg-purple-50 px-3 py-1.5 rounded-full"
-                >
-                  <Sparkles className="w-3.5 h-3.5 text-amber-500 animate-pulse" />
-                  Auto-fill Demo Credentials
-                </button>
-              </div>
             </motion.div>
           )}
 
@@ -805,11 +819,11 @@ export default function LandingPage({
               <div className="text-center space-y-2">
                 <div className="inline-flex items-center gap-1.5 bg-amber-50 text-amber-700 px-3 py-1 rounded-full text-[11px] font-bold uppercase mb-2 border border-amber-100">
                   <Flame className="w-3.5 h-3.5 animate-pulse" />
-                  INSTANT TRIAL ZONE
+                  TRY IT FREE
                 </div>
                 <h2 className="text-2xl font-black text-gray-900">Try MARKA Instantly</h2>
                 <p className="text-xs text-gray-500">
-                  Step in and try scanning simulated or printable OMR sheets.
+                  No signup needed. Explore with a free demo account.
                 </p>
               </div>
 
@@ -821,22 +835,10 @@ export default function LandingPage({
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="border border-purple-100 bg-purple-50/20 p-6 rounded-2xl space-y-4">
-                  <h3 className="font-bold text-[#3B0042] text-sm">Demo Access Pass</h3>
+                  <h3 className="font-bold text-[#3B0042] text-sm">Launch the Demo</h3>
                   <p className="text-xs text-gray-500 leading-relaxed">
-                    We have created a preloaded demo credentials block with{" "}
-                    <strong>382 free credits</strong> so you can play around with answer key builder and
-                    results instantly.
+                    Explore the full MARKA dashboard — build answer keys, upload sheets, and see how grading works. No signup required.
                   </p>
-                  <div className="bg-white p-4 rounded-xl border border-gray-100 space-y-2 text-xs">
-                    <div className="flex justify-between font-mono">
-                      <span className="text-gray-400">DEMO ID:</span>
-                      <strong className="text-purple-950 font-bold">MARKA-DEMO</strong>
-                    </div>
-                    <div className="flex justify-between font-mono">
-                      <span className="text-gray-400">DEMO PIN:</span>
-                      <strong className="text-purple-950 font-bold">1234</strong>
-                    </div>
-                  </div>
                   <button
                     onClick={onLaunchDemo}
                     className="w-full py-3 bg-[#3B0042] hover:bg-[#2c0032] text-white font-extrabold text-xs rounded-xl transition-all shadow-md active:scale-95"
@@ -849,7 +851,7 @@ export default function LandingPage({
                   <div className="space-y-3">
                     <h3 className="font-bold text-gray-900 text-sm">Download Sample Sheets</h3>
                     <p className="text-xs text-gray-500 leading-relaxed">
-                      Need papers to scan? Download standard 20-question, 4-option printable OMR templates.
+                      Print free 20-question answer sheets to test the scanning flow yourself.
                     </p>
                   </div>
                   <div className="space-y-3">

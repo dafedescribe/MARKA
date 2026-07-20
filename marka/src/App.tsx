@@ -124,7 +124,7 @@ export default function App() {
         {!user ? (
           <LandingPage
             onLoginSuccess={handleLoginSuccess}
-            onLaunchDemo={() => handleLoginSuccess({ markaId: "MARKA-DEMO", pin: "1234", credits: 382, createdAt: "" })}
+            onLaunchDemo={() => handleLoginSuccess({ markaId: "DEMO-TEST", pin: "0000", credits: 382, createdAt: "" })}
             onSetBanner={triggerBanner}
             apiBase={API_BASE}
           />
