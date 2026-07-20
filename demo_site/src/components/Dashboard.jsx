@@ -198,7 +198,7 @@ export default function Dashboard({ token, onLogout }) {
     const handler = PaystackPop.setup({
       key: import.meta.env.VITE_PAYSTACK_PUBLIC_KEY || 'pk_test_replace_with_your_key_here',
       email: userEmail,
-      amount: 5000 * 100, // Top up starter pack (100 credits)
+      amount: 500 * 100, // Top up starter pack (50 credits)
       currency: 'NGN',
       metadata: { 
         custom_fields: [

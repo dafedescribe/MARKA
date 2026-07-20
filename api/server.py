@@ -93,23 +93,22 @@ OMR_DIR = os.path.join(os.path.dirname(__file__), '..', 'omr_output')
 
 
 # ── Credit packs (official pricing) ───────────────────────────────
-# Paid amount (₦) → credits. The per-credit rate differs per pack, so this
-# must be a lookup, not a flat formula.
+# Paid amount (₦) → credits. Tiered packs must use a lookup, not a flat formula.
 CREDIT_PACKS = {
-    5000: 100,     # Starter      — ₦50/credit
-    11250: 250,    # Growth       — ₦45/credit
-    20000: 500,    # School       — ₦40/credit
-    35000: 1000,   # Institution  — ₦35/credit
+    500: 50,       # Starter
+    5000: 1000,    # Growth
+    12500: 3000,   # Pro
+    25000: 10000,  # Enterprise
 }
 
 
 def credits_for_amount(amount_naira) -> int:
     """Map a paid amount (₦) to credits per the official pack table.
-    Non-standard amounts fall back to the base ₦50/credit rate."""
+    Non-standard amounts fall back to the Starter pack rate."""
     amt = int(round(amount_naira))
     if amt in CREDIT_PACKS:
         return CREDIT_PACKS[amt]
-    return amt // 50
+    return amt // 10
 
 
 def get_exam_dir(exam_code: str) -> str:

@@ -36,7 +36,7 @@ export default function LandingPage({
   // Buy credits states
   const [markaIdInput, setMarkaIdInput] = useState("");
   const [isNewCustomer, setIsNewCustomer] = useState(true);
-  const [selectedPackage, setSelectedPackage] = useState<100 | 250 | 500 | 1000>(250);
+  const [selectedPackage, setSelectedPackage] = useState<50 | 1000 | 3000 | 10000>(1000);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [generatedCreds, setGeneratedCreds] = useState<{
     markaId: string;
@@ -447,10 +447,10 @@ export default function LandingPage({
 
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                   {[
-                    { count: 100, price: "₦15,000", desc: "For small classroom tests" },
-                    { count: 250, price: "₦32,500", desc: "Best for midterm exams" },
-                    { count: 500, price: "₦60,000", desc: "Perfect for secondary schools" },
-                    { count: 1000, price: "₦110,000", desc: "For large end-of-term exams" }
+                    { name: "Starter", count: 50, price: "₦500", desc: "For quick classroom checks" },
+                    { name: "Growth", count: 1000, price: "₦5,000", desc: "Best for regular testing" },
+                    { name: "Pro", count: 3000, price: "₦12,500", desc: "Perfect for secondary schools" },
+                    { name: "Enterprise", count: 10000, price: "₦25,000", desc: "For mass screening & exams" }
                   ].map((p, idx) => (
                     <div
                       key={idx}
@@ -458,7 +458,7 @@ export default function LandingPage({
                     >
                       <div className="space-y-4">
                         <span className="text-xs font-bold text-gray-400 uppercase tracking-widest block">
-                          PACKAGE
+                          {p.name}
                         </span>
                         <h3 className="text-3xl font-black text-purple-950">{p.count} Credits</h3>
                         <p className="text-xs text-gray-400 leading-snug">{p.desc}</p>
@@ -597,25 +597,27 @@ export default function LandingPage({
                       Select Credits Volume
                     </label>
                     <div className="grid grid-cols-2 gap-4">
-                      {[100, 250, 500, 1000].map((vol) => (
+                      {[
+                        { name: "Starter", credits: 50, price: "₦500" },
+                        { name: "Growth", credits: 1000, price: "₦5,000" },
+                        { name: "Pro", credits: 3000, price: "₦12,500" },
+                        { name: "Enterprise", credits: 10000, price: "₦25,000" }
+                      ].map((pkg) => (
                         <div
-                          key={vol}
-                          onClick={() => setSelectedPackage(vol as any)}
+                          key={pkg.credits}
+                          onClick={() => setSelectedPackage(pkg.credits as any)}
                           className={`cursor-pointer border p-4 rounded-xl text-center transition-all ${
-                            selectedPackage === vol
+                            selectedPackage === pkg.credits
                               ? "border-[#3B0042] bg-purple-50/40 text-[#3B0042] ring-2 ring-[#3B0042]/10"
                               : "border-gray-150 hover:border-gray-300"
                           }`}
                         >
-                          <span className="block text-lg font-black">{vol}</span>
+                          <span className="block text-[10px] text-gray-400 font-bold uppercase mb-1">
+                            {pkg.name}
+                          </span>
+                          <span className="block text-lg font-black">{pkg.credits}</span>
                           <span className="block text-[10px] text-gray-400 font-bold uppercase mt-1">
-                            {vol === 100
-                              ? "₦15,000"
-                              : vol === 250
-                              ? "₦32,500"
-                              : vol === 500
-                              ? "₦60,000"
-                              : "₦110,000"}
+                            {pkg.price}
                           </span>
                         </div>
                       ))}

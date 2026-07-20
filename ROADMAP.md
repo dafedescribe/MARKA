@@ -92,7 +92,7 @@ Live: Render backend + Vercel frontend, custom domain `marka.com.ng`. ✅ = done
 
 | # | Task | Why | Sev |
 |---|------|-----|-----|
-| 2.1 | **Fix credit math.** `int(amount/100)` gives ₦5,000 → 50 credits (should be 100) and ignores tiers. Use a pack lookup table (see below). | Users get half the credits they paid for | 🔴 |
+| 2.1 | **Fix credit math.** Use a pack lookup table (see below) instead of deriving credits from a flat amount formula. | Users get the wrong credits for tiered purchases | 🔴 |
 | 2.2 | Move JWT/token out of query strings (`/process-scan`, presigned) into `Authorization` header | Tokens leak into logs/history | 🟠 |
 | 2.3 | Add Pydantic validators for every input: `marka_id` (`^MK-[A-Z0-9]{4}$`), `pin` (4 digits), exam code, email format | Your "input validation for every field" item | 🟠 |
 | 2.4 | File-signature (magic-number) validation before OpenCV touches an upload | Plan §7 — reject disguised non-images | 🟡 |
@@ -102,13 +102,12 @@ Live: Render backend + Vercel frontend, custom domain `marka.com.ng`. ✅ = done
 
 ### Credit pack lookup (replace `amount/100`)
 
-| Pack | Credits | Price (₦) | ₦/credit |
-|------|--------:|----------:|---------:|
-| Starter | 100 | 5,000 | 50 |
-| Growth | 250 | 11,250 | 45 |
-| School | 500 | 20,000 | 40 |
-| Institution | 1,000 | 35,000 | 35 |
-| Enterprise | 5,000+ | Custom | Negotiated |
+| Pack | Credits | Price (₦) |
+|------|--------:|----------:|
+| Starter | 50 | 500 |
+| Growth | 1,000 | 5,000 |
+| Pro | 3,000 | 12,500 |
+| Enterprise | 10,000 | 25,000 |
 
 Map the **paid amount** (or a `pack` field in Paystack metadata) to credits from this table. Reject amounts that don't match a known pack.
 
