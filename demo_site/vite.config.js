@@ -75,6 +75,16 @@ export default defineConfig({
             },
           },
           {
+            // Monnify JS SDK — cache so payment works faster.
+            urlPattern: /^https:\/\/sdk\.monnify\.com\/.*/i,
+            handler: 'StaleWhileRevalidate',
+            options: {
+              cacheName: 'monnify-sdk',
+              expiration: { maxEntries: 5, maxAgeSeconds: 60 * 60 * 24 * 7 },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
+          {
             // Supabase storage signed URLs (graded images) — cache-first with
             // a generous TTL so the gallery loads instantly on repeat visits.
             urlPattern: /^https:\/\/.*\.supabase\.co\/storage\/.*/i,

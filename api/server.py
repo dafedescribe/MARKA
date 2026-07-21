@@ -48,6 +48,8 @@ import io
 import cv2
 import urllib.request
 import urllib.error
+import urllib.parse
+import base64
 
 
 
@@ -225,37 +227,100 @@ def purchase_id(req: PurchaseIdRequest):
     if not supabase:
         raise HTTPException(500, "Supabase not configured")
 
-    PAYSTACK_SECRET = os.environ.get("PAYSTACK_SECRET_KEY", "")
-    if not PAYSTACK_SECRET:
-        raise HTTPException(500, "Paystack secret not configured")
+    PAYMENT_PROVIDER = os.environ.get("PAYMENT_PROVIDER", "paystack").lower()
 
-    # 1. Verify transaction with Paystack
-    url = f"https://api.paystack.co/transaction/verify/{req.reference}"
-    headers = {
-        "Authorization": f"Bearer {PAYSTACK_SECRET}",
-        # Paystack is behind Cloudflare, which 403s the default Python-urllib
-        # User-Agent (error 1010). Any normal UA passes.
-        "User-Agent": "MARKA-Server/1.0",
-        "Accept": "application/json",
-    }
-    req_obj = urllib.request.Request(url, headers=headers)
-    
-    try:
-        with urllib.request.urlopen(req_obj, timeout=30) as response:
-            res_data = json.loads(response.read().decode())
-    except urllib.error.HTTPError as e:
-        body = e.read().decode(errors="replace")[:300]
-        print(f"Paystack verify HTTPError {e.code}: {body}")
-        raise HTTPException(400, f"Paystack verify failed ({e.code}): {body}")
-    except urllib.error.URLError as e:
-        print(f"Paystack verify URLError: {e.reason}")
-        raise HTTPException(400, f"Could not reach Paystack: {e.reason}")
+    if PAYMENT_PROVIDER == "monnify":
+        # ── Monnify verification flow ─────────────────────────────────
+        MONNIFY_API_KEY = os.environ.get("MONNIFY_API_KEY", "")
+        MONNIFY_SECRET = os.environ.get("MONNIFY_SECRET_KEY", "")
+        if not MONNIFY_API_KEY or not MONNIFY_SECRET:
+            raise HTTPException(500, "Monnify keys not configured")
 
-    if not res_data.get("status") or res_data.get("data", {}).get("status") != "success":
-        raise HTTPException(400, "Payment was not successful")
+        # Step 1: Authenticate to get Bearer token
+        credentials = base64.b64encode(f"{MONNIFY_API_KEY}:{MONNIFY_SECRET}".encode()).decode()
+        auth_url = "https://sandbox.monnify.com/api/v1/auth/login"
+        auth_headers = {
+            "Authorization": f"Basic {credentials}",
+            "Content-Type": "application/json",
+            "User-Agent": "MARKA-Server/1.0",
+        }
+        auth_req = urllib.request.Request(auth_url, method="POST", headers=auth_headers, data=b"")
 
-    data = res_data["data"]
-    amount = data.get("amount", 0) / 100
+        try:
+            with urllib.request.urlopen(auth_req, timeout=30) as response:
+                auth_data = json.loads(response.read().decode())
+        except urllib.error.HTTPError as e:
+            body = e.read().decode(errors="replace")[:300]
+            print(f"Monnify auth HTTPError {e.code}: {body}")
+            raise HTTPException(400, f"Monnify auth failed ({e.code}): {body}")
+        except urllib.error.URLError as e:
+            print(f"Monnify auth URLError: {e.reason}")
+            raise HTTPException(400, f"Could not reach Monnify: {e.reason}")
+
+        access_token = auth_data.get("responseBody", {}).get("accessToken", "")
+        if not access_token:
+            raise HTTPException(400, "Monnify auth did not return an access token")
+
+        # Step 2: Verify transaction by paymentReference
+        verify_url = f"https://sandbox.monnify.com/api/v2/merchant/transactions/query?paymentReference={urllib.parse.quote(req.reference)}"
+        verify_headers = {
+            "Authorization": f"Bearer {access_token}",
+            "User-Agent": "MARKA-Server/1.0",
+            "Accept": "application/json",
+        }
+        verify_req = urllib.request.Request(verify_url, headers=verify_headers)
+
+        try:
+            with urllib.request.urlopen(verify_req, timeout=30) as response:
+                res_data = json.loads(response.read().decode())
+        except urllib.error.HTTPError as e:
+            body = e.read().decode(errors="replace")[:300]
+            print(f"Monnify verify HTTPError {e.code}: {body}")
+            raise HTTPException(400, f"Monnify verify failed ({e.code}): {body}")
+        except urllib.error.URLError as e:
+            print(f"Monnify verify URLError: {e.reason}")
+            raise HTTPException(400, f"Could not reach Monnify: {e.reason}")
+
+        payment_status = res_data.get("responseBody", {}).get("paymentStatus", "")
+        if payment_status != "PAID":
+            raise HTTPException(400, "Payment was not successful")
+
+        # Monnify returns amount in Naira directly (not kobo)
+        amount = res_data.get("responseBody", {}).get("amountPaid", 0)
+
+    else:
+        # ── Paystack verification flow (original) ─────────────────────
+        PAYSTACK_SECRET = os.environ.get("PAYSTACK_SECRET_KEY", "")
+        if not PAYSTACK_SECRET:
+            raise HTTPException(500, "Paystack secret not configured")
+
+        # Verify transaction with Paystack
+        url = f"https://api.paystack.co/transaction/verify/{req.reference}"
+        headers = {
+            "Authorization": f"Bearer {PAYSTACK_SECRET}",
+            # Paystack is behind Cloudflare, which 403s the default Python-urllib
+            # User-Agent (error 1010). Any normal UA passes.
+            "User-Agent": "MARKA-Server/1.0",
+            "Accept": "application/json",
+        }
+        req_obj = urllib.request.Request(url, headers=headers)
+
+        try:
+            with urllib.request.urlopen(req_obj, timeout=30) as response:
+                res_data = json.loads(response.read().decode())
+        except urllib.error.HTTPError as e:
+            body = e.read().decode(errors="replace")[:300]
+            print(f"Paystack verify HTTPError {e.code}: {body}")
+            raise HTTPException(400, f"Paystack verify failed ({e.code}): {body}")
+        except urllib.error.URLError as e:
+            print(f"Paystack verify URLError: {e.reason}")
+            raise HTTPException(400, f"Could not reach Paystack: {e.reason}")
+
+        if not res_data.get("status") or res_data.get("data", {}).get("status") != "success":
+            raise HTTPException(400, "Payment was not successful")
+
+        data = res_data["data"]
+        amount = data.get("amount", 0) / 100
     credits_to_add = credits_for_amount(amount)
 
     # 2. Idempotency Check in transactions table (we use 'NEW_ID' as marka_id for the record)
@@ -1003,6 +1068,62 @@ async def paystack_webhook(request: Request, x_paystack_signature: str = Header(
                     print(f"Ignored duplicate webhook for reference: {reference}")
                     return {"status": "success", "message": "Duplicate ignored"}
                 print(f"Error recording transaction: {e}")
+                return {"status": "error"}
+
+            # 2. Add Credits securely
+            try:
+                supabase.rpc("add_credits_by_marka_id", {"m_id": marka_id.upper(), "amount": credits_to_add}).execute()
+            except Exception as rpc_err:
+                print(f"RPC add_credits_by_marka_id failed (maybe not defined?): {rpc_err}")
+                # Fallback to direct update
+                u_res = supabase.table("users").select("id, credits").eq("marka_id", marka_id.upper()).execute()
+                if u_res.data:
+                    uid = u_res.data[0]["id"]
+                    old_credits = u_res.data[0]["credits"]
+                    supabase.table("users").update({"credits": old_credits + credits_to_add}).eq("id", uid).execute()
+
+    return {"status": "success"}
+
+
+@app.post("/webhook/monnify")
+async def monnify_webhook(request: Request):
+    """Handle Monnify webhooks to add credits."""
+    MONNIFY_SECRET = os.environ.get("MONNIFY_SECRET_KEY", "")
+
+    payload = await request.body()
+
+    # Verify signature (HMAC-SHA512 of body using secret key)
+    monnify_sig = request.headers.get("monnify-signature", "")
+    computed_hash = hmac.new(MONNIFY_SECRET.encode('utf-8'), payload, hashlib.sha512).hexdigest()
+    if computed_hash != monnify_sig:
+        raise HTTPException(400, "Invalid signature")
+
+    data = json.loads(payload)
+
+    if data.get("eventType") == "SUCCESSFUL_TRANSACTION":
+        event_data = data.get("eventData", {})
+        reference = event_data.get("paymentReference")
+        amount = event_data.get("amountPaid", 0)  # Already in Naira
+        meta = event_data.get("metaData", {})
+        marka_id = meta.get("marka_id")
+
+        credits_to_add = credits_for_amount(amount)
+
+        if marka_id and reference and supabase:
+            # 1. Idempotency Check: Prevent duplicate webhooks
+            try:
+                supabase.table("transactions").insert({
+                    "reference": reference,
+                    "marka_id": marka_id.upper(),
+                    "amount": amount,
+                    "credits_added": credits_to_add
+                }).execute()
+            except Exception as e:
+                # 23505 is the Postgres error code for unique_violation
+                if "duplicate key value" in str(e).lower() or "23505" in str(e):
+                    print(f"Ignored duplicate Monnify webhook for reference: {reference}")
+                    return {"status": "success", "message": "Duplicate ignored"}
+                print(f"Error recording Monnify transaction: {e}")
                 return {"status": "error"}
 
             # 2. Add Credits securely
