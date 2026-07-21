@@ -50,6 +50,7 @@ import urllib.request
 import urllib.error
 import urllib.parse
 import base64
+import resend
 
 
 
@@ -401,26 +402,74 @@ class ForgotPinRequest(BaseModel):
 @app.post("/auth/forgot-pin")
 @limiter.limit("3/minute")
 def forgot_pin(request: Request, req: ForgotPinRequest):
-    """Initiate the Forgot PIN flow."""
+    """Reset PIN and email new credentials to the user."""
     if not supabase:
         raise HTTPException(500, "Supabase not configured")
 
-    res = supabase.table("users").select("marka_id").eq("email", req.email).execute()
+    RESEND_API_KEY = os.environ.get("RESEND_API_KEY", "")
+    if not RESEND_API_KEY:
+        raise HTTPException(500, "Email service not configured")
+
+    res = supabase.table("users").select("id, marka_id").eq("email", req.email).execute()
     if not res.data:
-        # Don't leak whether the email exists
-        return {"message": "If that email is registered, a recovery link has been sent."}
+        # Don't leak whether the email exists — return same message either way
+        return {"message": "If that email is registered, your new PIN has been sent to your inbox."}
 
-    marka_id = res.data[0]["marka_id"]
+    user = res.data[0]
+    marka_id = user["marka_id"]
 
-    # SECURITY: never return the MARKA ID / PIN in the API response — that would
-    # let anyone recover any account from a known email (account takeover), and
-    # PINs are stored unhashed. Proper recovery must email a short-lived reset
-    # link (Resend/SendGrid) to the address on file. Until that's wired up, we
-    # only log and return the same generic message as the not-found case.
-    # TODO: send a real recovery email to req.email for MARKA ID {marka_id}.
-    logger.info(f"Forgot-PIN requested for MARKA ID {marka_id} (email delivery not yet implemented)")
+    # Generate a new PIN and update the hash in the database
+    new_pin = generate_pin()
+    new_pin_hash = get_password_hash(new_pin)
 
-    return {"message": "If that email is registered, a recovery link has been sent."}
+    try:
+        supabase.table("users").update({"pin_hash": new_pin_hash}).eq("id", user["id"]).execute()
+    except Exception as e:
+        logger.error(f"Failed to update PIN for {marka_id}: {e}")
+        raise HTTPException(500, "Could not reset PIN. Please try again.")
+
+    # Send recovery email via Resend
+    try:
+        resend.api_key = RESEND_API_KEY
+        resend.Emails.send({
+            "from": "MARKA <onboarding@resend.dev>",
+            "to": [req.email],
+            "subject": "Your MARKA PIN Has Been Reset",
+            "html": f"""
+            <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 480px; margin: 0 auto; padding: 32px 24px;">
+                <div style="text-align: center; margin-bottom: 24px;">
+                    <h1 style="color: #3B0042; font-size: 24px; margin: 0;">MARKA</h1>
+                    <p style="color: #999; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; margin-top: 4px;">PIN Recovery</p>
+                </div>
+
+                <p style="color: #333; font-size: 14px; line-height: 1.6;">Your PIN has been reset. Use the credentials below to log in:</p>
+
+                <div style="background: #F9F5FF; border: 1px solid #E9D5FF; border-radius: 12px; padding: 24px; margin: 24px 0; text-align: center;">
+                    <div style="margin-bottom: 16px;">
+                        <span style="display: block; font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">MARKA ID</span>
+                        <span style="font-size: 22px; font-weight: 800; color: #3B0042; font-family: monospace; letter-spacing: 2px;">{marka_id}</span>
+                    </div>
+                    <div>
+                        <span style="display: block; font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">NEW PIN</span>
+                        <span style="font-size: 22px; font-weight: 800; color: #D97706; font-family: monospace; letter-spacing: 4px;">{new_pin}</span>
+                    </div>
+                </div>
+
+                <p style="color: #666; font-size: 12px; line-height: 1.5; background: #FEF3C7; padding: 12px; border-radius: 8px;">
+                    ⚠️ <strong>Save these credentials.</strong> Your old PIN no longer works. If you did not request this reset, contact support immediately.
+                </p>
+
+                <p style="color: #999; font-size: 11px; text-align: center; margin-top: 32px;">© MARKA — A Paperworked product</p>
+            </div>
+            """
+        })
+        logger.info(f"PIN recovery email sent to {req.email} for MARKA ID {marka_id}")
+    except Exception as e:
+        logger.error(f"Failed to send recovery email for {marka_id}: {e}")
+        # PIN was already reset — don't leave user stranded. Log the error but
+        # still tell them to check email (they can retry if it didn't arrive).
+
+    return {"message": "If that email is registered, your new PIN has been sent to your inbox."}
 
 
 # ── Exam / Answer-Key Endpoints ───────────────────────────────────
