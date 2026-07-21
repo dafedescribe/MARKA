@@ -107,7 +107,10 @@ CREDIT_PACKS = {
 def credits_for_amount(amount_naira) -> int:
     """Map a paid amount (₦) to credits per the official pack table.
     Non-standard amounts fall back to the Starter pack rate."""
-    amt = int(round(amount_naira))
+    try:
+        amt = int(round(float(amount_naira)))
+    except (ValueError, TypeError):
+        return 0
     if amt in CREDIT_PACKS:
         return CREDIT_PACKS[amt]
     return amt // 10
