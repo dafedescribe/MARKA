@@ -111,7 +111,10 @@ export default function Auth({ onLogin, initialTab = 'login' }) {
 
               setSuccessData(data);
             } catch (err) {
-              setError(err.message);
+              const errorMessage = err.message === '[object Object]' 
+                ? 'Payment verification failed. Please contact support.' 
+                : err.message;
+              setError(errorMessage);
             } finally {
               setLoading(false);
             }
