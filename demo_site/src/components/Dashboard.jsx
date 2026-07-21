@@ -47,9 +47,14 @@ export default function Dashboard({ token, onLogout }) {
   useEffect(() => { setSupabaseToken(token); }, [token]);
 
   useEffect(() => {
-    // Dynamically load Paystack JS
+    // Dynamically load payment SDK based on provider
+    const PAYMENT_PROVIDER = import.meta.env.VITE_PAYMENT_PROVIDER || 'paystack';
     const script = document.createElement('script');
-    script.src = 'https://js.paystack.co/v1/inline.js';
+    if (PAYMENT_PROVIDER === 'monnify') {
+      script.src = 'https://sdk.monnify.com/plugin/monnify.js';
+    } else {
+      script.src = 'https://js.paystack.co/v1/inline.js';
+    }
     script.async = true;
     document.body.appendChild(script);
 
@@ -191,26 +196,56 @@ export default function Dashboard({ token, onLogout }) {
       alert("User details not fully loaded. Please wait a moment or refresh.");
       return;
     }
-    if (typeof PaystackPop === 'undefined') {
-      alert("Payment system is loading. Please try again in a second.");
-      return;
-    }
-    const handler = PaystackPop.setup({
-      key: import.meta.env.VITE_PAYSTACK_PUBLIC_KEY || 'pk_test_replace_with_your_key_here',
-      email: userEmail,
-      amount: 500 * 100, // Top up starter pack (50 credits)
-      currency: 'NGN',
-      metadata: { 
-        custom_fields: [
-          { display_name: "MARKA ID", variable_name: "marka_id", value: markaId }
-        ]
-      },
-      callback: (response) => {
-        alert("Payment successful! Your credits will be updated momentarily.");
-        setTimeout(refreshCredits, 2000);
+
+    const PAYMENT_PROVIDER = import.meta.env.VITE_PAYMENT_PROVIDER || 'paystack';
+
+    if (PAYMENT_PROVIDER === 'monnify') {
+      // ── Monnify top-up ─────────────────────────────────────────
+      if (typeof MonnifySDK === 'undefined') {
+        alert("Payment system is loading. Please try again in a second.");
+        return;
       }
-    });
-    handler.openIframe();
+      MonnifySDK.initialize({
+        amount: 500,
+        currency: "NGN",
+        reference: `MARKA_TOPUP_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        customerFullName: markaId,
+        customerEmail: userEmail,
+        apiKey: import.meta.env.VITE_MONNIFY_API_KEY || '',
+        contractCode: import.meta.env.VITE_MONNIFY_CONTRACT_CODE || '',
+        paymentDescription: "MARKA Credits Top Up",
+        metaData: {
+          marka_id: markaId
+        },
+        onComplete: (response) => {
+          alert("Payment successful! Your credits will be updated momentarily.");
+          setTimeout(refreshCredits, 2000);
+        },
+        onClose: (data) => {}
+      });
+    } else {
+      // ── Paystack top-up (original) ─────────────────────────────
+      if (typeof PaystackPop === 'undefined') {
+        alert("Payment system is loading. Please try again in a second.");
+        return;
+      }
+      const handler = PaystackPop.setup({
+        key: import.meta.env.VITE_PAYSTACK_PUBLIC_KEY || 'pk_test_replace_with_your_key_here',
+        email: userEmail,
+        amount: 500 * 100, // Top up starter pack (50 credits)
+        currency: 'NGN',
+        metadata: { 
+          custom_fields: [
+            { display_name: "MARKA ID", variable_name: "marka_id", value: markaId }
+          ]
+        },
+        callback: (response) => {
+          alert("Payment successful! Your credits will be updated momentarily.");
+          setTimeout(refreshCredits, 2000);
+        }
+      });
+      handler.openIframe();
+    }
   };
 
   const handleCreateExam = async () => {

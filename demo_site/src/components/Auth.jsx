@@ -15,11 +15,18 @@ export default function Auth({ onLogin, initialTab = 'login' }) {
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
   const PAYSTACK_PUBLIC_KEY = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY || 'pk_test_replace_with_your_key_here';
+  const PAYMENT_PROVIDER = import.meta.env.VITE_PAYMENT_PROVIDER || 'paystack';
+  const MONNIFY_API_KEY = import.meta.env.VITE_MONNIFY_API_KEY || '';
+  const MONNIFY_CONTRACT_CODE = import.meta.env.VITE_MONNIFY_CONTRACT_CODE || '';
 
   useEffect(() => {
-    // Dynamically load Paystack JS
+    // Dynamically load payment SDK based on provider
     const script = document.createElement('script');
-    script.src = 'https://js.paystack.co/v1/inline.js';
+    if (PAYMENT_PROVIDER === 'monnify') {
+      script.src = 'https://sdk.monnify.com/plugin/monnify.js';
+    } else {
+      script.src = 'https://js.paystack.co/v1/inline.js';
+    }
     script.async = true;
     document.body.appendChild(script);
     return () => {
@@ -64,56 +71,108 @@ export default function Auth({ onLogin, initialTab = 'login' }) {
     }
     
     setError('');
-    
-    if (typeof PaystackPop === 'undefined') {
-      setError("Payment system is loading. Please try again in a second.");
-      return;
-    }
 
-    const handler = PaystackPop.setup({
-      key: PAYSTACK_PUBLIC_KEY,
-      email: email,
-      amount: amount * 100, // Dynamic amount in kobo
-      currency: 'NGN',
-      metadata: {
-        custom_fields: [
-          {
-            display_name: "Action",
-            variable_name: "action",
-            value: "new_id_generation"
-          }
-        ]
-      },
-      callback: (response) => {
-        (async () => {
-          setLoading(true);
-          try {
-            const res = await fetch(`${API_URL}/auth/purchase-id`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                reference: response.reference,
-                email: email
-              }),
-            });
-            const data = await res.json();
-
-            if (!res.ok) throw new Error(data.detail || 'Failed to verify payment and generate ID');
-
-            setSuccessData(data);
-          } catch (err) {
-            setError(err.message);
-          } finally {
-            setLoading(false);
-          }
-        })();
-      },
-      onClose: () => {
-        setLoading(false);
+    if (PAYMENT_PROVIDER === 'monnify') {
+      // ── Monnify checkout ───────────────────────────────────────
+      if (typeof MonnifySDK === 'undefined') {
+        setError("Payment system is loading. Please try again in a second.");
+        return;
       }
-    });
-    
-    handler.openIframe();
+
+      MonnifySDK.initialize({
+        amount: amount,
+        currency: "NGN",
+        reference: `MARKA_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        customerFullName: email.split('@')[0],
+        customerEmail: email,
+        apiKey: MONNIFY_API_KEY,
+        contractCode: MONNIFY_CONTRACT_CODE,
+        paymentDescription: "MARKA Credits Purchase",
+        metadata: {
+          action: "new_id_generation"
+        },
+        onLoadStart: () => { setLoading(true); },
+        onLoadComplete: () => {},
+        onComplete: (response) => {
+          (async () => {
+            setLoading(true);
+            try {
+              const res = await fetch(`${API_URL}/auth/purchase-id`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  reference: response.paymentReference,
+                  email: email
+                }),
+              });
+              const data = await res.json();
+
+              if (!res.ok) throw new Error(data.detail || 'Failed to verify payment and generate ID');
+
+              setSuccessData(data);
+            } catch (err) {
+              setError(err.message);
+            } finally {
+              setLoading(false);
+            }
+          })();
+        },
+        onClose: (data) => {
+          setLoading(false);
+        }
+      });
+    } else {
+      // ── Paystack checkout (original) ───────────────────────────
+      if (typeof PaystackPop === 'undefined') {
+        setError("Payment system is loading. Please try again in a second.");
+        return;
+      }
+
+      const handler = PaystackPop.setup({
+        key: PAYSTACK_PUBLIC_KEY,
+        email: email,
+        amount: amount * 100, // Dynamic amount in kobo
+        currency: 'NGN',
+        metadata: {
+          custom_fields: [
+            {
+              display_name: "Action",
+              variable_name: "action",
+              value: "new_id_generation"
+            }
+          ]
+        },
+        callback: (response) => {
+          (async () => {
+            setLoading(true);
+            try {
+              const res = await fetch(`${API_URL}/auth/purchase-id`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  reference: response.reference,
+                  email: email
+                }),
+              });
+              const data = await res.json();
+
+              if (!res.ok) throw new Error(data.detail || 'Failed to verify payment and generate ID');
+
+              setSuccessData(data);
+            } catch (err) {
+              setError(err.message);
+            } finally {
+              setLoading(false);
+            }
+          })();
+        },
+        onClose: () => {
+          setLoading(false);
+        }
+      });
+      
+      handler.openIframe();
+    }
   };
 
   const handleForgotPin = async (e) => {
@@ -380,7 +439,7 @@ export default function Auth({ onLogin, initialTab = 'login' }) {
                   </div>
                   <h2 className="text-2xl font-black text-gray-900">Purchase Credits</h2>
                   <p className="text-xs text-gray-500">
-                    Instant activation via Paystack. Your ID will be generated automatically.
+                    {`Instant activation via ${PAYMENT_PROVIDER === 'monnify' ? 'Monnify' : 'Paystack'}. Your ID will be generated automatically.`}
                   </p>
                 </div>
 
@@ -431,8 +490,12 @@ export default function Auth({ onLogin, initialTab = 'login' }) {
                 </div>
                 
                 <div className="bg-amber-50 p-3 rounded-xl border border-amber-200 flex flex-col gap-1">
-                  <span className="text-[10px] font-bold text-amber-800 uppercase tracking-wider">Test Mode Warning</span>
-                  <span className="text-[11px] text-amber-700">Use card number <span className="font-mono bg-amber-100 px-1 rounded">4084084084084081</span> with any CVV.</span>
+                  <span className="text-[10px] font-bold text-amber-800 uppercase tracking-wider">Sandbox Mode</span>
+                  <span className="text-[11px] text-amber-700">
+                    {PAYMENT_PROVIDER === 'monnify'
+                      ? 'Monnify sandbox — use the test card provided in the checkout modal.'
+                      : <>Use card number <span className="font-mono bg-amber-100 px-1 rounded">4084084084084081</span> with any CVV.</>}
+                  </span>
                 </div>
 
                 <button
@@ -443,11 +506,11 @@ export default function Auth({ onLogin, initialTab = 'login' }) {
                   {loading ? (
                     <>
                       <Loader2 className="w-5 h-5 animate-spin" />
-                      Initiating Paystack Checkout...
+                      Initiating Checkout...
                     </>
                   ) : (
                     <>
-                      Pay ₦{amount.toLocaleString()} via Paystack
+                      Pay ₦{amount.toLocaleString()} via {PAYMENT_PROVIDER === 'monnify' ? 'Monnify' : 'Paystack'}
                       <ArrowRight className="w-5 h-5" />
                     </>
                   )}
