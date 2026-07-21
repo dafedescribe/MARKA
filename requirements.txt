@@ -40,6 +40,7 @@ python-multipart==0.0.32
 qrcode==8.2
 realtime==2.31.0
 reportlab==5.0.0
+resend==2.7.0
 rsa==4.9.1
 six==1.17.0
 slowapi==0.1.10

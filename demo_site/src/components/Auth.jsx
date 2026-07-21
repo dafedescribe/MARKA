@@ -178,6 +178,8 @@ export default function Auth({ onLogin, initialTab = 'login' }) {
     }
   };
 
+  const [recoveryMessage, setRecoveryMessage] = useState('');
+
   const handleForgotPin = async (e) => {
     e.preventDefault();
     if (!email) {
@@ -195,17 +197,7 @@ export default function Auth({ onLogin, initialTab = 'login' }) {
       const data = await res.json();
       if (!res.ok) throw new Error(data.detail || 'Recovery failed');
       
-      // Since it's a demo, we might get the credentials directly
-      if (data.marka_id && data.pin) {
-        setSuccessData({
-          marka_id: data.marka_id,
-          pin: data.pin,
-          credits: "Recovered"
-        });
-      } else {
-        alert(data.message);
-        setIsForgotPin(false);
-      }
+      setRecoveryMessage(data.message || 'Check your email for your new PIN.');
     } catch (err) {
       setError(err.message);
     } finally {
@@ -386,6 +378,36 @@ export default function Auth({ onLogin, initialTab = 'login' }) {
                 </button>
               </form>
             ) : isForgotPin ? (
+              recoveryMessage ? (
+                <div className="space-y-6 text-center">
+                  <div className="w-14 h-14 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto">
+                    <CheckCircle2 className="w-7 h-7" />
+                  </div>
+                  <div className="space-y-2">
+                    <h2 className="text-2xl font-black text-gray-900">Check Your Email</h2>
+                    <p className="text-sm text-gray-500 leading-relaxed px-4">
+                      {recoveryMessage}
+                    </p>
+                  </div>
+                  <div className="bg-purple-50/50 p-4 rounded-xl border border-purple-100">
+                    <p className="text-xs text-gray-500">
+                      Your new MARKA ID and PIN have been sent to <span className="font-bold text-[#3B0042]">{email}</span>. Use them to log in.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsForgotPin(false);
+                      setRecoveryMessage('');
+                      setIsLogin(true);
+                      setError('');
+                    }}
+                    className="w-full py-4 bg-[#3B0042] hover:bg-[#2c0032] text-white font-bold rounded-xl transition-all shadow-md active:scale-95"
+                  >
+                    Back to Login
+                  </button>
+                </div>
+              ) : (
               <form onSubmit={handleForgotPin} className="space-y-6">
                 <div className="text-center space-y-2 pb-2">
                   <div className="w-12 h-12 bg-amber-50 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-2">
@@ -393,7 +415,7 @@ export default function Auth({ onLogin, initialTab = 'login' }) {
                   </div>
                   <h2 className="text-2xl font-black text-gray-900">Recover Access</h2>
                   <p className="text-xs text-gray-500">
-                    Enter the email you used to purchase credits.
+                    Enter the email you used to purchase credits. We'll reset your PIN and email you the new one.
                   </p>
                 </div>
 
@@ -414,7 +436,7 @@ export default function Auth({ onLogin, initialTab = 'login' }) {
                 </div>
 
                 <div className="pt-2 text-center">
-                  <button type="button" onClick={() => setIsForgotPin(false)} className="text-[11px] font-bold text-gray-500 hover:text-[#3B0042] transition-colors">
+                  <button type="button" onClick={() => { setIsForgotPin(false); setRecoveryMessage(''); }} className="text-[11px] font-bold text-gray-500 hover:text-[#3B0042] transition-colors">
                     Back to Login
                   </button>
                 </div>
@@ -430,10 +452,11 @@ export default function Auth({ onLogin, initialTab = 'login' }) {
                       Recovering...
                     </>
                   ) : (
-                    "Recover My PIN"
+                    "Reset & Email My PIN"
                   )}
                 </button>
               </form>
+              )
             ) : (
               <form onSubmit={handlePurchase} className="space-y-6">
                 <div className="text-center space-y-2 pb-2">
