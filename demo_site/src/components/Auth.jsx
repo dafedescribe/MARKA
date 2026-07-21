@@ -358,7 +358,7 @@ export default function Auth({ onLogin, initialTab = 'login' }) {
                 </div>
 
                 <div className="pt-2 text-center">
-                  <button type="button" onClick={() => { setIsForgotPin(true); setError(''); }} className="text-[11px] font-bold text-gray-500 hover:text-[#3B0042] transition-colors">
+                  <button type="button" onClick={() => { setIsLogin(false); setIsForgotPin(true); setError(''); }} className="text-[11px] font-bold text-gray-500 hover:text-[#3B0042] transition-colors">
                     Forgot MARKA ID or PIN?
                   </button>
                 </div>
