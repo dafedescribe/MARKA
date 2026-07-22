@@ -5,8 +5,10 @@ import cv2
 import numpy as np
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src')))
 
 from omr_scanner import _find_fiducials
+
 
 
 

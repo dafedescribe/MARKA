@@ -84,20 +84,22 @@ MARKA/
 │   ├── auth.py                  # Supabase & JWT auth utilities
 │   ├── database.py              # Database access layer
 │   └── test_server.py           # Backend Integration Tests
-├── omr_generator.py             # PDF Layout & OMR Sheet Generator
-├── omr_scanner.py               # OpenCV Computer Vision Scoring Engine
-├── receipt_generator.py         # Printable Assessment Receipt PDF Engine
-├── src/                         # Core Python models & layout engine
-│   ├── models.py                # Pydantic data schemas
+├── src/                         # Core Python Engine & Layout Modules
+│   ├── omr_generator.py         # PDF Layout & OMR Sheet Generator
+│   ├── omr_scanner.py           # OpenCV Computer Vision Scoring Engine
+│   ├── receipt_generator.py     # Printable Assessment Receipt PDF Engine
+│   ├── compiler.py              # CLI Exam Compiler
+│   ├── layout_engine.py         # ReportLab layout engine
 │   ├── parser.py                # Exam text parser
-│   └── layout_engine.py         # ReportLab layout engine
+│   └── models.py                # Pydantic data schemas
 ├── demo_site/                   # Production React + Vite Web App
 │   ├── src/                     # UI Components (Dashboard, Builder, Upload)
 │   ├── public/                  # Static assets & demo sheets
 │   └── package.json             # Frontend dependencies
-├── samples/                     # Clean sample exam text files for testing
+├── samples/                     # Clean sample exam text files & scans
 │   ├── government_exam.txt
-│   └── ss2_civic_exam.txt
+│   ├── ss2_civic_exam.txt
+│   └── scans/
 ├── tests/                       # Unit Test Suite
 │   ├── test_parser.py           # Text parser tests
 │   ├── test_layout.py           # PDF layout engine tests
@@ -107,6 +109,7 @@ MARKA/
 ├── requirements.txt             # Python Backend Dependencies
 └── render.yaml                  # One-Click Deployment Configuration
 ```
+
 
 ---
 

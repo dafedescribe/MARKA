@@ -11,11 +11,11 @@ Endpoints:
 
 import sys
 import os
-# Add repo root (for omr_scanner et al.) AND this api/ dir (for database, auth)
-# so bare imports resolve whether launched as `api.server:app` from the repo
-# root (Render) or `server:app` from inside api/ (local dev).
+# Add repo root, src/ (for omr_scanner et al.) AND api/ dir (for database, auth)
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 sys.path.insert(0, os.path.dirname(__file__))
+
 
 from fastapi import FastAPI, HTTPException, BackgroundTasks, Request, Header, Depends, Response
 from fastapi.security import OAuth2PasswordBearer
