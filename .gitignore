@@ -1,19 +1,48 @@
+# Python environments & caches
 venv/
+.venv/
+env/
 __pycache__/
 *.pyc
+*.pyo
+.pytest_cache/
+
+# Generated test & scanning output directories
 omr_output/
 output_packages/
 outputs/
 inputs/
+
+# Generated documents & test PDFs (except committed demo sheet)
 *.doc
+*.docx
 *.pdf
 !demo_site/public/demo_omr_sheet.pdf
+!Sample/*.pdf
+!samples/*.pdf
+
+# Local scratch / sensitive files
+Prospects.txt
+*.log
+*.tmp
 .DS_Store
+Thumbs.db
+.claude/
+.mcp.json
+.vercel
+
+# Node dependencies and build outputs
+node_modules/
+dist/
 demo_site/node_modules/
 demo_site/dist/
+marka/node_modules/
+marka/dist/
+
+# Environment secrets
 .env
+.env.local
 api/.env
 demo_site/.env
+marka/.env
 
-# MCP config — may contain a Render API key; never commit
-.mcp.json

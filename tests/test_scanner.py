@@ -1,14 +1,19 @@
 import unittest
-
+import sys
+import os
 import cv2
 import numpy as np
 
-from scanner import detect_fiducials
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from omr_scanner import _find_fiducials
+
+
 
 
 class ScannerFiducialTests(unittest.TestCase):
     def test_detect_fiducials_ignores_extra_square_contours(self):
-        image = np.full((1400, 1000, 3), 255, dtype=np.uint8)
+        image = np.full((1400, 1000), 255, dtype=np.uint8)
 
         # Four corner fiducials.
         squares = [
@@ -23,9 +28,9 @@ class ScannerFiducialTests(unittest.TestCase):
         ]
 
         for x, y in squares:
-            cv2.rectangle(image, (x, y), (x + 40, y + 40), (0, 0, 0), -1)
+            cv2.rectangle(image, (x, y), (x + 40, y + 40), 0, -1)
 
-        fiducials = detect_fiducials(image)
+        fiducials = _find_fiducials(image)
 
         self.assertEqual(len(fiducials), 4)
         expected = np.array(

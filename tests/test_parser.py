@@ -1,8 +1,9 @@
+import unittest
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from src.parser import parse_text, ParserError
+from src.parser import parse_text
 
 sample_text_1 = """Government
 SS2
@@ -27,27 +28,18 @@ C) 5
 (D) 22
 """
 
-# Wait, for question 3, (D) is the only one in parenthesis. Let's see if the parser picks it up.
 
-def run_tests():
-    print("Testing parser...")
-    try:
+class TestParser(unittest.TestCase):
+    def test_parse_text(self):
         exam = parse_text(sample_text_1)
-        print("Parsed successfully!")
-        print("Metadata:", exam.metadata)
-        for q in exam.questions:
-            print(f"Q{q.number}: {q.text}")
-            print(f"  Options: {q.options}")
-            print(f"  Correct: {q.correct_answer}")
-            
-        assert exam.questions[0].correct_answer == 'A'
-        assert exam.questions[1].correct_answer == 'C'
-        assert exam.questions[2].correct_answer == 'D'
-        print("All tests passed!")
-    except ParserError as e:
-        print(f"Parser error: {e}")
-    except Exception as e:
-        print(f"Unexpected error: {e}")
+        self.assertEqual(exam.metadata.subject, "Government")
+        self.assertEqual(exam.metadata.course_class, "SS2")
+        self.assertEqual(len(exam.questions), 3)
+        self.assertEqual(exam.questions[0].correct_answer, 'A')
+        self.assertEqual(exam.questions[1].correct_answer, 'C')
+        self.assertEqual(exam.questions[2].correct_answer, 'D')
+
 
 if __name__ == "__main__":
-    run_tests()
+    unittest.main()
+
