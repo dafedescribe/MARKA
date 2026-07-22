@@ -407,6 +407,9 @@ def forgot_pin(request: Request, req: ForgotPinRequest):
         raise HTTPException(500, "Supabase not configured")
 
     RESEND_API_KEY = os.environ.get("RESEND_API_KEY", "")
+    RESEND_FROM_EMAIL = os.environ.get("RESEND_FROM_EMAIL")
+    if not RESEND_FROM_EMAIL:
+        raise RuntimeError("RESEND_FROM_EMAIL environment variable must be set to a verified domain email for Resend")
     if not RESEND_API_KEY:
         raise HTTPException(500, "Email service not configured")
 
@@ -430,39 +433,43 @@ def forgot_pin(request: Request, req: ForgotPinRequest):
 
     # Send recovery email via Resend
     try:
-        resend.api_key = RESEND_API_KEY
-        resend.Emails.send({
-            "from": "MARKA <onboarding@resend.dev>",
+        # Resend already has the API key set globally above
+        email_payload = {
+            "from": f"MARKA <{RESEND_FROM_EMAIL}>",
             "to": [req.email],
             "subject": "Your MARKA PIN Has Been Reset",
             "html": f"""
-            <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 480px; margin: 0 auto; padding: 32px 24px;">
-                <div style="text-align: center; margin-bottom: 24px;">
-                    <h1 style="color: #3B0042; font-size: 24px; margin: 0;">MARKA</h1>
-                    <p style="color: #999; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; margin-top: 4px;">PIN Recovery</p>
+            <div style=\"font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 480px; margin: 0 auto; padding: 32px 24px;\">
+                <div style=\"text-align: center; margin-bottom: 24px;\">
+                    <h1 style=\"color: #3B0042; font-size: 24px; margin: 0;\">MARKA</h1>
+                    <p style=\"color: #999; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; margin-top: 4px;\">PIN Recovery</p>
                 </div>
 
-                <p style="color: #333; font-size: 14px; line-height: 1.6;">Your PIN has been reset. Use the credentials below to log in:</p>
+                <p style=\"color: #333; font-size: 14px; line-height: 1.6;\">Your PIN has been reset. Use the credentials below to log in:</p>
 
-                <div style="background: #F9F5FF; border: 1px solid #E9D5FF; border-radius: 12px; padding: 24px; margin: 24px 0; text-align: center;">
-                    <div style="margin-bottom: 16px;">
-                        <span style="display: block; font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">MARKA ID</span>
-                        <span style="font-size: 22px; font-weight: 800; color: #3B0042; font-family: monospace; letter-spacing: 2px;">{marka_id}</span>
+                <div style=\"background: #F9F5FF; border: 1px solid #E9D5FF; border-radius: 12px; padding: 24px; margin: 24px 0; text-align: center;\">
+                    <div style=\"margin-bottom: 16px;\">
+                        <span style=\"display: block; font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;\">MARKA ID</span>
+                        <span style=\"font-size: 22px; font-weight: 800; color: #3B0042; font-family: monospace; letter-spacing: 2px;\">{marka_id}</span>
                     </div>
                     <div>
-                        <span style="display: block; font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">NEW PIN</span>
-                        <span style="font-size: 22px; font-weight: 800; color: #D97706; font-family: monospace; letter-spacing: 4px;">{new_pin}</span>
+                        <span style=\"display: block; font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;\">NEW PIN</span>
+                        <span style=\"font-size: 22px; font-weight: 800; color: #D97706; font-family: monospace; letter-spacing: 4px;\">{new_pin}</span>
                     </div>
                 </div>
 
-                <p style="color: #666; font-size: 12px; line-height: 1.5; background: #FEF3C7; padding: 12px; border-radius: 8px;">
+                <p style=\"color: #666; font-size: 12px; line-height: 1.5; background: #FEF3C7; padding: 12px; border-radius: 8px;\">
                     ⚠️ <strong>Save these credentials.</strong> Your old PIN no longer works. If you did not request this reset, contact support immediately.
                 </p>
 
-                <p style="color: #999; font-size: 11px; text-align: center; margin-top: 32px;">© MARKA — A Paperworked product</p>
+                <p style=\"color: #999; font-size: 11px; text-align: center; margin-top: 32px;\">© MARKA — A Paperworked product</p>
             </div>
             """
-        })
+        }
+        result = resend.Emails.send(email_payload)
+        if result.get("error"):
+            raise RuntimeError(f"Resend error: {result['error']['message']}")
+        logger.info(f"PIN recovery email sent to {req.email} for MARKA ID {marka_id}")
         logger.info(f"PIN recovery email sent to {req.email} for MARKA ID {marka_id}")
     except Exception as e:
         logger.error(f"Failed to send recovery email for {marka_id}: {e}")
