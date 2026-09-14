@@ -36,9 +36,10 @@ BUBBLE_SPACING_MM = 4.8
 BUBBLE_STROKE_WIDTH_PT = 0.75
 QUESTION_NUMBER_FONT_SIZE_PT = 6.6
 QUESTION_NUMBER_BASELINE_OFFSET_MM = 0.6
-TIMING_TRACK_WIDTH_MM = 1.5
+QUESTION_NUMBER_RIGHT_OFFSET_MM = 6.0
+TIMING_TRACK_WIDTH_MM = 1.2
 TIMING_TRACK_HEIGHT_MM = 2.2
-TIMING_TRACK_LEFT_X_MM = 14.0
+TIMING_TRACK_LEFT_X_MM = 13.2
 TIMING_TRACK_RIGHT_X_MM = 182.5
 
 BRAND_PLUM = colors.HexColor("#3B2545")
@@ -188,7 +189,7 @@ def build_layout(num_questions: int = 100) -> Dict[str, object]:
                     "grid_bottom_mm": GRID_BOTTOM_MM,
                     "bubble_radius_mm": BUBBLE_RADIUS_MM,
                     "bubble_spacing_mm": BUBBLE_SPACING_MM,
-                    "question_number_right_offset_mm": 5.2,
+                    "question_number_right_offset_mm": QUESTION_NUMBER_RIGHT_OFFSET_MM,
                     "question_number_baseline_offset_mm": QUESTION_NUMBER_BASELINE_OFFSET_MM,
                     "timing_track_left_x_mm": TIMING_TRACK_LEFT_X_MM,
                     "timing_track_right_x_mm": TIMING_TRACK_RIGHT_X_MM,
@@ -344,7 +345,7 @@ def _draw_sheet(c: canvas.Canvas, sheet: Dict[str, object]) -> None:
         c.setFont("Helvetica", QUESTION_NUMBER_FONT_SIZE_PT)
         for question, y in rows:
             c.drawRightString(
-                (column_x + 5.2) * mm,
+                (column_x + QUESTION_NUMBER_RIGHT_OFFSET_MM) * mm,
                 (y - QUESTION_NUMBER_BASELINE_OFFSET_MM) * mm,
                 str(question),
             )

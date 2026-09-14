@@ -2,6 +2,7 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
+from reportlab.pdfbase.pdfmetrics import stringWidth
 from reportlab.lib.units import mm
 
 from scripts.generate_v2_omr_sheet import (
@@ -98,6 +99,28 @@ class V2PrototypeGeneratorTests(unittest.TestCase):
             self.assertEqual(len(sheet["bubbles"]), 60 * 5)
             self.assertTrue(all("timing_row_index" in bubble for bubble in sheet["bubbles"]))
             self.assertTrue(all("timing_track_id" not in bubble for bubble in sheet["bubbles"]))
+
+    def test_left_timing_rail_clears_two_digit_labels_and_first_bubble(self):
+        sheet = build_layout()["sheets"][0]
+        left_track = next(
+            track
+            for track in sheet["timing_tracks"]
+            if track["side"] == "left" and track["row_index"] == 9
+        )
+        first_column_x = sheet["answer_grid"]["column_starts_mm"][0]
+        number_right = first_column_x + sheet["answer_grid"]["question_number_right_offset_mm"]
+        label_width_mm = stringWidth("10", "Helvetica", 6.6) / 72 * 25.4
+        label_left = number_right - label_width_mm
+        track_right = left_track["x_mm"] + left_track["width_mm"]
+        first_bubble = next(
+            bubble
+            for bubble in sheet["bubbles"]
+            if bubble["question"] == 10 and bubble["option"] == "A"
+        )
+        first_bubble_left = first_bubble["x_mm"] - first_bubble["radius_mm"]
+
+        self.assertGreaterEqual(label_left - track_right, 0.9)
+        self.assertGreaterEqual(first_bubble_left - number_right, 0.7)
 
     def test_generate_sheet_writes_pdf_and_json(self):
         with tempfile.TemporaryDirectory() as temp_dir:

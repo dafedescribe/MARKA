@@ -12,7 +12,7 @@ Does R07 preserve the scan reliability of R06 while making the sheet cleaner and
 | B — R07 reduced | 4 required corners + 4 optional 6 mm midpoints | 40 shared row marks | Proposed production design |
 | C — R06 full | 9 required 7.5 mm ArUcos | 100 column-local marks | Reliability ceiling / control |
 
-R07 has 48 machine elements versus R06’s 109. Using marker bounding area plus timing-bar area as a consistent print-density proxy, R07 uses about 501 mm² versus 836.25 mm² for R06—a 40.1% reduction. This is a geometry comparison, not a claim about exact toner consumption.
+R07 has 48 machine elements versus R06’s 109. Using marker bounding area plus timing-bar area as a consistent print-density proxy, R07 uses about 474.6 mm² versus 836.25 mm² for R06—a 43.2% reduction. This is a geometry comparison, not a claim about exact toner consumption.
 
 ## Sample
 
