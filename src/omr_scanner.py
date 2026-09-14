@@ -62,6 +62,302 @@ MIN_SHARPNESS = 15.0  # Reduced due to downscaling optimization
 FLIP_MARGIN = 1.3
 
 
+def _is_structured_layout(layout):
+    """Return True for ArUco/timing layouts from R06 onward."""
+    if not isinstance(layout, dict) or int(layout.get("layout_version", 0)) < 3:
+        return False
+    sheets = layout.get("sheets") or []
+    return bool(sheets and sheets[0].get("aruco_anchors") and sheets[0].get("timing_tracks"))
+
+
+def _canonical_anchor_points(sheet):
+    """Return ArUco anchor destinations in aligned-image pixel coordinates."""
+    sheet_w_mm, sheet_h_mm = sheet["sheet_size_mm"]
+    points = {}
+    for anchor in sheet["aruco_anchors"]:
+        x_mm, y_mm = anchor["center_mm"]
+        points[int(anchor["id"])] = np.array(
+            [x_mm * PX_PER_MM, (sheet_h_mm - y_mm) * PX_PER_MM],
+            dtype=np.float32,
+        )
+    return points
+
+
+def _detect_aruco_anchors(gray, sheet):
+    """Detect configured anchors; require corners and tolerate missing optional IDs."""
+    dictionary_name = sheet.get("aruco_dictionary", "DICT_4X4_50")
+    dictionary_id = getattr(cv2.aruco, dictionary_name, cv2.aruco.DICT_4X4_50)
+    dictionary = cv2.aruco.getPredefinedDictionary(dictionary_id)
+    if hasattr(cv2.aruco, "ArucoDetector"):
+        detector = cv2.aruco.ArucoDetector(dictionary, cv2.aruco.DetectorParameters())
+        corners, ids, _ = detector.detectMarkers(gray)
+    else:
+        corners, ids, _ = cv2.aruco.detectMarkers(gray, dictionary)
+
+    registration = sheet.get("registration", {})
+    configured = {int(anchor["id"]) for anchor in sheet["aruco_anchors"]}
+    required = set(registration.get("required_anchor_ids", []))
+    if not required:
+        required = {int(anchor["id"]) for anchor in sheet["aruco_anchors"] if anchor.get("required", True)}
+    found = {}
+    if ids is not None:
+        for marker_corners, marker_id in zip(corners, ids.flatten()):
+            marker_id = int(marker_id)
+            if marker_id not in configured or marker_id in found:
+                continue
+            found[marker_id] = np.asarray(marker_corners, dtype=np.float32).reshape(4, 2).mean(axis=0)
+
+    missing = sorted(required - set(found))
+    if missing:
+        raise ValueError(
+            f"R07 registration failed: missing required corner markers {missing}. "
+            "Keep all four corner markers visible in the photo."
+        )
+    return found
+
+
+def _piecewise_registration_maps(sheet, observed_points, width, height):
+    """Build a destination-to-source mesh from the observed R07 anchors."""
+    canonical = _canonical_anchor_points(sheet)
+    corner_ids = [int(value) for value in sheet.get("registration", {}).get("required_anchor_ids", [0, 2, 4, 6])]
+    corner_dst = np.float32([canonical[i] for i in corner_ids])
+    corner_src = np.float32([observed_points[i] for i in corner_ids])
+    global_map = cv2.getPerspectiveTransform(corner_dst, corner_src)
+
+    center_dst = np.float32([[[width / 2.0, height / 2.0]]])
+    center_src = cv2.perspectiveTransform(center_dst, global_map)[0, 0]
+    points = [(key, value) for key, value in canonical.items() if key in observed_points]
+    sources = {key: observed_points[key] for key in observed_points if key in canonical}
+    points.append(("virtual_center", np.array([width / 2.0, height / 2.0], dtype=np.float32)))
+    sources["virtual_center"] = center_src.astype(np.float32)
+
+    map_x, map_y = np.meshgrid(
+        np.arange(width, dtype=np.float32), np.arange(height, dtype=np.float32)
+    )
+    global_xy = np.stack([map_x, map_y, np.ones_like(map_x)], axis=-1)
+    mapped = global_xy @ global_map.T
+    mapped_z = mapped[..., 2:3]
+    map_x[:, :] = mapped[..., 0] / np.maximum(mapped_z[..., 0], 1e-6)
+    map_y[:, :] = mapped[..., 1] / np.maximum(mapped_z[..., 0], 1e-6)
+
+    subdiv = cv2.Subdiv2D((0, 0, width, height))
+    for _, point in points:
+        subdiv.insert((float(point[0]), float(point[1])))
+
+    def point_index(x, y):
+        distances = [np.linalg.norm(point - np.array([x, y], dtype=np.float32)) for _, point in points]
+        index = int(np.argmin(distances))
+        return index if distances[index] < 2.0 else None
+
+    triangles = set()
+    for triangle in subdiv.getTriangleList():
+        indices = [
+            point_index(triangle[0], triangle[1]),
+            point_index(triangle[2], triangle[3]),
+            point_index(triangle[4], triangle[5]),
+        ]
+        if None not in indices and len(set(indices)) == 3:
+            triangles.add(tuple(sorted(indices)))
+
+    for triangle_indices in triangles:
+        dst_triangle = np.float32([points[i][1] for i in triangle_indices])
+        src_triangle = np.float32([sources[points[i][0]] for i in triangle_indices])
+        affine = cv2.getAffineTransform(dst_triangle, src_triangle)
+        x1 = max(0, int(np.floor(dst_triangle[:, 0].min())))
+        x2 = min(width - 1, int(np.ceil(dst_triangle[:, 0].max())))
+        y1 = max(0, int(np.floor(dst_triangle[:, 1].min())))
+        y2 = min(height - 1, int(np.ceil(dst_triangle[:, 1].max())))
+        if x2 < x1 or y2 < y1:
+            continue
+        grid_y, grid_x = np.mgrid[y1:y2 + 1, x1:x2 + 1]
+        inside = np.zeros((y2 - y1 + 1, x2 - x1 + 1), dtype=np.uint8)
+        cv2.fillConvexPoly(inside, np.round(dst_triangle - [x1, y1]).astype(np.int32), 1)
+        src_x = affine[0, 0] * grid_x + affine[0, 1] * grid_y + affine[0, 2]
+        src_y = affine[1, 0] * grid_x + affine[1, 1] * grid_y + affine[1, 2]
+        target_x = map_x[y1:y2 + 1, x1:x2 + 1]
+        target_y = map_y[y1:y2 + 1, x1:x2 + 1]
+        target_x[inside.astype(bool)] = src_x[inside.astype(bool)]
+        target_y[inside.astype(bool)] = src_y[inside.astype(bool)]
+
+    errors = []
+    for key, destination in canonical.items():
+        if key not in observed_points:
+            continue
+        px, py = np.round(destination).astype(int)
+        predicted = np.array([map_x[py, px], map_y[py, px]])
+        errors.append(float(np.linalg.norm(predicted - observed_points[key])))
+    return map_x, map_y, {
+        "mode": "r07-piecewise",
+        "anchor_error_px": round(max(errors), 3) if errors else 0.0,
+        "anchor_count": len(observed_points),
+    }
+
+
+def _homography_remap(homography, width, height):
+    """Expand a destination-to-source homography into cv2.remap fields."""
+    map_x, map_y = np.meshgrid(
+        np.arange(width, dtype=np.float32), np.arange(height, dtype=np.float32)
+    )
+    destination = np.stack([map_x, map_y, np.ones_like(map_x)], axis=-1)
+    source = destination @ homography.T
+    scale = np.maximum(source[..., 2], 1e-6)
+    return (source[..., 0] / scale).astype(np.float32), (source[..., 1] / scale).astype(np.float32)
+
+
+def _registration_maps(sheet, observed_points, width, height):
+    """Select global or piecewise R07 registration from measured deformation."""
+    canonical = _canonical_anchor_points(sheet)
+    registration = sheet.get("registration", {})
+    required = [int(value) for value in registration.get("required_anchor_ids", [0, 2, 4, 6])]
+    optional = [
+        int(value)
+        for value in registration.get(
+            "optional_anchor_ids",
+            sorted(set(canonical) - set(required)),
+        )
+    ]
+    missing_required = sorted(set(required) - set(observed_points))
+    if missing_required:
+        raise ValueError(
+            f"R07 registration failed: missing required corner markers {missing_required}. "
+            "Keep all four corner markers visible in the photo."
+        )
+
+    corner_dst = np.float32([canonical[marker_id] for marker_id in required])
+    corner_src = np.float32([observed_points[marker_id] for marker_id in required])
+    homography = cv2.getPerspectiveTransform(corner_dst, corner_src)
+    observed_optional = sorted(set(optional) & set(observed_points))
+    missing_optional = sorted(set(optional) - set(observed_points))
+    residuals = []
+    if observed_optional:
+        destinations = np.float32([[canonical[marker_id]] for marker_id in observed_optional])
+        predicted = cv2.perspectiveTransform(destinations, homography).reshape(-1, 2)
+        residuals = [
+            float(np.linalg.norm(prediction - observed_points[marker_id]))
+            for marker_id, prediction in zip(observed_optional, predicted)
+        ]
+
+    max_residual = max(residuals, default=0.0)
+    threshold = float(registration.get("piecewise_activation_error_px", 4.0))
+    min_optional = int(registration.get("piecewise_min_optional_anchors", 2))
+    use_piecewise = len(observed_optional) >= min_optional and max_residual > threshold
+    if use_piecewise:
+        map_x, map_y, diagnostics = _piecewise_registration_maps(
+            sheet, observed_points, width, height
+        )
+    else:
+        map_x, map_y = _homography_remap(homography, width, height)
+        diagnostics = {
+            "mode": "r07-global",
+            "anchor_error_px": round(max_residual, 3),
+            "anchor_count": len(observed_points),
+        }
+
+    diagnostics.update(
+        {
+            "required_marker_ids": sorted(required),
+            "optional_marker_ids": observed_optional,
+            "missing_optional_marker_ids": missing_optional,
+            "optional_residual_px": round(max_residual, 3),
+            "piecewise_threshold_px": threshold,
+        }
+    )
+    return map_x, map_y, diagnostics
+
+
+def _calibrate_r07_timing_rows(gray, sheet):
+    """Calibrate every answer row from the shared left/right timing rails."""
+    sheet_h_mm = float(sheet["sheet_size_mm"][1])
+    tracks = sheet.get("timing_tracks", [])
+    detected = {}
+    missing_ids = []
+
+    for track in tracks:
+        nominal_y = (sheet_h_mm - float(track["y_mm"])) * PX_PER_MM
+        x1 = max(0, int(float(track["x_mm"]) * PX_PER_MM) - 5)
+        x2 = min(
+            gray.shape[1],
+            int((float(track["x_mm"]) + float(track["width_mm"])) * PX_PER_MM) + 5,
+        )
+        y1 = max(0, int(nominal_y) - 18)
+        y2 = min(gray.shape[0], int(nominal_y) + 19)
+        roi = gray[y1:y2, x1:x2]
+        dark_y = np.where(roi < 100)[0]
+        min_dark_pixels = max(8, int(roi.size * 0.05))
+        if dark_y.size < min_dark_pixels:
+            missing_ids.append(int(track["id"]))
+            continue
+        detected[(str(track["side"]), int(track["row_index"]))] = float(y1 + dark_y.mean())
+
+    column_centers = {}
+    for bubble in sheet["bubbles"]:
+        column_centers.setdefault(int(bubble["column_index"]), []).append(float(bubble["x_mm"]))
+    column_centers = {
+        column_index: float(np.median(values))
+        for column_index, values in column_centers.items()
+    }
+
+    track_centers = {}
+    for track in tracks:
+        track_centers.setdefault(str(track["side"]), []).append(
+            float(track["x_mm"]) + float(track["width_mm"]) / 2.0
+        )
+    rail_x = {side: float(np.median(values)) for side, values in track_centers.items()}
+    rows = {}
+    row_indices = sorted({int(bubble["row_index"]) for bubble in sheet["bubbles"]})
+    for row_index in row_indices:
+        row_bubble = next(
+            bubble for bubble in sheet["bubbles"] if int(bubble["row_index"]) == row_index
+        )
+        nominal_y = (sheet_h_mm - float(row_bubble["y_mm"])) * PX_PER_MM
+        left = detected.get(("left", row_index))
+        right = detected.get(("right", row_index))
+        for column_index, column_x in column_centers.items():
+            if left is not None and right is not None:
+                span = max(rail_x["right"] - rail_x["left"], 1e-6)
+                ratio = float(np.clip((column_x - rail_x["left"]) / span, 0.0, 1.0))
+                observed_y = left + ratio * (right - left)
+            elif left is not None:
+                track = next(
+                    item for item in tracks
+                    if item["side"] == "left" and int(item["row_index"]) == row_index
+                )
+                track_nominal_y = (sheet_h_mm - float(track["y_mm"])) * PX_PER_MM
+                observed_y = nominal_y + (left - track_nominal_y)
+            elif right is not None:
+                track = next(
+                    item for item in tracks
+                    if item["side"] == "right" and int(item["row_index"]) == row_index
+                )
+                track_nominal_y = (sheet_h_mm - float(track["y_mm"])) * PX_PER_MM
+                observed_y = nominal_y + (right - track_nominal_y)
+            else:
+                observed_y = nominal_y
+            rows[(column_index, row_index)] = float(observed_y)
+
+    diagnostics = {
+        "mode": "shared-row-rails" if detected else "nominal-fallback",
+        "expected": len(tracks),
+        "detected": len(detected),
+        "missing": len(missing_ids),
+        "missing_track_ids": missing_ids,
+        "used": bool(detected),
+    }
+    return rows, diagnostics
+
+
+def _align_structured_sheet(image, sheet):
+    """Align an ArUco-based sheet with adaptive R07 registration."""
+    gray = image if image.ndim == 2 else cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    observed = _detect_aruco_anchors(gray, sheet)
+    width = int(sheet["sheet_size_mm"][0] * PX_PER_MM)
+    height = int(sheet["sheet_size_mm"][1] * PX_PER_MM)
+    map_x, map_y, diagnostics = _registration_maps(sheet, observed, width, height)
+    aligned = cv2.remap(image, map_x, map_y, cv2.INTER_LINEAR, borderValue=255)
+    diagnostics["marker_ids"] = sorted(observed)
+    return aligned, diagnostics
+
+
 def _find_fiducials(gray):
     """Detect the 4 corner fiducial squares. Returns sorted corners."""
     h_img, w_img = gray.shape
@@ -235,6 +531,9 @@ def _align_sheet(image, sheet):
         "flip_confidence": float,            # >1; closer to 1 = less certain
     }.
     """
+    if sheet.get("aruco_anchors") and sheet.get("timing_tracks"):
+        return _align_structured_sheet(image, sheet)
+
     gray = image if image.ndim == 2 else cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     src_pts = _find_fiducials(gray)
 
@@ -282,7 +581,7 @@ def _check_image_quality(gray):
     return float(laplacian_var)
 
 
-def _compute_adaptive_threshold(gray, bubbles, sheet_h_mm):
+def _compute_adaptive_threshold(gray, bubbles, sheet_h_mm, timing_rows=None):
     """
     Sample ALL bubble regions and compute a threshold relative to the
     actual paper brightness. This handles:
@@ -297,7 +596,9 @@ def _compute_adaptive_threshold(gray, bubbles, sheet_h_mm):
     all_means = []
     for b in bubbles:
         cx = int(b["x_mm"] * PX_PER_MM)
-        cy = int((sheet_h_mm - b["y_mm"]) * PX_PER_MM)
+        cy = int(timing_rows.get((b["column_index"], b["row_index"]),
+                                 (sheet_h_mm - b["y_mm"]) * PX_PER_MM)
+                 if timing_rows else (sheet_h_mm - b["y_mm"]) * PX_PER_MM)
         r = max(int(b["radius_mm"] * PX_PER_MM * 0.65), 2)
 
         y1, y2 = max(0, cy - r), min(gray.shape[0], cy + r)
@@ -326,7 +627,7 @@ def _compute_adaptive_threshold(gray, bubbles, sheet_h_mm):
     return threshold, blank_median
 
 
-def _read_all_bubbles(gray, bubbles, sheet_h_mm, threshold):
+def _read_all_bubbles(gray, bubbles, sheet_h_mm, threshold, timing_rows=None):
     """
     Read all bubbles using fast numpy ROI slicing.
     Returns dict: {question_num: [(option, mean_darkness, confidence), ...]}
@@ -336,7 +637,9 @@ def _read_all_bubbles(gray, bubbles, sheet_h_mm, threshold):
         q = b["question"]
         opt = b["option"]
         cx = int(b["x_mm"] * PX_PER_MM)
-        cy = int((sheet_h_mm - b["y_mm"]) * PX_PER_MM)  # flip Y
+        cy = int(timing_rows.get((b["column_index"], b["row_index"]),
+                                 (sheet_h_mm - b["y_mm"]) * PX_PER_MM)
+                 if timing_rows else (sheet_h_mm - b["y_mm"]) * PX_PER_MM)
         r = max(int(b["radius_mm"] * PX_PER_MM * 0.65), 2)  # sample 65% to avoid border
 
         # Bounds check
@@ -410,12 +713,20 @@ def read_bubbles(image_path, layout_data_or_path):
 
     # Compute adaptive threshold from the actual paper (kept for reporting and as
     # a coarse global reference; the real decision below is per-question local).
+    if sheet.get("timing_tracks"):
+        timing_rows, timing_diagnostics = _calibrate_r07_timing_rows(aligned_gray, sheet)
+    else:
+        timing_rows = None
+        timing_diagnostics = {
+            "mode": "not-used", "expected": 0, "detected": 0,
+            "missing": 0, "missing_track_ids": [], "used": False,
+        }
     threshold, blank_median = _compute_adaptive_threshold(
-        aligned_gray, sheet["bubbles"], sheet_h_mm
+        aligned_gray, sheet["bubbles"], sheet_h_mm, timing_rows
     )
 
     # Read all bubbles
-    raw = _read_all_bubbles(aligned_gray, sheet["bubbles"], sheet_h_mm, threshold)
+    raw = _read_all_bubbles(aligned_gray, sheet["bubbles"], sheet_h_mm, threshold, timing_rows)
 
     # Determine marked options per question with confidence
     marks = {}
@@ -484,6 +795,11 @@ def read_bubbles(image_path, layout_data_or_path):
             "ok": quality_ok
         },
         "orientation": orientation,
+        "registration": {
+            **orientation,
+            "timing_tracks": timing_diagnostics,
+            "mode": orientation.get("mode", "legacy-four-fiducial"),
+        },
         "threshold_used": round(threshold, 1),
         "blank_median": round(blank_median, 1),
         "time_ms": round(elapsed, 2)

@@ -93,6 +93,10 @@ app.add_middleware(
 DATA_DIR = os.path.join(os.path.dirname(__file__), '..', 'data')
 EXAMS_DIR = os.path.join(os.path.dirname(__file__), '..', 'output_packages')
 OMR_DIR = os.path.join(os.path.dirname(__file__), '..', 'omr_output')
+R07_LAYOUT_PATH = os.path.join(
+    os.path.dirname(os.path.dirname(__file__)),
+    'data', 'MARKA', 'layout.json'
+)
 
 
 # ── Credit packs (official pricing) ───────────────────────────────
@@ -129,6 +133,11 @@ def get_exam_dir(exam_code: str) -> str:
 def find_layout_json(exam_code: str) -> str:
     """Find the omr_layout.json or exam.json for an exam code."""
     code = exam_code.upper()
+
+    # MARKA's standard template is the single-sheet R07 contract. Exam-specific
+    # legacy layouts remain available below for existing non-MARKA exams.
+    if code == "MARKA" and os.path.exists(R07_LAYOUT_PATH):
+        return R07_LAYOUT_PATH
 
     # Check omr_output first
     omr_path = os.path.join(OMR_DIR, 'omr_layout.json')
