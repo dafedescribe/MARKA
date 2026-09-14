@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate the lean, deformation-aware, two-up MARKA R07 OMR sheet."""
+"""Generate the high-visibility, deformation-aware MARKA R07-E OMR sheet."""
 
 from __future__ import annotations
 
@@ -31,15 +31,24 @@ ARUCO_MARKER_SIZE_MM = 7.5
 OPTIONAL_ARUCO_MARKER_SIZE_MM = 6.0
 ARUCO_MOAT_MM = 1.7
 
-BUBBLE_RADIUS_MM = 1.75
+BUBBLE_RADIUS_MM = 1.9
 BUBBLE_SPACING_MM = 4.8
-BUBBLE_STROKE_WIDTH_PT = 0.75
-QUESTION_NUMBER_FONT_SIZE_PT = 6.6
-QUESTION_NUMBER_BASELINE_OFFSET_MM = 0.6
+BUBBLE_STROKE_WIDTH_PT = 0.8
+QUESTION_NUMBER_FONT_SIZE_PT = 8.0
+QUESTION_NUMBER_BASELINE_OFFSET_MM = 0.75
 QUESTION_NUMBER_RIGHT_OFFSET_MM = 6.0
-TIMING_TRACK_WIDTH_MM = 1.2
+OPTION_HEADER_FONT_SIZE_PT = 8.0
+RANGE_HEADER_FONT_SIZE_PT = 7.0
+FIELD_LABEL_FONT_SIZE_PT = 6.8
+INSTRUCTION_FONT_SIZE_PT = 6.5
+FOOTER_FONT_SIZE_PT = 6.0
+GROUP_HEADER_Y_MM = 99.3
+GROUP_HEADER_HEIGHT_MM = 4.2
+GROUP_HEADER_BASELINE_MM = 100.5
+RANGE_HEADER_RIGHT_OFFSET_MM = 6.0
+TIMING_TRACK_WIDTH_MM = 1.0
 TIMING_TRACK_HEIGHT_MM = 2.2
-TIMING_TRACK_LEFT_X_MM = 13.2
+TIMING_TRACK_LEFT_X_MM = 12.9
 TIMING_TRACK_RIGHT_X_MM = 182.5
 
 BRAND_PLUM = colors.HexColor("#3B2545")
@@ -59,15 +68,15 @@ SHEET_CENTER_Y_MM = SHEET_H_MM / 2.0
 COLUMN_X_MM = [12.0, 47.0, 82.0, 117.0, 152.0]
 # Every answer column uses the same x rhythm.
 BUBBLE_OFFSETS_MM = [8.5, 8.5, 8.5, 8.5, 8.5]
-GRID_TOP_MM = 95.0
-GRID_BOTTOM_MM = 19.0
+GRID_TOP_MM = 96.9
+GRID_BOTTOM_MM = 15.2
 
 FIELD_DEFS = (
-    ("name", "Name", 12.0, 104.0, 55.0, 7.2),
-    ("student_id", "Student ID", 70.0, 104.0, 21.0, 7.2),
-    ("class", "Class", 105.0, 104.0, 22.0, 7.2),
-    ("subject", "Subject", 130.0, 104.0, 32.0, 7.2),
-    ("date", "Date", 165.0, 104.0, 24.0, 7.2),
+    ("name", "Name", 12.0, 104.0, 55.0, 8.4),
+    ("student_id", "Student ID", 70.0, 104.0, 21.0, 8.4),
+    ("class", "Class", 105.0, 104.0, 22.0, 8.4),
+    ("subject", "Subject", 130.0, 104.0, 32.0, 8.4),
+    ("date", "Date", 165.0, 104.0, 24.0, 8.4),
 )
 
 
@@ -168,7 +177,7 @@ def build_layout(num_questions: int = 100) -> Dict[str, object]:
 
         sheets.append(
             {
-                "sheet_id": f"MARKA-R07-{sheet_number:04d}",
+                "sheet_id": f"MARKA-R07E-{sheet_number:04d}",
                 "page": 1,
                 "origin_on_page_mm": origin,
                 "sheet_size_mm": [SHEET_W_MM, SHEET_H_MM],
@@ -193,6 +202,13 @@ def build_layout(num_questions: int = 100) -> Dict[str, object]:
                     "question_number_baseline_offset_mm": QUESTION_NUMBER_BASELINE_OFFSET_MM,
                     "timing_track_left_x_mm": TIMING_TRACK_LEFT_X_MM,
                     "timing_track_right_x_mm": TIMING_TRACK_RIGHT_X_MM,
+                    "group_header": {
+                        "layout": "single-line",
+                        "y_mm": GROUP_HEADER_Y_MM,
+                        "height_mm": GROUP_HEADER_HEIGHT_MM,
+                        "baseline_mm": GROUP_HEADER_BASELINE_MM,
+                        "range_right_offset_mm": RANGE_HEADER_RIGHT_OFFSET_MM,
+                    },
                 },
                 "branding": {
                     "logo_box": {"x_mm": 12.0, "y_mm": 119.0, "w_mm": 18.0, "h_mm": 12.0},
@@ -207,7 +223,7 @@ def build_layout(num_questions: int = 100) -> Dict[str, object]:
 
     return {
         "layout_version": 4,
-        "template_revision": "R07",
+        "template_revision": "R07-E",
         "aruco_dictionary": ARUCO_DICTIONARY,
         "num_questions": num_questions,
         "num_choices": 5,
@@ -245,12 +261,12 @@ def _draw_field(c: canvas.Canvas, field: Dict[str, object]) -> None:
     c.setStrokeColor(RULE)
     c.setLineWidth(0.5)
     c.roundRect(x * mm, y * mm, width * mm, height * mm, 0.8 * mm, fill=1, stroke=1)
-    c.setFillColor(MUTED_INK)
-    c.setFont("Helvetica-Bold", 5.4)
-    c.drawString((x + 2.0) * mm, (y + height - 2.5) * mm, str(field["label"]).upper())
+    c.setFillColor(INK)
+    c.setFont("Helvetica-Bold", FIELD_LABEL_FONT_SIZE_PT)
+    c.drawString((x + 2.0) * mm, (y + height - 2.7) * mm, str(field["label"]).upper())
     c.setStrokeColor(RULE)
-    c.setLineWidth(0.3)
-    c.line((x + 1.8) * mm, (y + height - 3.3) * mm, (x + width - 1.8) * mm, (y + height - 3.3) * mm)
+    c.setLineWidth(0.35)
+    c.line((x + 1.8) * mm, (y + height - 3.8) * mm, (x + width - 1.8) * mm, (y + height - 3.8) * mm)
 
 
 def _draw_sheet(c: canvas.Canvas, sheet: Dict[str, object]) -> None:
@@ -297,33 +313,38 @@ def _draw_sheet(c: canvas.Canvas, sheet: Dict[str, object]) -> None:
     c.setStrokeColor(colors.white)
     c.setLineWidth(0.45)
     c.roundRect(13 * mm, 119 * mm, 18 * mm, 12 * mm, 0.8 * mm, fill=0, stroke=1)
-    c.setFont("Helvetica-Bold", 5.0)
+    c.setFont("Helvetica-Bold", 6.0)
     c.drawCentredString(22 * mm, 124.3 * mm, "LOGO")
-    c.setFont("Helvetica-Bold", 9.2)
+    c.setFont("Helvetica-Bold", 10.0)
     c.drawString(34 * mm, 128 * mm, "SCHOOL / COMPANY NAME")
-    c.setFont("Helvetica", 5.8)
+    c.setFont("Helvetica", 6.0)
     c.drawString(34 * mm, 122.8 * mm, "Address  •  Phone  •  Email")
-    c.setFont("Helvetica-Bold", 5.8)
+    c.setFont("Helvetica-Bold", INSTRUCTION_FONT_SIZE_PT)
+    c.drawString(34 * mm, 117.6 * mm, "SHADE ONE OPTION FULLY  •  DARK PENCIL OR PEN")
+    c.setFont("Helvetica-Bold", 6.3)
     c.drawRightString((SHEET_W_MM - 15) * mm, 128 * mm, "STUDENT ANSWER SHEET")
-    c.setFont("Helvetica", 5.0)
+    c.setFont("Helvetica", 6.0)
     c.drawRightString((SHEET_W_MM - 15) * mm, 122.8 * mm, "MARKA ID / EXAM CODE")
 
     for field in sheet["fields"]:  # type: ignore[union-attr]
         _draw_field(c, field)
-    c.setFillColor(MUTED_INK)
-    c.setFont("Helvetica", 6.2)
-    c.drawString(12 * mm, 102.4 * mm, "Fill one bubble per question. Use a dark pencil or pen.")
 
     for column_index, column_x in enumerate(COLUMN_X_MM):
         questions = sorted({b["question"] for b in sheet["bubbles"] if b["column_index"] == column_index})  # type: ignore[index]
         c.setFillColor(BRAND_PLUM_LIGHT)
-        c.roundRect((column_x - 1) * mm, 97.0 * mm, 32 * mm, 4.8 * mm, 0.7 * mm, fill=1, stroke=0)
+        c.roundRect(
+            (column_x - 1) * mm, GROUP_HEADER_Y_MM * mm,
+            32 * mm, GROUP_HEADER_HEIGHT_MM * mm, 0.7 * mm, fill=1, stroke=0)
         c.setFillColor(BRAND_PLUM)
-        c.setFont("Helvetica-Bold", 5.8)
-        c.drawString((column_x + 2.5) * mm, 99.6 * mm, f"{questions[0]:02d}–{questions[-1]:02d}")
-        c.setFont("Helvetica-Bold", 5.8)
+        c.setFont("Helvetica-Bold", RANGE_HEADER_FONT_SIZE_PT)
+        c.drawRightString(
+            (column_x + RANGE_HEADER_RIGHT_OFFSET_MM) * mm,
+            GROUP_HEADER_BASELINE_MM * mm,
+            f"{questions[0]:02d}–{questions[-1]:02d}",
+        )
+        c.setFont("Helvetica-Bold", OPTION_HEADER_FONT_SIZE_PT)
         for option_index, option in enumerate("ABCDE"):
-            c.drawCentredString((column_x + BUBBLE_OFFSETS_MM[column_index] + option_index * BUBBLE_SPACING_MM) * mm, 97.7 * mm, option)
+            c.drawCentredString((column_x + BUBBLE_OFFSETS_MM[column_index] + option_index * BUBBLE_SPACING_MM)   * mm, GROUP_HEADER_BASELINE_MM * mm, option)
 
     for track in sheet["timing_tracks"]:  # type: ignore[union-attr]
         y = float(track["y_mm"])
@@ -342,7 +363,7 @@ def _draw_sheet(c: canvas.Canvas, sheet: Dict[str, object]) -> None:
             {(int(b["question"]), float(b["y_mm"])) for b in sheet["bubbles"] if b["column_index"] == column_index}
         )
         c.setFillColor(INK)
-        c.setFont("Helvetica", QUESTION_NUMBER_FONT_SIZE_PT)
+        c.setFont("Helvetica-Bold", QUESTION_NUMBER_FONT_SIZE_PT)
         for question, y in rows:
             c.drawRightString(
                 (column_x + QUESTION_NUMBER_RIGHT_OFFSET_MM) * mm,
@@ -357,9 +378,9 @@ def _draw_sheet(c: canvas.Canvas, sheet: Dict[str, object]) -> None:
                  float(bubble["radius_mm"]) * mm, fill=0, stroke=1)
 
     c.setFillColor(MUTED_INK)
-    c.setFont("Helvetica", 5.2)
-    c.drawString(15 * mm, 4.2 * mm, "REV R07  •  PRINT AT 100%  •  DO NOT FIT TO PAGE")
-    c.setFont("Helvetica", 5.0)
+    c.setFont("Helvetica", FOOTER_FONT_SIZE_PT)
+    c.drawString(15 * mm, 4.2 * mm, "REV R07-E  •  PRINT AT 100%  •  DO NOT FIT TO PAGE")
+    c.setFont("Helvetica", FOOTER_FONT_SIZE_PT)
     c.drawString(15 * mm, 9.0 * mm, "KEEP FIDUCIALS VISIBLE  •  DO NOT FOLD")
 
     for anchor in sheet["aruco_anchors"]:  # type: ignore[union-attr]
@@ -376,7 +397,7 @@ def _draw_page_controls(c: canvas.Canvas) -> None:
     c.line(PAGE_MARGIN_MM * mm, cut_y * mm, (PAGE_W_MM - PAGE_MARGIN_MM) * mm, cut_y * mm)
     c.setDash()
     c.setFillColor(MUTED_INK)
-    c.setFont("Helvetica-Bold", 5.0)
+    c.setFont("Helvetica-Bold", 6.0)
     c.drawCentredString(PAGE_W_MM / 2.0 * mm, (cut_y + 0.9) * mm, "CUT HERE  •  TWO EQUAL A5-LIKE FORMS")
     c.restoreState()
 
@@ -385,14 +406,14 @@ def generate_sheet(output_dir: str | os.PathLike[str], num_questions: int = 100)
     output_path = Path(output_dir)
     output_path.mkdir(parents=True, exist_ok=True)
     layout = build_layout(num_questions=num_questions)
-    pdf_path = output_path / "marka_r07_omr_prototype.pdf"
-    json_path = output_path / "marka_r07_omr_layout.json"
+    pdf_path = output_path / "marka_r07e_omr_prototype.pdf"
+    json_path = output_path / "marka_r07e_omr_layout.json"
 
     pdf = canvas.Canvas(str(pdf_path), pagesize=A4)
     for sheet in layout["sheets"]:  # type: ignore[union-attr]
         _draw_sheet(pdf, sheet)
     _draw_page_controls(pdf)
-    pdf.setTitle("MARKA R07 Lean Two-up OMR Template")
+    pdf.setTitle("MARKA R07-E High-Visibility Two-up OMR Template")
     pdf.setAuthor("MARKA")
     pdf.save()
     json_path.write_text(json.dumps(layout, indent=2) + "\n", encoding="utf-8")

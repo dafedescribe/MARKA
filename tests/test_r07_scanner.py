@@ -62,7 +62,11 @@ class R07ScannerTests(unittest.TestCase):
         self.assertEqual(diagnostics["expected"], 40)
         self.assertEqual(diagnostics["detected"], 0)
         self.assertFalse(diagnostics["used"])
-        expected_y = (self.sheet["sheet_size_mm"][1] - 95.0) * 10
+        first_row_y_mm = next(
+            bubble["y_mm"] for bubble in self.sheet["bubbles"]
+            if bubble["column_index"] == 0 and bubble["row_index"] == 0
+        )
+        expected_y = (self.sheet["sheet_size_mm"][1] - first_row_y_mm) * 10
         self.assertAlmostEqual(calibrated[(0, 0)], expected_y, delta=0.1)
 
     def _observed_markers(self, marker_ids):

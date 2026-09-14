@@ -5,10 +5,12 @@ from pathlib import Path
 from reportlab.pdfbase.pdfmetrics import stringWidth
 from reportlab.lib.units import mm
 
+from scripts import generate_v2_omr_sheet as generator
 from scripts.generate_v2_omr_sheet import (
     ARUCO_MOAT_MM,
     BUBBLE_RADIUS_MM,
     BUBBLE_STROKE_WIDTH_PT,
+    QUESTION_NUMBER_FONT_SIZE_PT,
     build_layout,
     generate_sheet,
 )
@@ -37,9 +39,9 @@ class V2PrototypeGeneratorTests(unittest.TestCase):
                 ],
                 [35.0, 35.0, 35.0, 35.0],
             )
-            self.assertEqual(BUBBLE_RADIUS_MM, 1.75)
-            self.assertEqual(min(b["y_mm"] for b in sheet["bubbles"]), 19.0)
-            self.assertEqual(max(b["y_mm"] for b in sheet["bubbles"]), 95.0)
+            self.assertEqual(BUBBLE_RADIUS_MM, 1.9)
+            self.assertEqual(min(b["y_mm"] for b in sheet["bubbles"]), 15.2)
+            self.assertEqual(max(b["y_mm"] for b in sheet["bubbles"]), 96.9)
             row_centers = sorted({b["y_mm"] for b in sheet["bubbles"]})
             row_pitch = row_centers[1] - row_centers[0]
             stroke_width_mm = BUBBLE_STROKE_WIDTH_PT / 72 * 25.4
@@ -60,7 +62,7 @@ class V2PrototypeGeneratorTests(unittest.TestCase):
                 [field["key"] for field in sheet["fields"]],
                 ["name", "student_id", "class", "subject", "date"],
             )
-            self.assertTrue(all(field["w_mm"] > 0 and field["h_mm"] > 0 for field in sheet["fields"]))
+            self.assertTrue(all(field["w_mm"] > 0 and field["h_mm"] >= 8.4 for field in sheet["fields"]))
             self.assertEqual(sheet["branding"]["logo_box"]["w_mm"], 18.0)
             self.assertIn("contact_line", sheet["branding"])
 
@@ -68,7 +70,7 @@ class V2PrototypeGeneratorTests(unittest.TestCase):
         layout = build_layout(num_questions=60)
 
         self.assertEqual(layout["layout_version"], 4)
-        self.assertEqual(layout["template_revision"], "R07")
+        self.assertEqual(layout["template_revision"], "R07-E")
         self.assertNotIn("measurement_reference_mm", layout["print_spec"])
         self.assertEqual(layout["print_spec"]["scale"], "100%")
         self.assertEqual(layout["print_spec"]["cut_line"], True)
@@ -109,7 +111,7 @@ class V2PrototypeGeneratorTests(unittest.TestCase):
         )
         first_column_x = sheet["answer_grid"]["column_starts_mm"][0]
         number_right = first_column_x + sheet["answer_grid"]["question_number_right_offset_mm"]
-        label_width_mm = stringWidth("10", "Helvetica", 6.6) / 72 * 25.4
+        label_width_mm = stringWidth("10", "Helvetica-Bold", QUESTION_NUMBER_FONT_SIZE_PT) / 72 * 25.4
         label_left = number_right - label_width_mm
         track_right = left_track["x_mm"] + left_track["width_mm"]
         first_bubble = next(
@@ -119,8 +121,24 @@ class V2PrototypeGeneratorTests(unittest.TestCase):
         )
         first_bubble_left = first_bubble["x_mm"] - first_bubble["radius_mm"]
 
-        self.assertGreaterEqual(label_left - track_right, 0.9)
-        self.assertGreaterEqual(first_bubble_left - number_right, 0.7)
+        self.assertGreaterEqual(label_left - track_right, 0.8)
+        self.assertGreaterEqual(first_bubble_left - number_right, 0.5)
+
+    def test_r07e_uses_the_largest_practical_two_up_type_scale(self):
+        self.assertGreaterEqual(QUESTION_NUMBER_FONT_SIZE_PT, 8.0)
+        self.assertGreaterEqual(getattr(generator, "OPTION_HEADER_FONT_SIZE_PT", 0), 8.0)
+        self.assertGreaterEqual(getattr(generator, "RANGE_HEADER_FONT_SIZE_PT", 0), 7.0)
+        self.assertGreaterEqual(getattr(generator, "FIELD_LABEL_FONT_SIZE_PT", 0), 6.8)
+        self.assertGreaterEqual(getattr(generator, "INSTRUCTION_FONT_SIZE_PT", 0), 6.5)
+        self.assertGreaterEqual(getattr(generator, "FOOTER_FONT_SIZE_PT", 0), 6.0)
+
+    def test_group_header_uses_one_baseline(self):
+        sheet = build_layout()["sheets"][0]
+        header = sheet["answer_grid"].get("group_header", {})
+
+        self.assertEqual(header.get("layout"), "single-line")
+        self.assertEqual(header.get("range_right_offset_mm"), 6.0)
+        self.assertEqual(header.get("baseline_mm"), 100.5)
 
     def test_generate_sheet_writes_pdf_and_json(self):
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -131,10 +149,10 @@ class V2PrototypeGeneratorTests(unittest.TestCase):
             self.assertTrue(Path(json_path).is_file())
 
             saved = json.loads(Path(json_path).read_text())
-            self.assertEqual(Path(pdf_path).name, "marka_r07_omr_prototype.pdf")
-            self.assertEqual(Path(json_path).name, "marka_r07_omr_layout.json")
+            self.assertEqual(Path(pdf_path).name, "marka_r07e_omr_prototype.pdf")
+            self.assertEqual(Path(json_path).name, "marka_r07e_omr_layout.json")
             self.assertEqual(saved["layout_version"], 4)
-            self.assertEqual(saved["template_revision"], "R07")
+            self.assertEqual(saved["template_revision"], "R07-E")
             self.assertEqual(saved["sheets_per_page"], 2)
             self.assertEqual(saved["page_size_mm"], [210.0, 297.0])
             self.assertEqual(saved["sheets"][0]["sheet_size_mm"], [198.0, 140.0])

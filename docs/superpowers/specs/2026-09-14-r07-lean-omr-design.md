@@ -5,18 +5,18 @@
 
 ## Purpose
 
-R07 keeps MARKA focused on its core advantage: helping people practise on paper under realistic time pressure while preserving fast digital self-evaluation. The form must feel like a credible assessment document, not a machine calibration target.
+R07-E keeps MARKA focused on its core advantage: helping people practise on paper under realistic time pressure while preserving fast digital self-evaluation. The form must feel like a credible assessment document, not a machine calibration target.
 
 ## Printed form
 
-Each A4 page contains two 198 × 140 mm, 100-question forms. The existing five-column answer grid, writing fields, calm plum identity, print-at-100% warning, and cut line remain. The centre registration marker is removed.
+Each A4 page contains two 198 × 140 mm, 100-question forms. R07-E enlarges essential typography and bubbles to the practical limit of that compact geometry. The existing five-column answer grid, writing fields, calm plum identity, print-at-100% warning, and cut line remain. The centre registration marker is removed.
 
 The form has eight unique ArUco markers:
 
 - IDs 0, 2, 4, and 6 are mandatory 7.5 mm corner markers.
 - IDs 1, 3, 5, and 7 are optional 6 mm edge-midpoint markers.
 
-The answer grid uses 40 timing marks: one left and one right mark for each of 20 shared row positions. Question numbers are rendered independently, so timing geometry does not dictate the reading experience.
+The high-visibility answer grid uses single-line group headers, 8 pt bold question numbers, 8 pt option labels, 3.8 mm bubbles, 4.3 mm row spacing, and 40 timing marks: one left and one right mark for each of 20 shared row positions. Question numbers are rendered independently, so timing geometry does not dictate the reading experience.
 
 ## Registration behavior
 

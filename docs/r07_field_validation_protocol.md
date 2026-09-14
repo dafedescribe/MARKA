@@ -9,10 +9,10 @@ Does R07 preserve the scan reliability of R06 while making the sheet cleaner and
 | Variant | Registration | Timing | Purpose |
 | --- | --- | --- | --- |
 | A — corners only | 4 required corner ArUcos | None | Minimum viable geometry |
-| B — R07 reduced | 4 required corners + 4 optional 6 mm midpoints | 40 shared row marks | Proposed production design |
+| B — R07-E reduced | 4 required corners + 4 optional 6 mm midpoints | 40 shared row marks | Proposed production design |
 | C — R06 full | 9 required 7.5 mm ArUcos | 100 column-local marks | Reliability ceiling / control |
 
-R07 has 48 machine elements versus R06’s 109. Using marker bounding area plus timing-bar area as a consistent print-density proxy, R07 uses about 474.6 mm² versus 836.25 mm² for R06—a 43.2% reduction. This is a geometry comparison, not a claim about exact toner consumption.
+R07-E has 48 machine elements versus R06’s 109. Using marker bounding area plus timing-bar area as a consistent print-density proxy, R07-E uses about 457 mm² versus 836.25 mm² for R06—a 45.4% reduction. This is a geometry comparison, not a claim about exact toner consumption.
 
 ## Sample
 
@@ -46,7 +46,7 @@ After the scan exercise, show the three blank forms without labels to at least 1
 
 ## Retain / remove gates
 
-Retain R07 as the production candidate only if all are true:
+Retain R07-E as the production candidate only if all are true:
 
 - overall answer accuracy is no more than 0.5 percentage points below R06;
 - first-scan success and manual retry rate are no worse than R06;
