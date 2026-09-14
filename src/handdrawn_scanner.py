@@ -228,3 +228,129 @@ def align_handdrawn_page(image_or_path, profile=None):
     diagnostics["quality"] = quality
     diagnostics["corrected_degrees"] = 0
     return aligned, diagnostics
+
+
+
+def _line_projection(binary: np.ndarray, orientation: str) -> np.ndarray:
+    kernel_shape = (25, 1) if orientation == "vertical" else (1, 25)
+    opened = cv2.morphologyEx(
+        binary,
+        cv2.MORPH_OPEN,
+        np.ones(kernel_shape, dtype=np.uint8),
+    )
+    axis = 0 if orientation == "vertical" else 1
+    return np.count_nonzero(opened, axis=axis).astype(np.float32)
+
+
+def _find_expected_lines(
+    projection: np.ndarray,
+    expected_px,
+    search_radius_px: int,
+    minimum_evidence: float,
+):
+    found = []
+    for expected in expected_px:
+        start = max(0, int(round(expected)) - search_radius_px)
+        stop = min(len(projection), int(round(expected)) + search_radius_px + 1)
+        local = projection[start:stop]
+        if local.size == 0 or float(local.max()) < minimum_evidence:
+            raise HanddrawnScanError(
+                "GRID_TOPOLOGY_UNSAFE",
+                "The two 20-row grids could not be read safely.",
+                "Check every ruler line and retake the photograph.",
+            )
+        peak = float(local.max())
+        peak_indices = np.flatnonzero(local >= peak * 0.92)
+        found.append(start + int(round(float(peak_indices.mean()))))
+    return found
+
+
+def _validate_axis_spacing(lines, minimum=40, maximum=60):
+    spacing = np.diff(np.asarray(lines, dtype=np.float32))
+    if np.any(spacing < minimum) or np.any(spacing > maximum):
+        raise HanddrawnScanError(
+            "GRID_TOPOLOGY_UNSAFE",
+            "The ruler lines do not form consistent 1 cm boxes.",
+            "Check both grids and redraw any missing or doubled line.",
+        )
+
+
+def detect_handdrawn_grid(aligned: np.ndarray, profile: dict) -> dict:
+    "Find the actual 21 horizontal and seven vertical grid lines per block."
+    gray = aligned if aligned.ndim == 2 else cv2.cvtColor(aligned, cv2.COLOR_BGR2GRAY)
+    binary = cv2.adaptiveThreshold(
+        gray,
+        255,
+        cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+        cv2.THRESH_BINARY_INV,
+        31,
+        9,
+    )
+    result = {}
+    radius = 18
+    for grid_definition in profile["grids"]:
+        left, top, right, bottom = [
+            value * CANONICAL_PX_PER_MM for value in grid_definition["bounds_mm"]
+        ]
+        pad = 22
+        x1 = max(0, int(left - pad))
+        x2 = min(gray.shape[1], int(right + pad + 1))
+        y1 = max(0, int(top - pad))
+        y2 = min(gray.shape[0], int(bottom + pad + 1))
+
+        vertical_crop = binary[int(top):int(bottom) + 1, x1:x2]
+        vertical_projection = _line_projection(vertical_crop, "vertical")
+        expected_vertical = [
+            left - x1 + index * 10 * CANONICAL_PX_PER_MM for index in range(7)
+        ]
+        vertical_local = _find_expected_lines(
+            vertical_projection,
+            expected_vertical,
+            radius,
+            minimum_evidence=(bottom - top) * 0.40,
+        )
+        vertical = [x1 + value for value in vertical_local]
+
+        horizontal_crop = binary[y1:y2, int(left):int(right) + 1]
+        horizontal_projection = _line_projection(horizontal_crop, "horizontal")
+        expected_horizontal = [
+            top - y1 + index * 10 * CANONICAL_PX_PER_MM for index in range(21)
+        ]
+        horizontal_local = _find_expected_lines(
+            horizontal_projection,
+            expected_horizontal,
+            radius,
+            minimum_evidence=(right - left) * 0.40,
+        )
+        horizontal = [y1 + value for value in horizontal_local]
+
+        _validate_axis_spacing(vertical)
+        _validate_axis_spacing(horizontal)
+        result[grid_definition["id"]] = {
+            "vertical_lines_px": vertical,
+            "horizontal_lines_px": horizontal,
+            "questions": list(grid_definition["questions"]),
+        }
+    return result
+
+
+def build_handdrawn_cells(grid: dict, profile: dict):
+    "Map questions 1–40 and A–E to measured pixel rectangles."
+    cells = {}
+    for grid_definition in profile["grids"]:
+        measured = grid[grid_definition["id"]]
+        vertical = measured["vertical_lines_px"]
+        horizontal = measured["horizontal_lines_px"]
+        first_question = int(grid_definition["questions"][0])
+        for row in range(20):
+            question = first_question + row
+            cells[question] = {}
+            for choice_index, option in enumerate(profile["choices"]):
+                column = choice_index + 1
+                cells[question][option] = (
+                    int(vertical[column]),
+                    int(horizontal[row]),
+                    int(vertical[column + 1]),
+                    int(horizontal[row + 1]),
+                )
+    return cells
