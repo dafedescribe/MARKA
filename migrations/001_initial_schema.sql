@@ -28,6 +28,8 @@ CREATE TABLE IF NOT EXISTS public.scans (
   user_id           UUID REFERENCES public.users(id),
   exam_id           UUID REFERENCES public.exams(id),
   scan_id           VARCHAR NOT NULL UNIQUE,
+  layout_mode       VARCHAR NOT NULL DEFAULT 'PRINTED_R07E'
+                    CHECK (layout_mode IN ('PRINTED_R07E', 'HANDDRAWN_A4_40_V1')),
   status            VARCHAR DEFAULT 'processing',
   score             INTEGER,
   total             INTEGER,

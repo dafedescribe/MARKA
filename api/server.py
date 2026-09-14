@@ -51,10 +51,11 @@ import urllib.error
 import urllib.parse
 import base64
 import resend
+from typing import Literal
 
 
 
-from omr_scanner import read_bubbles, grade_and_render
+from scanner_dispatch import PRINTED_R07E, grade_sheet, read_sheet
 from database import supabase
 from auth import generate_marka_id, generate_pin, get_password_hash, verify_password, create_access_token
 from pydantic import BaseModel, constr
@@ -219,6 +220,7 @@ class LoginRequest(BaseModel):
 class ProcessScanRequest(BaseModel):
     scan_id: str
     exam_code: constr(max_length=50) = None  # type: ignore
+    layout_mode: Literal["PRINTED_R07E", "HANDDRAWN_A4_40_V1"] = PRINTED_R07E
 
 class ExamRequest(BaseModel):
     exam_code: constr(max_length=50)  # type: ignore
@@ -584,7 +586,7 @@ def get_presigned_url(request: Request, scan_id: str, user_id: str = Depends(get
         raise HTTPException(500, str(e))
 
 
-def process_scan_background(scan_id: str, exam_code: str, user_id: str):
+def process_scan_background(scan_id: str, exam_code: str, user_id: str, layout_mode: str = PRINTED_R07E):
     """Background task to process a scan uploaded to Supabase."""
     if not supabase:
         print("Error: Supabase not configured")
@@ -621,6 +623,7 @@ def process_scan_background(scan_id: str, exam_code: str, user_id: str):
             "scan_id": scan_id,
             "user_id": user_id,
             "exam_id": exam_id,
+            "layout_mode": layout_mode,
             "status": "processing"
         }).execute()
 
@@ -642,7 +645,7 @@ def process_scan_background(scan_id: str, exam_code: str, user_id: str):
         if not layout_path and not GLOBAL_LAYOUT_DATA:
             raise ValueError(f"No OMR layout available for exam '{code}'.")
 
-        result = read_bubbles(tmp_path, GLOBAL_LAYOUT_DATA or layout_path)
+        result = read_sheet(tmp_path, GLOBAL_LAYOUT_DATA or layout_path, layout_mode)
         result["scan_id"] = scan_id
 
         # Ensure answer key exists
@@ -661,7 +664,10 @@ def process_scan_background(scan_id: str, exam_code: str, user_id: str):
 
         if answers:
             out_path = tmp_path.replace(".jpg", "_graded.jpg")
-            grade_result = grade_and_render(result, answers, tmp_path, GLOBAL_LAYOUT_DATA or layout_path, out_path)
+            grade_result = grade_sheet(
+                result, answers, tmp_path, GLOBAL_LAYOUT_DATA or layout_path,
+                out_path, layout_mode,
+            )
             score = grade_result["score"]
             total = grade_result["total"]
             percentage = grade_result["percentage"]
@@ -752,8 +758,8 @@ def _scan_worker():
     while True:
         job = _scan_queue.get()
         try:
-            scan_id, exam_code, user_id = job
-            process_scan_background(scan_id, exam_code, user_id)
+            scan_id, exam_code, user_id, layout_mode = job
+            process_scan_background(scan_id, exam_code, user_id, layout_mode)
         except Exception:
             # process_scan_background already records failures on the scan row;
             # this is a last-resort guard so one bad job can never kill the worker.
@@ -768,6 +774,12 @@ def _start_scan_worker():
     logger.info("Scan worker started (grading is serialized, 1 at a time)")
 
 
+def _enqueue_scan(scan_id, exam_code, user_id, layout_mode):
+    job = (scan_id, exam_code, user_id, layout_mode)
+    _scan_queue.put(job)
+    return _scan_queue.qsize()
+
+
 @app.post("/process-scan")
 @limiter.limit("10/second")
 def trigger_process_scan(request: Request, req: ProcessScanRequest, user_id: str = Depends(get_current_user)):
@@ -779,11 +791,11 @@ def trigger_process_scan(request: Request, req: ProcessScanRequest, user_id: str
         if not user_res.data or user_res.data[0]['credits'] <= 0:
             raise HTTPException(402, "Insufficient credits")
 
-    _scan_queue.put((req.scan_id, req.exam_code, user_id))
+    queue_depth = _enqueue_scan(req.scan_id, req.exam_code, user_id, req.layout_mode)
     return {
         "message": "Processing started",
         "scan_id": req.scan_id,
-        "queue_depth": _scan_queue.qsize(),
+        "queue_depth": queue_depth,
     }
 
 
