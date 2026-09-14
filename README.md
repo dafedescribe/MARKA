@@ -188,6 +188,39 @@ Ran 3 tests in 0.20s
 OK
 ```
 
+### Hand-drawn 40 mode
+
+MARKA also supports one ruler-drawn A4 answer sheet with questions 1–40 and
+choices A–E. The learner draws the reusable sheet once using the one-centimetre
+guide, answers with a pencil X or tick, and does not need a phone. After the
+practice or assessment, the teacher selects **Hand-drawn 40** in Scan & Grade and
+uploads the photographs. V1 does not OCR learner details, merge sheets beyond 40
+questions, or track individual duration; the teacher controls the timed session.
+
+Generate the two-page construction guide and preview:
+
+```bash
+./.venv/bin/python scripts/generate_handdrawn_a4_40_guide.py
+```
+
+Run the hand-drawn scanner tests:
+
+```bash
+./.venv/bin/python -m pytest tests/test_handdrawn_*.py tests/test_scanner_dispatch.py -q
+```
+
+Before production release, build a ground-truthed physical corpus using
+[`docs/handdrawn_a4_40_field_validation.md`](docs/handdrawn_a4_40_field_validation.md),
+then run:
+
+```bash
+./.venv/bin/python scripts/benchmark_handdrawn_a4_40.py path/to/corpus \
+  --json path/to/corpus/report.json
+```
+
+Synthetic tests confirm code behavior, not field reliability. Release remains
+blocked until at least 100 independently drawn sheets meet every documented gate.
+
 ---
 
 ## 🚢 Deployment
