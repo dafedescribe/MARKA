@@ -1,16 +1,25 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { Upload, FileText, CheckCircle, XCircle, Loader2, Play, AlertTriangle, RefreshCw, Plus, Images, Sun, Maximize, PenLine, ScanLine } from 'lucide-react';
+import { HANDDRAWN_A4_40_V1, PRINTED_R07E, captureTipsForMode } from '../lib/scanModes';
 
-const CAPTURE_TIPS = [
-  { icon: Sun, title: 'Even, bright light', desc: 'No shadows across the sheet' },
-  { icon: Maximize, title: 'Flat & fully in frame', desc: 'All 4 corner squares visible' },
-  { icon: PenLine, title: 'Fill bubbles darkly', desc: 'Dark pencil or pen, fully shaded' },
-  { icon: ScanLine, title: 'Straight & in focus', desc: 'Shoot from directly above' },
+const CAPTURE_ICONS = [Sun, Maximize, PenLine, ScanLine];
+
+const SCAN_MODES = [
+  {
+    value: PRINTED_R07E,
+    label: 'Printed OMR',
+    description: 'Use the MARKA R07-E printed sheet.',
+  },
+  {
+    value: HANDDRAWN_A4_40_V1,
+    label: 'Hand-drawn 40',
+    description: 'Use the ruler-drawn 1 cm grid.',
+  },
 ];
 
 export default function UploadQueue({
-  examCode, setExamCode, exams, uploadQueue, setUploadQueue,
+  examCode, setExamCode, exams, scanMode, setScanMode, uploadQueue, setUploadQueue,
   fileInputRef, handleFilesAdded, addFiles, runBatchProcessing, isUploadingBatch, retryFailed, goToLibrary
 }) {
   const hasFailedItems = uploadQueue.some(item => item.status === 'failed');
@@ -18,6 +27,8 @@ export default function UploadQueue({
   const completeCount = uploadQueue.filter(item => item.status === 'complete').length;
   const allSettled = uploadQueue.length > 0 && !isUploadingBatch &&
     uploadQueue.every(item => item.status === 'complete' || item.status === 'failed');
+  const captureTips = captureTipsForMode(scanMode);
+  const modeLocked = uploadQueue.length > 0;
 
   // Drag-and-drop upload. The dropzone previously only handled click, so dragging
   // a sheet onto it did nothing despite the "Drop sheets here" copy.
@@ -54,11 +65,56 @@ export default function UploadQueue({
         </select>
       </div>
 
+      <fieldset className="space-y-3" aria-describedby="sheet-type-help">
+        <div>
+          <legend className="text-sm font-black text-purple-950">What kind of answer sheet is this batch?</legend>
+          <p id="sheet-type-help" className="mt-1 text-xs text-gray-500">
+            Choose before adding photos. Every sheet in one batch must use the same layout.
+          </p>
+        </div>
+        <div className="grid gap-3 sm:grid-cols-2">
+          {SCAN_MODES.map((mode) => {
+            const selected = scanMode === mode.value;
+            return (
+              <label
+                key={mode.value}
+                className={`relative flex min-h-20 cursor-pointer items-start gap-3 rounded-2xl border p-4 transition-colors ${
+                  selected
+                    ? 'border-[#3B0042] bg-purple-50/70 shadow-sm'
+                    : 'border-gray-200 bg-white hover:border-purple-200'
+                } ${modeLocked ? 'cursor-not-allowed opacity-65' : ''}`}
+              >
+                <input
+                  type="radio"
+                  name="scan-mode"
+                  value={mode.value}
+                  checked={selected}
+                  disabled={modeLocked}
+                  onChange={() => setScanMode(mode.value)}
+                  className="mt-0.5 h-4 w-4 accent-[#3B0042]"
+                />
+                <span>
+                  <span className="block text-sm font-black text-gray-900">{mode.label}</span>
+                  <span className="mt-1 block text-xs leading-relaxed text-gray-500">{mode.description}</span>
+                </span>
+              </label>
+            );
+          })}
+        </div>
+        {modeLocked && (
+          <p className="text-[11px] font-semibold text-amber-700">
+            Sheet type is locked for this batch. Clear the queue to change it.
+          </p>
+        )}
+      </fieldset>
+
       {/* Capture guidance — the biggest driver of grading accuracy is photo quality */}
       <div className="bg-purple-50/60 border border-purple-100 rounded-2xl p-4">
         <p className="text-[11px] font-black uppercase tracking-wider text-[#3B0042] mb-3">For accurate grading, photograph each sheet like this</p>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-          {CAPTURE_TIPS.map(({ icon: Icon, title, desc }) => (
+          {captureTips.map(({ title, desc }, index) => {
+            const Icon = CAPTURE_ICONS[index];
+            return (
             <div key={title} className="flex items-start gap-2.5">
               <div className="w-8 h-8 flex-shrink-0 bg-white text-[#3B0042] rounded-lg flex items-center justify-center shadow-sm"><Icon className="w-4 h-4" /></div>
               <div className="min-w-0">
@@ -66,7 +122,8 @@ export default function UploadQueue({
                 <p className="text-[11px] text-gray-500 leading-tight mt-0.5">{desc}</p>
               </div>
             </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 

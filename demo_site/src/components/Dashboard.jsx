@@ -6,6 +6,7 @@ import DashboardHome from './DashboardHome';
 import ExamBuilder from './ExamBuilder';
 import UploadQueue from './UploadQueue';
 import Gallery from './Gallery';
+import { DEFAULT_SCAN_MODE, buildProcessScanPayload } from '../lib/scanModes';
 
 
 export default function Dashboard({ token, onLogout }) {
@@ -35,6 +36,7 @@ export default function Dashboard({ token, onLogout }) {
   // Upload Queue
   const [uploadQueue, setUploadQueue] = useState([]);
   const [isUploadingBatch, setIsUploadingBatch] = useState(false);
+  const [scanMode, setScanMode] = useState(DEFAULT_SCAN_MODE);
   const fileInputRef = useRef(null);
 
   // Gallery Filters
@@ -496,10 +498,7 @@ export default function Dashboard({ token, onLogout }) {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
               },
-              body: JSON.stringify({
-                scan_id: scanId,
-                exam_code: examCode
-              })
+              body: JSON.stringify(buildProcessScanPayload(scanId, examCode, scanMode))
             });
             break; // Success
           } catch (err) {
@@ -615,7 +614,7 @@ export default function Dashboard({ token, onLogout }) {
         <AnimatePresence mode="wait">
           {currentView === "dashboard" && <DashboardHome credits={credits} scans={scans} exams={exams} setExamCode={setExamCode} setCurrentView={setCurrentView} handleExport={handleExport} setQuestionsCount={setQuestionsCount} setAnswerKey={setAnswerKey} setNewExamCode={setNewExamCode} handleWipeAllRaw={handleWipeAllRaw} />}
           {currentView === "builder" && <ExamBuilder newExamCode={newExamCode} setNewExamCode={setNewExamCode} questionsCount={questionsCount} setQuestionsCount={setQuestionsCount} optionsCount={optionsCount} setOptionsCount={setOptionsCount} answerKey={answerKey} setAnswerKey={setAnswerKey} activeBuilderQ={activeBuilderQ} setActiveBuilderQ={setActiveBuilderQ} examSaving={examSaving} examMsg={examMsg} handleCreateExam={handleCreateExam} setCurrentView={setCurrentView} />}
-          {currentView === "upload" && <UploadQueue examCode={examCode} setExamCode={setExamCode} exams={exams} uploadQueue={uploadQueue} setUploadQueue={setUploadQueue} fileInputRef={fileInputRef} handleFilesAdded={handleFilesAdded} addFiles={addFiles} runBatchProcessing={runBatchProcessing} isUploadingBatch={isUploadingBatch} retryFailed={retryFailed} goToLibrary={goToLibrary} />}
+          {currentView === "upload" && <UploadQueue examCode={examCode} setExamCode={setExamCode} exams={exams} scanMode={scanMode} setScanMode={setScanMode} uploadQueue={uploadQueue} setUploadQueue={setUploadQueue} fileInputRef={fileInputRef} handleFilesAdded={handleFilesAdded} addFiles={addFiles} runBatchProcessing={runBatchProcessing} isUploadingBatch={isUploadingBatch} retryFailed={retryFailed} goToLibrary={goToLibrary} />}
           {currentView === "gallery" && <Gallery scans={scans} fetchScans={() => fetchScans(0, false)} loadMoreScans={loadMoreScans} hasMoreScans={hasMoreScans} wipeImage={wipeImage} deleteScan={deleteScan} expiryInfo={expiryInfo} searchQuery={searchQuery} setSearchQuery={setSearchQuery} scansError={scansError} />}
         </AnimatePresence>
       </main>
