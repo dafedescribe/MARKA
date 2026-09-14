@@ -354,3 +354,182 @@ def build_handdrawn_cells(grid: dict, profile: dict):
                     int(horizontal[row + 1]),
                 )
     return cells
+
+
+
+def _binary_foreground(gray: np.ndarray) -> np.ndarray:
+    normalized = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8)).apply(gray)
+    return cv2.adaptiveThreshold(
+        normalized, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+        cv2.THRESH_BINARY_INV, 31, 9,
+    )
+
+
+def score_handdrawn_cells(gray: np.ndarray, cells: dict, profile: dict) -> dict:
+    "Measure interior ink and unsafe choice-boundary leakage per question."
+    foreground = _binary_foreground(gray)
+    cleaned = foreground.copy()
+    line_half_width = 4
+    x_lines = set()
+    y_lines = set()
+    for options in cells.values():
+        for x1, y1, x2, y2 in options.values():
+            x_lines.update((x1, x2))
+            y_lines.update((y1, y2))
+    for x in x_lines:
+        cleaned[:, max(0, x - line_half_width):x + line_half_width + 1] = 0
+    for y in y_lines:
+        cleaned[max(0, y - line_half_width):y + line_half_width + 1, :] = 0
+
+    margin_ratio = float(profile["marking"]["inner_margin_ratio"])
+    scores = {}
+    for question, options in cells.items():
+        option_scores = {}
+        ordered_rects = []
+        for option, (x1, y1, x2, y2) in options.items():
+            margin = max(4, int(round(min(x2 - x1, y2 - y1) * margin_ratio)))
+            roi = cleaned[y1 + margin:y2 - margin, x1 + margin:x2 - margin]
+            option_scores[option] = float(np.count_nonzero(roi)) / max(roi.size, 1)
+            ordered_rects.append((option, (x1, y1, x2, y2)))
+
+        boundary_leakage = False
+        for (_, left_rect), (_, right_rect) in zip(ordered_rects, ordered_rects[1:]):
+            boundary_x = left_rect[2]
+            y1 = max(left_rect[1], right_rect[1]) + 7
+            y2 = min(left_rect[3], right_rect[3]) - 7
+            corridor = cleaned[y1:y2, boundary_x - 7:boundary_x + 8]
+            if corridor.size and float(np.count_nonzero(corridor)) / corridor.size >= 0.025:
+                boundary_leakage = True
+                break
+        scores[question] = {
+            "options": option_scores,
+            "boundary_leakage": boundary_leakage,
+        }
+    return scores
+
+
+def classify_handdrawn_marks(scores: dict, profile: dict):
+    minimum = float(profile["marking"]["minimum_ink_ratio"])
+    winner_gap = float(profile["marking"]["minimum_winner_gap"])
+    marks, multi_marks, confidence, ambiguous = {}, {}, {}, []
+    for question in range(1, int(profile["questions"]) + 1):
+        item = scores[question]
+        values = item["options"]
+        ranked = sorted(values.items(), key=lambda pair: pair[1], reverse=True)
+        baseline = float(np.median(list(values.values())))
+        qualifying = [
+            (option, value) for option, value in ranked
+            if value >= minimum and value - baseline >= winner_gap
+        ]
+        key = str(question)
+        if item["boundary_leakage"]:
+            marks[key] = None
+            confidence[key] = 0.0
+            ambiguous.append(key)
+        elif len(qualifying) > 1:
+            marks[key] = None
+            multi_marks[key] = [option for option, _ in qualifying]
+            confidence[key] = 0.0
+            ambiguous.append(key)
+        elif len(qualifying) == 1:
+            option, value = qualifying[0]
+            second = ranked[1][1]
+            marks[key] = option
+            confidence[key] = round(float(np.clip(
+                (value - second) / (winner_gap * 3.0), 0.0, 1.0
+            )), 2)
+        else:
+            marks[key] = None
+            confidence[key] = 0.0
+    return marks, multi_marks, confidence, ambiguous
+
+
+def read_handdrawn(image_or_path, profile=None) -> dict:
+    "Read one HANDDRAWN_A4_40_V1 image without grading it."
+    started = time.perf_counter()
+    profile = profile or load_handdrawn_profile()
+    aligned, registration = align_handdrawn_page(image_or_path, profile)
+    grid = detect_handdrawn_grid(aligned, profile)
+    cells = build_handdrawn_cells(grid, profile)
+    gray = cv2.cvtColor(aligned, cv2.COLOR_BGR2GRAY)
+    scores = score_handdrawn_cells(gray, cells, profile)
+    marks, multi_marks, confidence, ambiguous = classify_handdrawn_marks(scores, profile)
+    elapsed = (time.perf_counter() - started) * 1000.0
+    sharpness = registration["quality"]["sharpness"]
+    return {
+        "sheet_id": profile["profile_id"],
+        "marks": marks,
+        "multi_marks": multi_marks,
+        "confidence": confidence,
+        "ambiguous": ambiguous,
+        "image_quality": {"sharpness": sharpness, "ok": True},
+        "orientation": {
+            "corrected_degrees": registration.get("corrected_degrees", 0),
+            "cue": "top_left_x",
+        },
+        "registration": {
+            **registration,
+            "mode": "handdrawn-a4-40-v1",
+            "grid_topology": "two-by-twenty-by-six",
+        },
+        "threshold_used": "adaptive-local-ink",
+        "blank_median": round(float(np.median([
+            value for item in scores.values() for value in item["options"].values()
+        ])), 4),
+        "time_ms": round(elapsed, 2),
+    }
+
+
+def _accepted_answers(correct):
+    if correct == "*" or correct == ["*"]:
+        return True, set()
+    if isinstance(correct, list):
+        return False, {str(value).strip().upper() for value in correct}
+    return False, {str(correct).strip().upper()}
+
+
+def grade_and_render_handdrawn(
+    marks_data,
+    answers,
+    image_path,
+    profile,
+    output_path,
+) -> dict:
+    "Grade and draw feedback around measured hand-drawn answer cells."
+    profile = profile or load_handdrawn_profile()
+    aligned, _ = align_handdrawn_page(image_path, profile)
+    grid = detect_handdrawn_grid(aligned, profile)
+    cells = build_handdrawn_cells(grid, profile)
+    score = 0
+    marks = marks_data["marks"]
+
+    for question_key, correct in answers.items():
+        question = int(question_key)
+        bonus, accepted = _accepted_answers(correct)
+        student = marks.get(str(question))
+        is_correct = bonus or student in accepted
+        if is_correct:
+            score += 1
+        for option, (x1, y1, x2, y2) in cells.get(question, {}).items():
+            if option == student:
+                color = (0, 170, 0) if is_correct else (0, 0, 220)
+                cv2.rectangle(aligned, (x1 + 3, y1 + 3), (x2 - 3, y2 - 3), color, 3)
+            elif option in accepted and not is_correct:
+                cv2.rectangle(aligned, (x1 + 3, y1 + 3), (x2 - 3, y2 - 3), (0, 170, 0), 3)
+            if str(question) in marks_data.get("ambiguous", []):
+                detected = marks_data.get("multi_marks", {}).get(str(question), [])
+                if not detected or option in detected:
+                    cv2.rectangle(aligned, (x1 + 5, y1 + 5), (x2 - 5, y2 - 5), (0, 165, 255), 2)
+
+    total = len(answers)
+    percentage = score / total * 100.0 if total else 0.0
+    label = f"SCORE: {score}/{total} ({percentage:.0f}%)"
+    cv2.putText(aligned, label, (105, 55), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 130, 0), 3, cv2.LINE_AA)
+    if not cv2.imwrite(str(output_path), aligned):
+        raise ValueError(f"Could not write graded image: {output_path}")
+    return {
+        "score": score,
+        "total": total,
+        "percentage": round(percentage, 1),
+        "output_path": str(output_path),
+    }
