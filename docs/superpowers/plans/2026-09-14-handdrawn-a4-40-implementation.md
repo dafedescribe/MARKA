@@ -96,7 +96,8 @@ def test_guide_generator_writes_pdf_and_png(tmp_path):
     outputs = generate_guide(PROFILE_PATH, tmp_path)
     assert outputs["pdf"].is_file()
     assert outputs["png"].is_file()
-    assert outputs["pdf"].stat().st_size > 10_000
+    pdf_info = subprocess.run(["pdfinfo", str(outputs["pdf"])], check=True, capture_output=True, text=True).stdout
+    assert "Pages:           2" in pdf_info
     assert outputs["png"].stat().st_size > 10_000
 ```
 
@@ -157,7 +158,7 @@ Populate `answer_cells` deterministically: for each grid row, the first 10 mm co
 
 - [ ] **Step 4: Implement the guide generator**
 
-Implement `generate_guide(profile_path: Path, output_dir: Path) -> dict[str, Path]` with ReportLab. Page one is the four-picture construction guide; page two is a dimensionally faithful sample. Use permanent black rules, graphite-grey sample X/ticks, large step numbers, and the exact 1 cm/3 cm/6 cm/20 cm language. Render the first page to PNG with the same PyMuPDF approach already used by `scripts/generate_v2_omr_sheet.py`.
+Implement `generate_guide(profile_path: Path, output_dir: Path) -> dict[str, Path]` with ReportLab. Page one is the four-picture construction guide; page two is a dimensionally faithful sample. Use permanent black rules, graphite-grey sample X/ticks, large step numbers, and the exact 1 cm/3 cm/6 cm/20 cm language. Render the first page to PNG with the installed Poppler `pdftoppm` command; do not add a new Python PDF-rendering dependency.
 
 The CLI contract is:
 
