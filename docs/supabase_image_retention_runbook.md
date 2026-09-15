@@ -166,8 +166,16 @@ the Render fallback remains available.
 Apply only after controlled live verification passes:
 
 ```bash
-npx supabase db push --linked
+npx supabase db query --linked \
+  --file supabase/migrations/20260915105434_schedule_image_retention.sql
 ```
+
+MARKA has historical remote migration versions that predate this repository's
+`supabase/migrations` directory. For that reason, `supabase db push --linked`
+refuses with `LegacyDbPushMissingLocalError`. Do not mark those historical
+versions reverted. Apply this reviewed file directly as shown above, then verify
+the job. A future migration-baseline project can reconcile the full history
+separately.
 
 Confirm exactly one active job:
 
