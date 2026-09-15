@@ -384,6 +384,9 @@ deno_version = 2
 # [edge_runtime.secrets]
 # secret_key = "env(SECRET_VALUE)"
 
+[functions.cleanup-expired-images]
+verify_jwt = false
+
 [analytics]
 enabled = true
 port = 54327
