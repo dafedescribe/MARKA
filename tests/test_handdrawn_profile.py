@@ -25,7 +25,14 @@ def test_profile_uses_the_approved_one_centimetre_geometry():
     assert profile["questions"] == 40
     assert profile["choices"] == ["A", "B", "C", "D", "E"]
     assert profile["cell_mm"] == {"width": 10, "height": 10}
-    assert profile["fields"] == ["Name", "Student ID", "Class", "Subject", "Date"]
+    assert profile["identity_fields"] == {
+        "bounds_mm": [30, 30, 180, 50],
+        "fields": [
+            {"key": "name", "left_mm": 30, "right_mm": 110},
+            {"key": "class", "left_mm": 110, "right_mm": 140},
+            {"key": "subject", "left_mm": 140, "right_mm": 180},
+        ],
+    }
     assert profile["grids"] == [
         {"id": "left", "bounds_mm": [30, 50, 90, 250], "questions": [1, 20]},
         {"id": "right", "bounds_mm": [120, 50, 180, 250], "questions": [21, 40]},

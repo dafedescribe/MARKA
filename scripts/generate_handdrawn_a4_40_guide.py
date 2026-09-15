@@ -103,6 +103,22 @@ def _draw_grid(c: canvas.Canvas, grid: dict, start_question: int, sample: bool) 
             c.line((cx - 0.8) * mm, (cy - 2.4) * mm, (cx + 3) * mm, (cy + 2.7) * mm)
 
 
+def _draw_identity_strip(c: canvas.Canvas, profile: dict) -> None:
+    """Draw the one-ruler identity strip: 8 cm + 3 cm + 4 cm."""
+    page_height_mm = A4[1] / mm
+    strip = profile["identity_fields"]
+    _, top, _, bottom = strip["bounds_mm"]
+    y = page_height_mm - bottom
+    c.setStrokeColor(black)
+    c.setLineWidth(0.9)
+    for field in strip["fields"]:
+        key, left, right = field["key"], field["left_mm"], field["right_mm"]
+        label = key.upper()
+        c.rect(left * mm, y * mm, (right - left) * mm, (bottom - top) * mm, stroke=1, fill=0)
+        c.setFont("Helvetica-Bold", 6)
+        c.drawString((left + 2) * mm, (page_height_mm - top - 4) * mm, label)
+
+
 def _draw_sample(c: canvas.Canvas, profile: dict) -> None:
     width, height = A4
     c.setFillColor(white)
@@ -115,8 +131,7 @@ def _draw_sample(c: canvas.Canvas, profile: dict) -> None:
     c.setFont("Helvetica-Bold", 11)
     c.drawCentredString(width / 2, height - 16 * mm, "MARKA HAND-DRAWN 40")
     c.setFont("Helvetica", 6.5)
-    c.drawCentredString(width / 2, height - 23 * mm,
-                       "NAME __________  STUDENT ID ______  CLASS _____  SUBJECT ______  DATE ______")
+    _draw_identity_strip(c, profile)
     _draw_grid(c, profile["grids"][0], 1, sample=True)
     _draw_grid(c, profile["grids"][1], 21, sample=True)
     c.setFillColor(MUTED)
@@ -125,20 +140,15 @@ def _draw_sample(c: canvas.Canvas, profile: dict) -> None:
                        "Draw the frame in permanent pen. Mark one answer in pencil with a clear X or tick.")
 
 
-def generate_guide(profile_path: Path, output_dir: Path) -> dict[str, Path]:
+def generate_guide_pdf(profile_path: Path, pdf_path: Path) -> Path:
     profile = json.loads(Path(profile_path).read_text())
-    output_dir = Path(output_dir)
-    output_dir.mkdir(parents=True, exist_ok=True)
-    pdf_path = output_dir / "marka_handdrawn_a4_40_guide.pdf"
-    png_path = output_dir / "marka_handdrawn_a4_40_guide.png"
-
     c = canvas.Canvas(str(pdf_path), pagesize=A4)
     c.setTitle("MARKA Hand-drawn A4 40 Construction Guide")
     _title(c, "Draw it once. Use it again.", "One ruler. One measurement. Every box is 1 cm.")
     _step(c, 1, 207, "Draw four corner squares", "Each square is 1 cm. Put an X only in the top-left square.")
-    _step(c, 2, 155, "Draw two tall rectangles", "Each rectangle is 6 boxes wide and 20 boxes tall.")
-    _step(c, 3, 103, "Mark every centimetre", "Join the ruler marks to make the rows and A–E columns.")
-    _step(c, 4, 51, "Label and answer", "Write 1–40 and A–E. Put one clear X or tick inside a box.")
+    _step(c, 2, 155, "Draw the details strip", "Draw 15 cm × 2 cm. Divide it: Name 8 cm, Class 3 cm, Subject 4 cm.")
+    _step(c, 3, 103, "Draw two tall rectangles", "Each rectangle is 6 boxes wide and 20 boxes tall.")
+    _step(c, 4, 51, "Divide, label and answer", "Make 1 cm boxes. Add 1–40 and A–E. Use one clear X or tick.")
     c.setFillColor(PLUM)
     c.setFont("Helvetica-Bold", 10)
     c.drawCentredString(A4[0] / 2, 29 * mm, "3 cm + 6 cm + 3 cm + 6 cm + 3 cm = the full A4 width")
@@ -148,6 +158,14 @@ def generate_guide(profile_path: Path, output_dir: Path) -> dict[str, Path]:
     c.showPage()
     _draw_sample(c, profile)
     c.save()
+    return Path(pdf_path)
+
+
+def generate_guide(profile_path: Path, output_dir: Path) -> dict[str, Path]:
+    output_dir = Path(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    pdf_path = generate_guide_pdf(profile_path, output_dir / "marka_handdrawn_a4_40_guide.pdf")
+    png_path = output_dir / "marka_handdrawn_a4_40_guide.png"
 
     subprocess.run(
         [

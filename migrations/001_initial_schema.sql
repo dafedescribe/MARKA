@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS public.users (
   pin_hash   VARCHAR NOT NULL,
   email      VARCHAR UNIQUE,
   credits    INTEGER NOT NULL DEFAULT 0,
+  sheet_profile JSONB NOT NULL DEFAULT '{}'::jsonb,
   created_at TIMESTAMPTZ DEFAULT now()
 );
 

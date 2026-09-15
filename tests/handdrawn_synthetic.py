@@ -17,6 +17,7 @@ def render_sheet(
     broken_grid_line=None,
     cell_jitter_px=0,
     seed=7,
+    identity_text=None,
 ):
     """Return a deterministic white BGR A4 image with ruler lines and marks."""
     paper = profile["paper"]
@@ -35,6 +36,25 @@ def render_sheet(
             inset = _mm(2, px_per_mm)
             cv2.line(image, (left + inset, top + inset), (right - inset, bottom - inset), (0, 0, 0), thickness)
             cv2.line(image, (left + inset, bottom - inset), (right - inset, top + inset), (0, 0, 0), thickness)
+
+    strip = profile.get("identity_fields")
+    if strip:
+        left, top, right, bottom = [_mm(v, px_per_mm) for v in strip["bounds_mm"]]
+        cv2.rectangle(image, (left, top), (right, bottom), (0, 0, 0), thickness)
+        for field in strip["fields"][:-1]:
+            divider = _mm(field["right_mm"], px_per_mm)
+            cv2.line(image, (divider, top), (divider, bottom), (0, 0, 0), thickness)
+        for key, text in (identity_text or {}).items():
+            field = next(item for item in strip["fields"] if item["key"] == key)
+            cv2.putText(
+                image,
+                text,
+                (_mm(field["left_mm"] + 2, px_per_mm), _mm(43, px_per_mm)),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                0.6,
+                (30, 30, 30),
+                max(1, int(px_per_mm * 0.3)),
+            )
 
     measured = {}
     for grid in profile["grids"]:

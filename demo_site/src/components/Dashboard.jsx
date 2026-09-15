@@ -7,6 +7,8 @@ import ExamBuilder from './ExamBuilder';
 import UploadQueue from './UploadQueue';
 import Gallery from './Gallery';
 import { DEFAULT_SCAN_MODE, buildProcessScanPayload } from '../lib/scanModes';
+import { visibleLibraryScans, storedImageCount } from '../lib/library';
+import { authenticatedFetch } from '../lib/session';
 
 
 export default function Dashboard({ token, onLogout }) {
@@ -19,6 +21,8 @@ export default function Dashboard({ token, onLogout }) {
   const [scansError, setScansError] = useState(null);
   const [userEmail, setUserEmail] = useState('');
   const [markaId, setMarkaId] = useState('');
+  const [sheetProfile, setSheetProfile] = useState({ school_name: '', address: '', phone: '', email: '' });
+  const [profileMessage, setProfileMessage] = useState('');
   
   // Navigation
   const [currentView, setCurrentView] = useState('dashboard'); // dashboard, builder, upload, gallery
@@ -43,6 +47,8 @@ export default function Dashboard({ token, onLogout }) {
   const [searchQuery, setSearchQuery] = useState("");
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+  const apiFetch = (url, options = {}) =>
+    authenticatedFetch(fetch, url, options, token, onLogout);
 
   // Authenticate the Supabase client with our backend JWT before any read.
   // Without this every supabase query runs as anon and RLS returns nothing.
@@ -64,6 +70,7 @@ export default function Dashboard({ token, onLogout }) {
     fetchScans(0, false);
     fetchExams();
     refreshCredits();
+    fetchSheetProfile();
     const channel = supabase
       .channel('public:scans')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'scans' }, (payload) => {
@@ -178,9 +185,38 @@ export default function Dashboard({ token, onLogout }) {
     fetchScans(nextPage, true);
   };
 
+  const fetchSheetProfile = async () => {
+    try {
+      const res = await apiFetch(`${API_URL}/profile/sheet`);
+      if (res.ok) {
+        const data = await res.json();
+        setSheetProfile(prev => ({ ...prev, ...(data.sheet_profile || {}) }));
+      }
+    } catch (e) { console.error(e); }
+  };
+
+  const saveSheetProfile = async () => {
+    setProfileMessage('Saving…');
+    try {
+      const res = await apiFetch(`${API_URL}/profile/sheet`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(sheetProfile) });
+      if (!res.ok) throw new Error('Could not save details');
+      setProfileMessage('Saved');
+    } catch (e) { setProfileMessage(e.message); }
+  };
+
+  const downloadTemplate = async (kind) => {
+    try {
+      const res = await apiFetch(`${API_URL}/templates/${kind}.pdf`);
+      if (!res.ok) throw new Error('Could not prepare template');
+      const url = URL.createObjectURL(await res.blob());
+      const a = document.createElement('a'); a.href = url; a.download = `marka_${kind}.pdf`; a.click();
+      URL.revokeObjectURL(url);
+    } catch (e) { alert(e.message); }
+  };
+
   const fetchExams = async () => {
     try {
-      const res = await fetch(`${API_URL}/exams`, {
+      const res = await apiFetch(`${API_URL}/exams`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (!res.ok) return;
@@ -272,7 +308,7 @@ export default function Dashboard({ token, onLogout }) {
     setExamSaving(true);
     setExamMsg('');
     try {
-      const res = await fetch(`${API_URL}/exams`, {
+      const res = await apiFetch(`${API_URL}/exams`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -297,7 +333,7 @@ export default function Dashboard({ token, onLogout }) {
     if (!scanId) return;
     if (!window.confirm('Delete this scan’s image to reclaim space? The score is kept.')) return;
     try {
-      const res = await fetch(`${API_URL}/scans/${scanId}/wipe-image`, {
+      const res = await apiFetch(`${API_URL}/scans/${scanId}/wipe-image`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -327,7 +363,7 @@ export default function Dashboard({ token, onLogout }) {
     let lastErr;
     for (let attempt = 1; attempt <= 3; attempt++) {
       try {
-        const res = await fetch(`${API_URL}/scans/${scanId}`, {
+        const res = await apiFetch(`${API_URL}/scans/${scanId}`, {
           method: 'DELETE',
           headers: { 'Authorization': `Bearer ${token}` }
         });
@@ -344,10 +380,10 @@ export default function Dashboard({ token, onLogout }) {
     alert(`Could not delete this scan: ${lastErr?.message || 'network error'}. Please try again in a moment.`);
   };
 
-  const handleWipeAllRaw = async () => {
-    if (!window.confirm('Delete ALL original high-res images to reclaim space? (Your graded images and scores will be kept). This cannot be undone.')) return;
+  const handleClearLibrary = async () => {
+    if (!window.confirm('Clear every stored sheet image from your Library? Scores and exports will be kept. This cannot be undone.')) return;
     try {
-      const res = await fetch(`${API_URL}/scans/wipe-all-raw`, {
+      const res = await apiFetch(`${API_URL}/scans/clear-library`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -355,8 +391,18 @@ export default function Dashboard({ token, onLogout }) {
         }
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.detail || 'Failed to delete batch');
-      alert(`Successfully deleted ${data.deleted} original images to reclaim space.`);
+      if (!res.ok) throw new Error(data.detail || 'Failed to clear image library');
+      if (data.failed) {
+        alert(`Cleared ${data.deleted} images; ${data.failed} could not be cleared yet. Please retry.`);
+      } else {
+        setScans((current) => current.map((scan) => ({
+          ...scan,
+          image_path: null,
+          graded_image_path: null,
+          thumbnailUrl: null,
+        })));
+        alert(`Cleared ${data.deleted} stored image${data.deleted === 1 ? '' : 's'}. Scores and exports are still available.`);
+      }
       fetchScans(0, false);
     } catch (e) {
       alert(e.message);
@@ -474,7 +520,7 @@ export default function Dashboard({ token, onLogout }) {
         // Retry logic for cold starts (up to 2 retries)
         for (let attempt = 1; attempt <= 3; attempt++) {
           try {
-            const res = await fetch(`${API_URL}/upload/presigned-url?scan_id=${scanId}`, {
+            const res = await apiFetch(`${API_URL}/upload/presigned-url?scan_id=${scanId}`, {
               headers: { 'Authorization': `Bearer ${token}` }
             });
             if (!res.ok) throw new Error("API not ready");
@@ -492,7 +538,7 @@ export default function Dashboard({ token, onLogout }) {
               prev.map((itm) => (itm.id === item.id ? { ...itm, status: "grading" } : itm))
             );
 
-            triggerRes = await fetch(`${API_URL}/process-scan`, {
+            triggerRes = await apiFetch(`${API_URL}/process-scan`, {
               method: 'POST',
               headers: { 
                 'Content-Type': 'application/json',
@@ -547,7 +593,7 @@ export default function Dashboard({ token, onLogout }) {
 
   const handleExport = async (exportExamCode, format = "csv") => {
     try {
-      const res = await fetch(`${API_URL}/export/${exportExamCode}/${format}`, {
+      const res = await apiFetch(`${API_URL}/export/${exportExamCode}/${format}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (!res.ok) {
@@ -612,10 +658,10 @@ export default function Dashboard({ token, onLogout }) {
           </div>
         )}
         <AnimatePresence mode="wait">
-          {currentView === "dashboard" && <DashboardHome credits={credits} scans={scans} exams={exams} setExamCode={setExamCode} setCurrentView={setCurrentView} handleExport={handleExport} setQuestionsCount={setQuestionsCount} setAnswerKey={setAnswerKey} setNewExamCode={setNewExamCode} handleWipeAllRaw={handleWipeAllRaw} />}
+          {currentView === "dashboard" && <DashboardHome credits={credits} storedImages={storedImageCount(scans)} exams={exams} setExamCode={setExamCode} setCurrentView={setCurrentView} handleExport={handleExport} setQuestionsCount={setQuestionsCount} setAnswerKey={setAnswerKey} setNewExamCode={setNewExamCode} handleClearLibrary={handleClearLibrary} sheetProfile={sheetProfile} setSheetProfile={setSheetProfile} saveSheetProfile={saveSheetProfile} profileMessage={profileMessage} downloadTemplate={downloadTemplate} />}
           {currentView === "builder" && <ExamBuilder newExamCode={newExamCode} setNewExamCode={setNewExamCode} questionsCount={questionsCount} setQuestionsCount={setQuestionsCount} optionsCount={optionsCount} setOptionsCount={setOptionsCount} answerKey={answerKey} setAnswerKey={setAnswerKey} activeBuilderQ={activeBuilderQ} setActiveBuilderQ={setActiveBuilderQ} examSaving={examSaving} examMsg={examMsg} handleCreateExam={handleCreateExam} setCurrentView={setCurrentView} />}
           {currentView === "upload" && <UploadQueue examCode={examCode} setExamCode={setExamCode} exams={exams} scanMode={scanMode} setScanMode={setScanMode} uploadQueue={uploadQueue} setUploadQueue={setUploadQueue} fileInputRef={fileInputRef} handleFilesAdded={handleFilesAdded} addFiles={addFiles} runBatchProcessing={runBatchProcessing} isUploadingBatch={isUploadingBatch} retryFailed={retryFailed} goToLibrary={goToLibrary} />}
-          {currentView === "gallery" && <Gallery scans={scans} fetchScans={() => fetchScans(0, false)} loadMoreScans={loadMoreScans} hasMoreScans={hasMoreScans} wipeImage={wipeImage} deleteScan={deleteScan} expiryInfo={expiryInfo} searchQuery={searchQuery} setSearchQuery={setSearchQuery} scansError={scansError} />}
+          {currentView === "gallery" && <Gallery scans={visibleLibraryScans(scans)} fetchScans={() => fetchScans(0, false)} loadMoreScans={loadMoreScans} hasMoreScans={hasMoreScans} wipeImage={wipeImage} deleteScan={deleteScan} expiryInfo={expiryInfo} searchQuery={searchQuery} setSearchQuery={setSearchQuery} scansError={scansError} />}
         </AnimatePresence>
       </main>
     </div>

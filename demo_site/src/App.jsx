@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import Auth from './components/Auth';
 import Dashboard from './components/Dashboard';
 import Landing from './components/Landing';
+import { clearStoredSession, readUsableToken, tokenExpiryMs } from './lib/session';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 function App() {
-  const [token, setToken] = useState(localStorage.getItem('marka_token'));
+  const [token, setToken] = useState(() => readUsableToken(localStorage));
   const [showAuth, setShowAuth] = useState(false);
   const [initialAuthTab, setInitialAuthTab] = useState('login');
 
@@ -16,16 +17,25 @@ function App() {
     fetch(`${API_URL}/`).catch(() => {});
   }, []);
 
-  // If token changes (e.g. from logout), update state
-  const handleLogin = (newToken) => {
-    setToken(newToken);
-  };
-
   const handleLogout = () => {
-    localStorage.removeItem('marka_token');
-    localStorage.removeItem('marka_credits');
+    clearStoredSession(localStorage);
     setToken(null);
     setShowAuth(false);
+  };
+
+  useEffect(() => {
+    if (!token) return undefined;
+    const expiry = tokenExpiryMs(token);
+    if (!expiry) {
+      handleLogout();
+      return undefined;
+    }
+    const timer = window.setTimeout(handleLogout, expiry - Date.now());
+    return () => window.clearTimeout(timer);
+  }, [token]);
+
+  const handleLogin = (newToken) => {
+    setToken(newToken);
   };
 
   return (

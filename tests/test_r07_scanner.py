@@ -1,6 +1,8 @@
 import sys
 import os
 import unittest
+import tempfile
+from unittest import mock
 
 import cv2
 import numpy as np
@@ -14,6 +16,7 @@ from omr_scanner import (
     _detect_aruco_anchors,
     _is_structured_layout,
     _registration_maps,
+    extract_fields,
     read_bubbles,
 )
 
@@ -29,6 +32,22 @@ class R07ScannerTests(unittest.TestCase):
         self.assertEqual(len(self.sheet["aruco_anchors"]), 8)
         self.assertEqual(len(self.sheet["timing_tracks"]), 40)
         self.assertEqual(self.sheet["answer_grid"]["column_pitch_mm"], 35.0)
+
+    def test_printed_fields_are_extracted_as_compact_webp(self):
+        height = int(self.sheet["sheet_size_mm"][1] * 10)
+        width = int(self.sheet["sheet_size_mm"][0] * 10)
+        image = np.full((height, width, 3), 255, dtype=np.uint8)
+        field = self.sheet["fields_mm"]["name"]
+        x = int((field["x"] + 5) * 10)
+        y = int((self.sheet["sheet_size_mm"][1] - field["y"] - 4) * 10)
+        cv2.putText(image, "ADA", (x, y), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 0), 2)
+        with tempfile.NamedTemporaryFile(suffix=".png") as handle:
+            cv2.imwrite(handle.name, image)
+            with mock.patch("omr_scanner._align_sheet", return_value=(image, {})):
+                fields = extract_fields(handle.name, self.layout)
+        self.assertEqual(list(fields["fields_b64"]), ["name", "student_id", "class", "subject", "date"])
+        self.assertTrue(fields["fields_b64"]["name"].startswith("data:image/webp;base64,"))
+        self.assertLess(len(fields["fields_b64"]["name"]), 20_000)
 
     def test_shared_timing_tracks_interpolate_across_columns(self):
         height = int(self.sheet["sheet_size_mm"][1] * 10)

@@ -9,6 +9,8 @@ from pathlib import Path
 import cv2
 import numpy as np
 
+from field_crops import encode_field_crop
+
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_PROFILE_PATH = ROOT / "data/handdrawn_profiles/HANDDRAWN_A4_40_V1.json"
@@ -456,12 +458,24 @@ def read_handdrawn(image_or_path, profile=None) -> dict:
     marks, multi_marks, confidence, ambiguous = classify_handdrawn_marks(scores, profile)
     elapsed = (time.perf_counter() - started) * 1000.0
     sharpness = registration["quality"]["sharpness"]
+    fields_b64 = {}
+    strip = profile.get("identity_fields", {})
+    for field in strip.get("fields", []):
+        inset = 1.2
+        left = int((field["left_mm"] + inset) * CANONICAL_PX_PER_MM)
+        right = int((field["right_mm"] - inset) * CANONICAL_PX_PER_MM)
+        top = int((strip["bounds_mm"][1] + inset) * CANONICAL_PX_PER_MM)
+        bottom = int((strip["bounds_mm"][3] - inset) * CANONICAL_PX_PER_MM)
+        encoded = encode_field_crop(aligned[top:bottom, left:right])
+        if encoded:
+            fields_b64[field["key"]] = encoded
     return {
         "sheet_id": profile["profile_id"],
         "marks": marks,
         "multi_marks": multi_marks,
         "confidence": confidence,
         "ambiguous": ambiguous,
+        "fields_b64": fields_b64,
         "image_quality": {"sharpness": sharpness, "ok": True},
         "orientation": {
             "corrected_degrees": registration.get("corrected_degrees", 0),

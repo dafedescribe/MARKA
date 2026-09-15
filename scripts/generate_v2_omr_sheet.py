@@ -122,11 +122,11 @@ def _sheet_origins() -> List[List[float]]:
     return [[PAGE_MARGIN_MM, PAGE_MARGIN_MM + SHEET_H_MM + SHEET_GAP_MM], [PAGE_MARGIN_MM, PAGE_MARGIN_MM]]
 
 
-def _field_layout() -> List[Dict[str, object]]:
-    return [
-        {"key": key, "label": label, "x_mm": x, "y_mm": y, "w_mm": width, "h_mm": height}
+def _field_layout() -> Dict[str, Dict[str, object]]:
+    return {
+        key: {"label": label, "x": x, "y": y, "w": width, "h": height}
         for key, label, x, y, width, height in FIELD_DEFS
-    ]
+    }
 
 
 def build_layout(num_questions: int = 100) -> Dict[str, object]:
@@ -215,7 +215,7 @@ def build_layout(num_questions: int = 100) -> Dict[str, object]:
                     "school_name": {"x_mm": 34.0, "y_mm": 128.0},
                     "contact_line": {"x_mm": 34.0, "y_mm": 122.8},
                 },
-                "fields": _field_layout(),
+                "fields_mm": _field_layout(),
                 "timing_tracks": timing_tracks,
                 "bubbles": bubbles,
             }
@@ -255,8 +255,8 @@ def _draw_aruco(c: canvas.Canvas, anchor: Dict[str, object]) -> None:
 
 
 def _draw_field(c: canvas.Canvas, field: Dict[str, object]) -> None:
-    x, y = float(field["x_mm"]), float(field["y_mm"])
-    width, height = float(field["w_mm"]), float(field["h_mm"])
+    x, y = float(field["x"]), float(field["y"])
+    width, height = float(field["w"]), float(field["h"])
     c.setFillColor(colors.white)
     c.setStrokeColor(RULE)
     c.setLineWidth(0.5)
@@ -269,7 +269,15 @@ def _draw_field(c: canvas.Canvas, field: Dict[str, object]) -> None:
     c.line((x + 1.8) * mm, (y + height - 3.8) * mm, (x + width - 1.8) * mm, (y + height - 3.8) * mm)
 
 
-def _draw_sheet(c: canvas.Canvas, sheet: Dict[str, object]) -> None:
+def _fitted_text(c, text, x, y, max_width, preferred, minimum=4.0, font="Helvetica"):
+    size = preferred
+    while size > minimum and c.stringWidth(text, font, size) > max_width:
+        size -= 0.25
+    c.setFont(font, size)
+    c.drawString(x, y, text)
+
+
+def _draw_sheet(c: canvas.Canvas, sheet: Dict[str, object], sheet_profile=None) -> None:
     c.saveState()
     origin_x, origin_y = sheet["origin_on_page_mm"]  # type: ignore[index]
     c.translate(float(origin_x) * mm, float(origin_y) * mm)
@@ -315,10 +323,11 @@ def _draw_sheet(c: canvas.Canvas, sheet: Dict[str, object]) -> None:
     c.roundRect(13 * mm, 119 * mm, 18 * mm, 12 * mm, 0.8 * mm, fill=0, stroke=1)
     c.setFont("Helvetica-Bold", 6.0)
     c.drawCentredString(22 * mm, 124.3 * mm, "LOGO")
-    c.setFont("Helvetica-Bold", 10.0)
-    c.drawString(34 * mm, 128 * mm, "SCHOOL / COMPANY NAME")
-    c.setFont("Helvetica", 6.0)
-    c.drawString(34 * mm, 122.8 * mm, "Address  •  Phone  •  Email")
+    profile = sheet_profile or {}
+    school_name = profile.get("school_name") or "SCHOOL / COMPANY NAME"
+    contact = "  •  ".join(filter(None, [profile.get("address"), profile.get("phone"), profile.get("email")])) or "Address  •  Phone  •  Email"
+    _fitted_text(c, school_name[:90], 34 * mm, 128 * mm, 100 * mm, 10.0, 5.5, "Helvetica-Bold")
+    _fitted_text(c, contact, 34 * mm, 122.8 * mm, 100 * mm, 6.0)
     c.setFont("Helvetica-Bold", INSTRUCTION_FONT_SIZE_PT)
     c.drawString(34 * mm, 117.6 * mm, "SHADE ONE OPTION FULLY  •  DARK PENCIL OR PEN")
     c.setFont("Helvetica-Bold", 6.3)
@@ -326,7 +335,7 @@ def _draw_sheet(c: canvas.Canvas, sheet: Dict[str, object]) -> None:
     c.setFont("Helvetica", 6.0)
     c.drawRightString((SHEET_W_MM - 15) * mm, 122.8 * mm, "MARKA ID / EXAM CODE")
 
-    for field in sheet["fields"]:  # type: ignore[union-attr]
+    for field in sheet["fields_mm"].values():  # type: ignore[union-attr]
         _draw_field(c, field)
 
     for column_index, column_x in enumerate(COLUMN_X_MM):
@@ -402,7 +411,7 @@ def _draw_page_controls(c: canvas.Canvas) -> None:
     c.restoreState()
 
 
-def generate_sheet(output_dir: str | os.PathLike[str], num_questions: int = 100) -> Tuple[str, str]:
+def generate_sheet(output_dir: str | os.PathLike[str], num_questions: int = 100, sheet_profile=None) -> Tuple[str, str]:
     output_path = Path(output_dir)
     output_path.mkdir(parents=True, exist_ok=True)
     layout = build_layout(num_questions=num_questions)
@@ -411,7 +420,7 @@ def generate_sheet(output_dir: str | os.PathLike[str], num_questions: int = 100)
 
     pdf = canvas.Canvas(str(pdf_path), pagesize=A4)
     for sheet in layout["sheets"]:  # type: ignore[union-attr]
-        _draw_sheet(pdf, sheet)
+        _draw_sheet(pdf, sheet, sheet_profile)
     _draw_page_controls(pdf)
     pdf.setTitle("MARKA R07-E High-Visibility Two-up OMR Template")
     pdf.setAuthor("MARKA")

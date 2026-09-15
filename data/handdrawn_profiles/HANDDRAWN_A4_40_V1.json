@@ -20,13 +20,14 @@
     "width": 10,
     "height": 10
   },
-  "fields": [
-    "Name",
-    "Student ID",
-    "Class",
-    "Subject",
-    "Date"
-  ],
+  "identity_fields": {
+    "bounds_mm": [30, 30, 180, 50],
+    "fields": [
+      {"key": "name", "left_mm": 30, "right_mm": 110},
+      {"key": "class", "left_mm": 110, "right_mm": 140},
+      {"key": "subject", "left_mm": 140, "right_mm": 180}
+    ]
+  },
   "anchors": [
     {
       "id": "top_left",

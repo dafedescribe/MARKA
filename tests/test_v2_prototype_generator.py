@@ -59,10 +59,13 @@ class V2PrototypeGeneratorTests(unittest.TestCase):
             self.assertEqual(len(sheet["timing_tracks"]), 40)
             self.assertEqual(len(sheet["bubbles"]), 100 * 5)
             self.assertEqual(
-                [field["key"] for field in sheet["fields"]],
+                list(sheet["fields_mm"]),
                 ["name", "student_id", "class", "subject", "date"],
             )
-            self.assertTrue(all(field["w_mm"] > 0 and field["h_mm"] >= 8.4 for field in sheet["fields"]))
+            self.assertTrue(all(
+                field["w"] > 0 and field["h"] >= 8.4
+                for field in sheet["fields_mm"].values()
+            ))
             self.assertEqual(sheet["branding"]["logo_box"]["w_mm"], 18.0)
             self.assertIn("contact_line", sheet["branding"])
 

@@ -172,48 +172,43 @@
           "y_mm": 122.8
         }
       },
-      "fields": [
-        {
-          "key": "name",
+      "fields_mm": {
+        "name": {
           "label": "Name",
-          "x_mm": 12.0,
-          "y_mm": 104.0,
-          "w_mm": 55.0,
-          "h_mm": 8.4
+          "x": 12.0,
+          "y": 104.0,
+          "w": 55.0,
+          "h": 8.4
         },
-        {
-          "key": "student_id",
+        "student_id": {
           "label": "Student ID",
-          "x_mm": 70.0,
-          "y_mm": 104.0,
-          "w_mm": 21.0,
-          "h_mm": 8.4
+          "x": 70.0,
+          "y": 104.0,
+          "w": 21.0,
+          "h": 8.4
         },
-        {
-          "key": "class",
+        "class": {
           "label": "Class",
-          "x_mm": 105.0,
-          "y_mm": 104.0,
-          "w_mm": 22.0,
-          "h_mm": 8.4
+          "x": 105.0,
+          "y": 104.0,
+          "w": 22.0,
+          "h": 8.4
         },
-        {
-          "key": "subject",
+        "subject": {
           "label": "Subject",
-          "x_mm": 130.0,
-          "y_mm": 104.0,
-          "w_mm": 32.0,
-          "h_mm": 8.4
+          "x": 130.0,
+          "y": 104.0,
+          "w": 32.0,
+          "h": 8.4
         },
-        {
-          "key": "date",
+        "date": {
           "label": "Date",
-          "x_mm": 165.0,
-          "y_mm": 104.0,
-          "w_mm": 24.0,
-          "h_mm": 8.4
+          "x": 165.0,
+          "y": 104.0,
+          "w": 24.0,
+          "h": 8.4
         }
-      ],
+      },
       "timing_tracks": [
         {
           "id": 0,
@@ -5732,48 +5727,43 @@
           "y_mm": 122.8
         }
       },
-      "fields": [
-        {
-          "key": "name",
+      "fields_mm": {
+        "name": {
           "label": "Name",
-          "x_mm": 12.0,
-          "y_mm": 104.0,
-          "w_mm": 55.0,
-          "h_mm": 8.4
+          "x": 12.0,
+          "y": 104.0,
+          "w": 55.0,
+          "h": 8.4
         },
-        {
-          "key": "student_id",
+        "student_id": {
           "label": "Student ID",
-          "x_mm": 70.0,
-          "y_mm": 104.0,
-          "w_mm": 21.0,
-          "h_mm": 8.4
+          "x": 70.0,
+          "y": 104.0,
+          "w": 21.0,
+          "h": 8.4
         },
-        {
-          "key": "class",
+        "class": {
           "label": "Class",
-          "x_mm": 105.0,
-          "y_mm": 104.0,
-          "w_mm": 22.0,
-          "h_mm": 8.4
+          "x": 105.0,
+          "y": 104.0,
+          "w": 22.0,
+          "h": 8.4
         },
-        {
-          "key": "subject",
+        "subject": {
           "label": "Subject",
-          "x_mm": 130.0,
-          "y_mm": 104.0,
-          "w_mm": 32.0,
-          "h_mm": 8.4
+          "x": 130.0,
+          "y": 104.0,
+          "w": 32.0,
+          "h": 8.4
         },
-        {
-          "key": "date",
+        "date": {
           "label": "Date",
-          "x_mm": 165.0,
-          "y_mm": 104.0,
-          "w_mm": 24.0,
-          "h_mm": 8.4
+          "x": 165.0,
+          "y": 104.0,
+          "w": 24.0,
+          "h": 8.4
         }
-      ],
+      },
       "timing_tracks": [
         {
           "id": 0,

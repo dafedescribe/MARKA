@@ -818,10 +818,11 @@ def _crop_field(aligned_img, field_box, sheet_h_mm):
     
     Returns: numpy array (BGR or grayscale crop), or None if coordinates invalid.
     """
-    x_mm = field_box["x"]
-    y_mm = field_box["y"]
-    w_mm = field_box["w"]
-    h_mm = field_box["h"]
+    inset_mm = 1.0
+    x_mm = field_box["x"] + inset_mm
+    y_mm = field_box["y"] + inset_mm
+    w_mm = field_box["w"] - inset_mm * 2
+    h_mm = field_box["h"] - inset_mm * 2
     
     # Convert mm → pixels
     x1 = int(x_mm * PX_PER_MM)
@@ -876,7 +877,7 @@ def extract_fields(image_path, layout_data_or_path, output_dir=None):
             }
         }
     """
-    import base64
+    from field_crops import encode_field_crop
     
     # Load layout
     if isinstance(layout_data_or_path, str):
@@ -907,7 +908,7 @@ def extract_fields(image_path, layout_data_or_path, output_dir=None):
         "fields_b64": {}
     }
     
-    for field_name in ["name", "id", "class", "subject", "date"]:
+    for field_name in ["name", "student_id", "class", "subject", "date"]:
         if field_name not in fields_mm:
             continue
         
@@ -916,11 +917,9 @@ def extract_fields(image_path, layout_data_or_path, output_dir=None):
             continue
         
         result[f"{field_name}_img"] = crop
-        
-        # Encode to base64 PNG for embedding in receipts / API responses
-        _, buf = cv2.imencode(".png", crop)
-        b64 = base64.b64encode(buf).decode("utf-8")
-        result["fields_b64"][field_name] = f"data:image/png;base64,{b64}"
+        encoded = encode_field_crop(crop)
+        if encoded:
+            result["fields_b64"][field_name] = encoded
         
         # Optionally save to disk
         if output_dir:

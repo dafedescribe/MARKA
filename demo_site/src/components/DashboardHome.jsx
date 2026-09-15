@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { Coins, HardDrive, PlusCircle, History, ClipboardList, Download, Eye, FileText } from 'lucide-react';
 
-export default function DashboardHome({ credits, scans, exams, setExamCode, setCurrentView, handleExport, setQuestionsCount, setAnswerKey, setNewExamCode, handleWipeAllRaw }) {
+export default function DashboardHome({ credits, storedImages, exams, setExamCode, setCurrentView, handleExport, setQuestionsCount, setAnswerKey, setNewExamCode, handleClearLibrary, sheetProfile, setSheetProfile, saveSheetProfile, profileMessage, downloadTemplate }) {
   return (
     <motion.div
       key="dashboard-view"
@@ -29,12 +29,12 @@ export default function DashboardHome({ credits, scans, exams, setExamCode, setC
             <div className="p-2 bg-purple-50 text-[#3B0042] rounded-xl"><HardDrive className="w-5 h-5" /></div>
           </div>
           <div>
-            <span className="text-2xl font-black text-gray-800 block">{scans.length} Scans</span>
+            <span className="text-2xl font-black text-gray-800 block">{storedImages} Images</span>
             <div className="w-full bg-gray-100 rounded-full h-2 mt-2">
-              <div className="bg-[#3B0042] h-2 rounded-full" style={{ width: `${Math.min((scans.length / 500) * 100, 100)}%` }}></div>
+              <div className="bg-[#3B0042] h-2 rounded-full" style={{ width: `${Math.min((storedImages / 500) * 100, 100)}%` }}></div>
             </div>
           </div>
-          <button onClick={handleWipeAllRaw} className="w-full text-center py-2.5 rounded-xl border border-gray-200 hover:bg-gray-50 text-gray-600 font-bold text-xs transition-all">Delete original images</button>
+          <button onClick={handleClearLibrary} className="w-full text-center py-2.5 rounded-xl border border-gray-200 hover:bg-gray-50 text-gray-600 font-bold text-xs transition-all">Clear image library</button>
         </div>
 
         <div className="bg-[#3B0042] text-white p-6 rounded-2xl flex flex-col justify-between shadow-lg relative overflow-hidden">
@@ -46,6 +46,19 @@ export default function DashboardHome({ credits, scans, exams, setExamCode, setC
           <button onClick={() => setCurrentView("builder")} className="w-full py-3 bg-white text-[#3B0042] hover:bg-amber-400 font-extrabold text-xs rounded-xl transition-all shadow mt-4 flex items-center justify-center gap-2">
             <PlusCircle className="w-4 h-4" /> Start Marking Now
           </button>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm space-y-4">
+        <div><h3 className="font-extrabold text-gray-900 text-sm">Sheet and receipt details</h3><p className="text-xs text-gray-500 mt-1">Save once; MARKA reuses these details.</p></div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {['school_name', 'address', 'phone', 'email'].map((key) => <input key={key} value={sheetProfile[key] || ''} maxLength={key === 'address' ? 240 : 120} onChange={(e) => setSheetProfile({ ...sheetProfile, [key]: e.target.value })} placeholder={{ school_name: 'School or organisation name', address: 'Full address', phone: 'Phone', email: 'Email' }[key]} className="px-3 py-2.5 rounded-xl border border-gray-200 text-sm outline-none focus:border-purple-500" />)}
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <button onClick={saveSheetProfile} className="px-4 py-2.5 bg-[#3B0042] text-white rounded-xl text-xs font-bold">Save details</button>
+          <button onClick={() => downloadTemplate('printed')} className="px-4 py-2.5 border border-gray-200 rounded-xl text-xs font-bold">Download printed sheet</button>
+          <button onClick={() => downloadTemplate('handdrawn')} className="px-4 py-2.5 border border-gray-200 rounded-xl text-xs font-bold">Download drawing guide</button>
+          <span className="text-xs text-gray-500">{profileMessage}</span>
         </div>
       </div>
 

@@ -96,4 +96,5 @@ def test_render_no_longer_exposes_scheduled_retention():
     paths = {route.path for route in server.app.routes}
     assert "/admin/wipe-expired" not in paths
     assert "/scans/{scan_id}/wipe-image" in paths
+    assert "/scans/clear-library" in paths
     assert "/scans/wipe-all-raw" in paths

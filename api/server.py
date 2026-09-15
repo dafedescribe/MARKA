@@ -56,8 +56,10 @@ from typing import Literal
 
 
 from scanner_dispatch import PRINTED_R07E, grade_sheet, read_sheet
+from omr_scanner import extract_fields
 from database import supabase
 from auth import generate_marka_id, generate_pin, get_password_hash, verify_password, create_access_token
+from image_cleanup import clear_user_image_library
 from paystack import validate_verified_transaction, valid_webhook_signature
 from pydantic import BaseModel, constr
 
@@ -229,6 +231,41 @@ class ExamRequest(BaseModel):
 
 class TokenRequest(BaseModel):
     token: str
+
+class SheetProfile(BaseModel):
+    school_name: constr(strip_whitespace=True, min_length=1, max_length=120)  # type: ignore
+    address: constr(strip_whitespace=True, max_length=240) = ""  # type: ignore
+    phone: constr(strip_whitespace=True, max_length=40) = ""  # type: ignore
+    email: constr(strip_whitespace=True, max_length=120) = ""  # type: ignore
+
+
+@app.get("/profile/sheet")
+def get_sheet_profile(user_id: str = Depends(get_current_user)):
+    row = supabase.table("users").select("sheet_profile").eq("id", user_id).single().execute()
+    return {"sheet_profile": (row.data or {}).get("sheet_profile") or {}}
+
+
+@app.put("/profile/sheet")
+def put_sheet_profile(profile: SheetProfile, user_id: str = Depends(get_current_user)):
+    data = profile.model_dump()
+    supabase.table("users").update({"sheet_profile": data}).eq("id", user_id).execute()
+    return {"sheet_profile": data}
+
+
+@app.get("/templates/{template_kind}.pdf")
+def download_template(template_kind: Literal["printed", "handdrawn"], user_id: str = Depends(get_current_user)):
+    from pathlib import Path
+    profile_row = supabase.table("users").select("sheet_profile").eq("id", user_id).single().execute()
+    profile = (profile_row.data or {}).get("sheet_profile") or {}
+    with tempfile.TemporaryDirectory() as tmp:
+        if template_kind == "printed":
+            from scripts.generate_v2_omr_sheet import generate_sheet
+            pdf_path, _ = generate_sheet(tmp, sheet_profile=profile)
+        else:
+            from scripts.generate_handdrawn_a4_40_guide import generate_guide_pdf, DEFAULT_PROFILE
+            pdf_path = generate_guide_pdf(DEFAULT_PROFILE, Path(tmp) / "handdrawn.pdf")
+        pdf_bytes = Path(pdf_path).read_bytes()
+    return Response(pdf_bytes, media_type="application/pdf", headers={"Content-Disposition": f'attachment; filename="marka_{template_kind}.pdf"'})
 
 
 # ── Authentication Endpoints ──────────────────────────────────────
@@ -646,6 +683,9 @@ def process_scan_background(scan_id: str, exam_code: str, user_id: str, layout_m
             raise ValueError(f"No OMR layout available for exam '{code}'.")
 
         result = read_sheet(tmp_path, GLOBAL_LAYOUT_DATA or layout_path, layout_mode)
+        if layout_mode == PRINTED_R07E:
+            field_result = extract_fields(tmp_path, GLOBAL_LAYOUT_DATA or layout_path)
+            result["fields_b64"] = field_result["fields_b64"]
         result["scan_id"] = scan_id
 
         # Ensure answer key exists
@@ -834,6 +874,21 @@ def _missed_answers(marks: dict, answer_key: dict) -> dict:
     return missed
 
 
+def build_receipt_record(scan, code, answer_key, sheet_profile=None):
+    raw_marks = scan.get("raw_marks") or {}
+    profile = sheet_profile or {}
+    return {
+        "subject": code,
+        "student_name": scan["scan_id"],
+        "score": scan.get("score") or 0,
+        "total": scan.get("total") or 0,
+        "missed": _missed_answers(raw_marks.get("marks", {}), answer_key),
+        "receipt_id": scan["scan_id"],
+        "fields_b64": raw_marks.get("fields_b64", {}),
+        **profile,
+    }
+
+
 @app.get("/export/{exam_code}/csv")
 @limiter.limit("10/second")
 def export_results_csv(request: Request, exam_code: str, user_id: str = Depends(get_current_user)):
@@ -873,17 +928,9 @@ def export_results_pdf(request: Request, exam_code: str, user_id: str = Depends(
 
     code, scans, answer_key = _fetch_export_scans(user_id, exam_code)
 
-    results_list = []
-    for s in scans:
-        marks = (s.get("raw_marks") or {}).get("marks", {})
-        results_list.append({
-            "subject": code,
-            "student_name": s["scan_id"],
-            "score": s.get("score") or 0,
-            "total": s.get("total") or 0,
-            "missed": _missed_answers(marks, answer_key),
-            "receipt_id": s["scan_id"],
-        })
+    profile_row = supabase.table("users").select("sheet_profile").eq("id", user_id).single().execute()
+    profile = (profile_row.data or {}).get("sheet_profile") or {}
+    results_list = [build_receipt_record(s, code, answer_key, profile) for s in scans]
 
     with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp_pdf:
         pdf_path = tmp_pdf.name
@@ -924,6 +971,7 @@ def wipe_scan_image(scan_id: str, user_id: str = Depends(get_current_user)):
                 supabase.storage.from_(bucket).remove([p])
             except Exception as e:
                 logger.warning(f"wipe-image: {bucket}/{p} failed: {e}")
+                raise HTTPException(503, "Image storage is temporarily unavailable. Please retry.")
     supabase.table("scans").update(
         {"image_path": None, "graded_image_path": None}).eq("id", s["id"]).execute()
     return {"ok": True, "scan_id": scan_id}
@@ -957,34 +1005,25 @@ def delete_scan(scan_id: str, user_id: str = Depends(get_current_user)):
                 supabase.storage.from_(bucket).remove([p])
             except Exception as e:
                 logger.warning(f"delete-scan: {bucket}/{p} failed: {e}")
+                raise HTTPException(503, "Image storage is temporarily unavailable. Please retry.")
 
     supabase.table("scans").delete().eq("id", s["id"]).execute()
     return {"ok": True, "scan_id": scan_id, "deleted": True}
 
 
-@app.post("/scans/wipe-all-raw")
-def wipe_all_raw(request: Request, user_id: str = Depends(get_current_user)):
-    """Wipe all raw, original images to reclaim storage space without losing grades."""
+@app.post("/scans/clear-library")
+def clear_library(request: Request, user_id: str = Depends(get_current_user)):
+    """Delete both proof-image layers while preserving result rows and exports."""
     if not supabase:
         raise HTTPException(500, "Supabase not configured")
-        
-    res = supabase.table("scans").select("id, image_path").eq("user_id", user_id).not_.is_("image_path", "null").execute()
-    paths = [s["image_path"] for s in res.data if s.get("image_path")]
-    
-    if paths:
-        # Remove in chunks of 100
-        for i in range(0, len(paths), 100):
-            try:
-                supabase.storage.from_("raw_images").remove(paths[i:i+100])
-            except Exception as e:
-                logger.warning(f"wipe-all-raw failed on chunk: {e}")
-                
-        try:
-            supabase.table("scans").update({"image_path": None}).eq("user_id", user_id).not_.is_("image_path", "null").execute()
-        except Exception as e:
-            logger.error(f"Failed to update db after wipe-all: {e}")
-            
-    return {"ok": True, "deleted": len(paths)}
+    report = clear_user_image_library(supabase, user_id)
+    return {"ok": report["failed"] == 0, **report}
+
+
+@app.post("/scans/wipe-all-raw")
+def wipe_all_raw(request: Request, user_id: str = Depends(get_current_user)):
+    """Compatibility alias for clients using the former raw-only action."""
+    return clear_library(request, user_id)
 
 class OverrideRequest(BaseModel):
     q_num: str

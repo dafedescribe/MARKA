@@ -9,7 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT / "tests"))
 
-from handdrawn_scanner import HanddrawnScanError, align_handdrawn_page
+from handdrawn_scanner import HanddrawnScanError, align_handdrawn_page, read_handdrawn
 from handdrawn_synthetic import render_sheet, transform_capture
 
 
@@ -73,3 +73,13 @@ def test_severe_blur_rejects_with_action(profile, tmp_path):
         align_handdrawn_page(write_image(tmp_path, image), profile)
     assert error.value.code == "IMAGE_BLURRY"
     assert "steady" in error.value.action.lower()
+
+
+def test_identity_strip_is_preserved_as_receipt_crops(profile, tmp_path):
+    image = render_sheet(
+        profile,
+        identity_text={"name": "ADA", "class": "P1", "subject": "MATH"},
+    )
+    result = read_handdrawn(write_image(tmp_path, image), profile)
+    assert list(result["fields_b64"]) == ["name", "class", "subject"]
+    assert all(value.startswith("data:image/webp;base64,") for value in result["fields_b64"].values())
