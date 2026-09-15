@@ -58,6 +58,7 @@ from typing import Literal
 from scanner_dispatch import PRINTED_R07E, grade_sheet, read_sheet
 from database import supabase
 from auth import generate_marka_id, generate_pin, get_password_hash, verify_password, create_access_token
+from paystack import validate_verified_transaction, valid_webhook_signature
 from pydantic import BaseModel, constr
 
 
@@ -331,11 +332,10 @@ def purchase_id(req: PurchaseIdRequest):
             print(f"Paystack verify URLError: {e.reason}")
             raise HTTPException(400, f"Could not reach Paystack: {e.reason}")
 
-        if not res_data.get("status") or res_data.get("data", {}).get("status") != "success":
-            raise HTTPException(400, "Payment was not successful")
-
-        data = res_data["data"]
-        amount = data.get("amount", 0) / 100
+        try:
+            amount = validate_verified_transaction(res_data, req.email)
+        except ValueError as exc:
+            raise HTTPException(400, str(exc))
     credits_to_add = credits_for_amount(amount)
 
     # 2. Idempotency Check in transactions table (we use 'NEW_ID' as marka_id for the record)
@@ -1049,9 +1049,8 @@ async def paystack_webhook(request: Request, x_paystack_signature: str = Header(
     
     payload = await request.body()
     
-    # Verify signature
-    hash = hmac.new(PAYSTACK_SECRET.encode('utf-8'), payload, hashlib.sha512).hexdigest()
-    if hash != x_paystack_signature:
+    # Paystack signs each webhook with HMAC-SHA512 using our live secret.
+    if not valid_webhook_signature(payload, x_paystack_signature, PAYSTACK_SECRET):
         raise HTTPException(400, "Invalid signature")
         
     data = json.loads(payload)
