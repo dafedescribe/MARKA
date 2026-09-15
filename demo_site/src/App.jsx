@@ -3,6 +3,7 @@ import Auth from './components/Auth';
 import Dashboard from './components/Dashboard';
 import Landing from './components/Landing';
 import { clearStoredSession, readUsableToken, tokenExpiryMs } from './lib/session';
+import { warmApi } from './lib/apiWarmup';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
@@ -12,9 +13,7 @@ function App() {
   const [initialAuthTab, setInitialAuthTab] = useState('login');
 
   useEffect(() => {
-    // 1. Silent Wake-up for Render Cold Starts
-    // Fire a non-blocking request to wake up the API if it has spun down.
-    fetch(`${API_URL}/`).catch(() => {});
+    warmApi(API_URL);
   }, []);
 
   const handleLogout = () => {
