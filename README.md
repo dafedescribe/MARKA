@@ -75,6 +75,25 @@ Whether operating in offline classrooms or modern digital institutions, MARKA el
 
 ---
 
+## 🧹 Image retention
+
+Supabase owns MARKA's scheduled image cleanup through an authenticated Edge
+Function invoked by Supabase Cron every fifteen minutes. Standard images become
+eligible after seven days; `DEMO-TEST` images become eligible after fifteen
+minutes. Cleanup removes only objects from `raw_images` and `graded_images` and
+clears the corresponding scan path columns. Scan rows, scores, marks, ownership,
+and timestamps remain intact.
+
+Run the local retention checks with:
+
+```bash
+/home/dafe/.deno/bin/deno test supabase/functions/cleanup-expired-images
+.venv/bin/python -m pytest -q tests/test_supabase_retention_config.py
+```
+
+Deployment, observation, rollback, and secret rotation are documented in
+[the Supabase image-retention runbook](docs/supabase_image_retention_runbook.md).
+
 ## 📁 Repository Structure
 
 ```
