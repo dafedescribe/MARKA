@@ -86,3 +86,104 @@ export function createCleanupHandler(deps: {
     }
   };
 }
+
+function chunks<T>(items: T[], size: number): T[][] {
+  const result: T[][] = [];
+  for (let index = 0; index < items.length; index += size) {
+    result.push(items.slice(index, index + size));
+  }
+  return result;
+}
+
+export async function runCleanup(
+  store: CleanupStore,
+  dryRun: boolean,
+  now = new Date(),
+): Promise<CleanupReport> {
+  const cutoffs = retentionCutoffs(now);
+  const demoUserId = await store.findDemoUserId();
+  const [demoRows, standardRows] = await Promise.all([
+    demoUserId
+      ? store.listCandidates({
+        cohort: "demo",
+        cutoff: cutoffs.demo,
+        demoUserId,
+        limit: SCAN_LIMIT,
+      })
+      : Promise.resolve([]),
+    store.listCandidates({
+      cohort: "standard",
+      cutoff: cutoffs.standard,
+      demoUserId,
+      limit: SCAN_LIMIT,
+    }),
+  ]);
+
+  const scans = [
+    ...new Map(
+      [...demoRows, ...standardRows].map((scan) => [scan.id, scan]),
+    ).values(),
+  ];
+  const raw = scans
+    .filter((scan) => scan.image_path !== null)
+    .map((scan) => ({ id: scan.id, path: scan.image_path as string }));
+  const graded = scans
+    .filter((scan) => scan.graded_image_path !== null)
+    .map((scan) => ({
+      id: scan.id,
+      path: scan.graded_image_path as string,
+    }));
+
+  const report: CleanupReport = {
+    ok: true,
+    dry_run: dryRun,
+    demo_user_found: demoUserId !== null,
+    scans_inspected: scans.length,
+    raw_paths_eligible: raw.length,
+    graded_paths_eligible: graded.length,
+    raw_paths_cleared: 0,
+    graded_paths_cleared: 0,
+    storage_failures: 0,
+    metadata_failures: 0,
+  };
+  if (dryRun) return report;
+
+  async function process(
+    bucket: Bucket,
+    column: PathColumn,
+    objects: Array<{ id: string; path: string }>,
+    clearedKey: "raw_paths_cleared" | "graded_paths_cleared",
+  ): Promise<void> {
+    for (const batch of chunks(objects, STORAGE_BATCH_SIZE)) {
+      try {
+        await store.removeObjects(
+          bucket,
+          batch.map((item) => item.path),
+        );
+      } catch {
+        report.storage_failures += batch.length;
+        continue;
+      }
+      try {
+        await store.clearPaths(
+          column,
+          batch.map((item) => item.id),
+        );
+        report[clearedKey] += batch.length;
+      } catch {
+        report.metadata_failures += batch.length;
+      }
+    }
+  }
+
+  await process("raw_images", "image_path", raw, "raw_paths_cleared");
+  await process(
+    "graded_images",
+    "graded_image_path",
+    graded,
+    "graded_paths_cleared",
+  );
+  report.ok = report.storage_failures === 0 &&
+    report.metadata_failures === 0;
+  return report;
+}
