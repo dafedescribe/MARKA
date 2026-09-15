@@ -17,7 +17,7 @@
 - Create `supabase/functions/cleanup-expired-images/cleanup.test.ts` — deterministic policy, batching, failure, and authentication tests.
 - Create `supabase/functions/cleanup-expired-images/index.ts` — Supabase database/Storage adapter and Edge entry point.
 - Create `supabase/functions/cleanup-expired-images/index.test.ts` — adapter query and path-update contract tests.
-- Create `supabase/migrations/20260915000000_schedule_image_retention.sql` — extensions and fifteen-minute Cron job.
+- Create `supabase/migrations/20260915105434_schedule_image_retention.sql` — extensions and fifteen-minute Cron job.
 - Create `tests/test_supabase_retention_config.py` — static deployment-safety assertions for function config and migration.
 - Create `docs/supabase_image_retention_runbook.md` — deployment, observation, rollback, and secret-rotation procedure.
 - Modify `README.md` — document the retention owner and local verification commands.
@@ -584,7 +584,7 @@ git commit -m "feat: add retry-safe image retention engine"
 Create `supabase/functions/cleanup-expired-images/index.test.ts`:
 
 ```ts
-import type { SupabaseClient } from "npm:@supabase/supabase-js@2.109.0";
+import type { SupabaseClient } from "npm:@supabase/supabase-js@2.116.0";
 import { SupabaseCleanupStore } from "./index.ts";
 
 type Call = unknown[];
@@ -710,7 +710,7 @@ Create `supabase/functions/cleanup-expired-images/index.ts`:
 import {
   createClient,
   type SupabaseClient,
-} from "npm:@supabase/supabase-js@2.109.0";
+} from "npm:@supabase/supabase-js@2.116.0";
 import {
   createCleanupHandler,
   type Bucket,
@@ -824,7 +824,7 @@ git commit -m "feat: connect image retention to Supabase"
 
 **Files:**
 - Modify: `supabase/config.toml`
-- Create: `supabase/migrations/20260915000000_schedule_image_retention.sql`
+- Create: `supabase/migrations/20260915105434_schedule_image_retention.sql`
 - Create: `tests/test_supabase_retention_config.py`
 
 - [ ] **Step 1: Write the failing static deployment-safety tests**
@@ -893,7 +893,7 @@ This allows the Cron call through the gateway; `X-Cleanup-Secret` remains mandat
 
 - [ ] **Step 4: Create the Cron migration**
 
-Create `supabase/migrations/20260915000000_schedule_image_retention.sql`:
+Create `supabase/migrations/20260915105434_schedule_image_retention.sql`:
 
 ```sql
 create extension if not exists pg_cron;
@@ -1038,7 +1038,7 @@ git commit -m "docs: add Supabase retention operations runbook"
 **Files:**
 - Apply: `migrations/002_add_scan_layout_mode.sql`
 - Deploy: `supabase/functions/cleanup-expired-images/`
-- Apply later: `supabase/migrations/20260915000000_schedule_image_retention.sql`
+- Apply later: `supabase/migrations/20260915105434_schedule_image_retention.sql`
 
 - [ ] **Step 1: Confirm management access to the exact MARKA project**
 
@@ -1146,7 +1146,7 @@ from urllib.request import Request, urlopen
 from dotenv import load_dotenv
 from supabase import create_client
 
-load_dotenv()
+load_dotenv("api/.env")
 url = os.environ["SUPABASE_URL"].rstrip("/")
 service_key = os.environ["SUPABASE_SERVICE_ROLE_KEY"]
 secret_file = os.environ["RETENTION_SECRET_FILE"]
@@ -1158,6 +1158,7 @@ token = uuid.uuid4().hex
 user_id = str(uuid.uuid4())
 scan_row_id = str(uuid.uuid4())
 scan_id = f"RETENTION-VERIFY-{token}"
+marka_id = f"RV-{token[:16]}"
 raw_path = f"retention-verification/{token}-raw.bin"
 graded_path = f"retention-verification/{token}-graded.bin"
 expected = {
@@ -1193,7 +1194,7 @@ def object_exists(bucket, path):
 try:
     client.table("users").insert({
         "id": user_id,
-        "marka_id": scan_id,
+        "marka_id": marka_id,
         "pin_hash": "disabled-retention-verification-user",
         "credits": 0,
     }).execute()
@@ -1274,7 +1275,8 @@ Cron; inspect Edge logs and keep the Render fallback.
 Run:
 
 ```bash
-npx supabase db push --linked
+npx supabase db query --linked \
+  --file supabase/migrations/20260915105434_schedule_image_retention.sql
 npx supabase db query --linked \
   --sql "select jobid, jobname, schedule, active from cron.job where jobname='cleanup-expired-images';"
 ```
