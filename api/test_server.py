@@ -90,3 +90,10 @@ def test_scan_schema_persists_layout_mode():
     upgrade = (root / "migrations/002_add_scan_layout_mode.sql").read_text()
     assert "layout_mode" in initial
     assert "HANDDRAWN_A4_40_V1" in upgrade
+
+
+def test_render_no_longer_exposes_scheduled_retention():
+    paths = {route.path for route in server.app.routes}
+    assert "/admin/wipe-expired" not in paths
+    assert "/scans/{scan_id}/wipe-image" in paths
+    assert "/scans/wipe-all-raw" in paths

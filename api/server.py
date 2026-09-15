@@ -902,67 +902,6 @@ def export_results_pdf(request: Request, exam_code: str, user_id: str = Depends(
     )
 
 
-# ── Retention: 7-day image wipe ───────────────────────────────────
-
-def wipe_expired_images(days: int = 7) -> dict:
-    """Delete raw + graded images for standard scans older than `days`, 
-    and DEMO-TEST scans older than 15 minutes. Scores and records are kept."""
-    if not supabase:
-        return {"error": "supabase not configured"}
-    import datetime as _dt
-    
-    now = _dt.datetime.now(_dt.timezone.utc)
-    standard_cutoff = (now - _dt.timedelta(days=days)).isoformat()
-    demo_cutoff = (now - _dt.timedelta(minutes=15)).isoformat()
-
-    # Find DEMO-TEST user
-    demo_res = supabase.table("users").select("id").eq("marka_id", "DEMO-TEST").execute()
-    demo_user_id = demo_res.data[0]["id"] if demo_res.data else None
-
-    # Get standard scans older than 7 days OR demo scans older than 15 mins
-    res = supabase.table("scans").select(
-        "id, user_id, image_path, graded_image_path, created_at"
-    ).or_(f"image_path.not.is.null,graded_image_path.not.is.null").execute()
-    
-    targets = []
-    for s in (res.data or []):
-        is_demo = (s["user_id"] == demo_user_id)
-        created = s["created_at"]
-        if is_demo and created < demo_cutoff:
-            targets.append(s)
-        elif not is_demo and created < standard_cutoff:
-            targets.append(s)
-
-    files_deleted = 0
-    for s in targets:
-        for bucket, col in (("raw_images", "image_path"),
-                            ("graded_images", "graded_image_path")):
-            p = s.get(col)
-            if p:
-                try:
-                    supabase.storage.from_(bucket).remove([p])
-                    files_deleted += 1
-                except Exception as e:
-                    logger.warning(f"wipe: {bucket}/{p} failed: {e}")
-        try:
-            supabase.table("scans").update(
-                {"image_path": None, "graded_image_path": None}).eq("id", s["id"]).execute()
-        except Exception as e:
-            logger.error(f"wipe: db update failed for scan {s['id']}: {e}")
-
-    return {"scans_affected": len(targets), "files_deleted": files_deleted}
-
-
-@app.post("/admin/wipe-expired")
-def admin_wipe_expired(days: int = 7, x_cron_secret: str = Header(None)):
-    """Delete images older than `days` (default 7). Call daily from a cron
-    (e.g. cron-job.org) with the X-Cron-Secret header set to CRON_SECRET."""
-    secret = os.environ.get("CRON_SECRET", "")
-    if not secret or x_cron_secret != secret:
-        raise HTTPException(401, "Invalid or missing cron secret")
-    return wipe_expired_images(days)
-
-
 @app.post("/scans/{scan_id}/wipe-image")
 def wipe_scan_image(scan_id: str, user_id: str = Depends(get_current_user)):
     """Let a user delete a scan's stored images early to reclaim space.
