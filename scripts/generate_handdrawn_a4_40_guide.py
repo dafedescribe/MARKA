@@ -66,6 +66,7 @@ def _draw_anchor(c: canvas.Canvas, left_mm: float, top_mm: float, crossed: bool)
 def _draw_grid(c: canvas.Canvas, grid: dict, start_question: int, sample: bool) -> None:
     page_height_mm = A4[1] / mm
     left, top, right, bottom = grid["bounds_mm"]
+    header_left, header_top, header_right, header_bottom = grid["header_bounds_mm"]
     y_bottom = page_height_mm - bottom
     c.setStrokeColor(black)
     c.setLineWidth(0.65)
@@ -76,10 +77,17 @@ def _draw_grid(c: canvas.Canvas, grid: dict, start_question: int, sample: bool) 
         y = y_bottom + row * 10
         c.line(left * mm, y * mm, right * mm, y * mm)
 
+    header_y = page_height_mm - header_bottom
+    for column in range(7):
+        x = header_left + column * 10
+        c.line(x * mm, header_y * mm, x * mm, (page_height_mm - header_top) * mm)
+    c.line(header_left * mm, header_y * mm, header_right * mm, header_y * mm)
+    c.line(header_left * mm, (page_height_mm - header_top) * mm,
+           header_right * mm, (page_height_mm - header_top) * mm)
     c.setFont("Helvetica-Bold", 8)
     for index, option in enumerate("ABCDE"):
-        c.drawCentredString((left + 15 + index * 10) * mm,
-                            (page_height_mm - top + 3) * mm, option)
+        c.drawCentredString((header_left + 15 + index * 10) * mm,
+                            (header_y + 3.4) * mm, option)
     c.setFont("Helvetica-Bold", 6.5)
     for row in range(20):
         question = start_question + row
@@ -147,8 +155,8 @@ def generate_guide_pdf(profile_path: Path, pdf_path: Path) -> Path:
     _title(c, "Draw it once. Use it again.", "One ruler. One measurement. Every box is 1 cm.")
     _step(c, 1, 207, "Draw four corner squares", "Each square is 1 cm. Put an X only in the top-left square.")
     _step(c, 2, 155, "Draw the details strip", "Draw 15 cm × 2 cm. Divide it: Name 8 cm, Class 3 cm, Subject 4 cm.")
-    _step(c, 3, 103, "Draw two tall rectangles", "Each rectangle is 6 boxes wide and 20 boxes tall.")
-    _step(c, 4, 51, "Divide, label and answer", "Make 1 cm boxes. Add 1–40 and A–E. Use one clear X or tick.")
+    _step(c, 3, 103, "Draw two tall rectangles", "Each rectangle is 6 boxes wide and 21 boxes tall.")
+    _step(c, 4, 51, "Divide, label and answer", "Top row: A–E. Next 20 rows: questions. Use one clear X or tick.")
     c.setFillColor(PLUM)
     c.setFont("Helvetica-Bold", 10)
     c.drawCentredString(A4[0] / 2, 29 * mm, "3 cm + 6 cm + 3 cm + 6 cm + 3 cm = the full A4 width")

@@ -8,11 +8,14 @@ Premium "Certificate" Aesthetics:
 - High contrast, ink-efficient.
 """
 
+import base64
+import io
 import math
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import mm
 from reportlab.lib.colors import black, HexColor
 from reportlab.pdfgen import canvas as pdf_canvas
+from reportlab.lib.utils import ImageReader
 
 
 # ── Page Geometry (Fixed 10 per page) ─────────────────────────────
@@ -99,9 +102,18 @@ def _draw_slip(c, ox, oy, d):
     c.rect(ix, y - logo_size, logo_size, logo_size)
     c.setDash()
     
-    c.setFillColor(DARK_GREY)
-    c.setFont("Helvetica", 4)
-    c.drawCentredString(ix + logo_size/2, y - logo_size/2 - 1*mm, "[LOGO]")
+    logo_drawn = False
+    try:
+        logo_data = d.get("logo_b64", "").split(",", 1)[1]
+        c.drawImage(ImageReader(io.BytesIO(base64.b64decode(logo_data, validate=True))), ix, y - logo_size,
+                    width=logo_size, height=logo_size, preserveAspectRatio=True, anchor="c", mask="auto")
+        logo_drawn = True
+    except (IndexError, ValueError, TypeError):
+        pass
+    if not logo_drawn:
+        c.setFillColor(DARK_GREY)
+        c.setFont("Helvetica", 4)
+        c.drawCentredString(ix + logo_size/2, y - logo_size/2 - 1*mm, "[LOGO]")
     
     text_x = ix + logo_size + 2.5 * mm
     
@@ -123,10 +135,6 @@ def _draw_slip(c, ox, oy, d):
     fields_b64 = d.get("fields_b64", {})
     
     if "name" in fields_b64:
-        import base64
-        import io
-        from reportlab.lib.utils import ImageReader
-        
         # Name
         img_data = base64.b64decode(fields_b64["name"].split(",")[1])
         # scale down slightly to fit gracefully (max 40mm wide)

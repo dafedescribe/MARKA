@@ -17,7 +17,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 sys.path.insert(0, os.path.dirname(__file__))
 
 
-from fastapi import FastAPI, HTTPException, BackgroundTasks, Request, Header, Depends, Response
+from fastapi import FastAPI, HTTPException, BackgroundTasks, Request, Header, Depends, Response, UploadFile, File
 from fastapi.security import OAuth2PasswordBearer
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
@@ -60,6 +60,7 @@ from omr_scanner import extract_fields
 from database import supabase
 from auth import generate_marka_id, generate_pin, get_password_hash, verify_password, create_access_token
 from image_cleanup import clear_user_image_library
+from logo_profile import normalize_logo
 from paystack import validate_verified_transaction, valid_webhook_signature
 from pydantic import BaseModel, constr
 
@@ -247,9 +248,36 @@ def get_sheet_profile(user_id: str = Depends(get_current_user)):
 
 @app.put("/profile/sheet")
 def put_sheet_profile(profile: SheetProfile, user_id: str = Depends(get_current_user)):
-    data = profile.model_dump()
+    row = supabase.table("users").select("sheet_profile").eq("id", user_id).single().execute()
+    data = {**((row.data or {}).get("sheet_profile") or {}), **profile.model_dump()}
     supabase.table("users").update({"sheet_profile": data}).eq("id", user_id).execute()
     return {"sheet_profile": data}
+
+
+@app.post("/profile/logo")
+async def upload_profile_logo(logo: UploadFile = File(...), user_id: str = Depends(get_current_user)):
+    if logo.content_type not in {"image/png", "image/jpeg", "image/webp"}:
+        raise HTTPException(415, "Use a PNG, JPEG, or WebP logo.")
+    content = await logo.read(2 * 1024 * 1024 + 1)
+    if len(content) > 2 * 1024 * 1024:
+        raise HTTPException(413, "Logo must be 2 MB or smaller.")
+    try:
+        logo_b64 = normalize_logo(content)
+    except ValueError as exc:
+        raise HTTPException(422, str(exc)) from exc
+    row = supabase.table("users").select("sheet_profile").eq("id", user_id).single().execute()
+    profile = {**((row.data or {}).get("sheet_profile") or {}), "logo_b64": logo_b64}
+    supabase.table("users").update({"sheet_profile": profile}).eq("id", user_id).execute()
+    return {"sheet_profile": profile}
+
+
+@app.delete("/profile/logo")
+def delete_profile_logo(user_id: str = Depends(get_current_user)):
+    row = supabase.table("users").select("sheet_profile").eq("id", user_id).single().execute()
+    profile = dict((row.data or {}).get("sheet_profile") or {})
+    profile.pop("logo_b64", None)
+    supabase.table("users").update({"sheet_profile": profile}).eq("id", user_id).execute()
+    return {"sheet_profile": profile}
 
 
 @app.get("/templates/{template_kind}.pdf")

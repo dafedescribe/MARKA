@@ -204,6 +204,29 @@ export default function Dashboard({ token, onLogout }) {
     } catch (e) { setProfileMessage(e.message); }
   };
 
+  const uploadLogo = async (file) => {
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) { setProfileMessage('Logo must be 2 MB or smaller'); return; }
+    setProfileMessage('Uploading logo…');
+    try {
+      const form = new FormData(); form.append('logo', file);
+      const res = await apiFetch(`${API_URL}/profile/logo`, { method: 'POST', body: form });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || 'Could not upload logo');
+      setSheetProfile(data.sheet_profile); setProfileMessage('Logo saved');
+    } catch (e) { setProfileMessage(e.message); }
+  };
+
+  const removeLogo = async () => {
+    setProfileMessage('Removing logo…');
+    try {
+      const res = await apiFetch(`${API_URL}/profile/logo`, { method: 'DELETE' });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || 'Could not remove logo');
+      setSheetProfile(data.sheet_profile); setProfileMessage('Logo removed');
+    } catch (e) { setProfileMessage(e.message); }
+  };
+
   const downloadTemplate = async (kind) => {
     try {
       const res = await apiFetch(`${API_URL}/templates/${kind}.pdf`);
@@ -658,7 +681,7 @@ export default function Dashboard({ token, onLogout }) {
           </div>
         )}
         <AnimatePresence mode="wait">
-          {currentView === "dashboard" && <DashboardHome credits={credits} storedImages={storedImageCount(scans)} exams={exams} setExamCode={setExamCode} setCurrentView={setCurrentView} handleExport={handleExport} setQuestionsCount={setQuestionsCount} setAnswerKey={setAnswerKey} setNewExamCode={setNewExamCode} handleClearLibrary={handleClearLibrary} sheetProfile={sheetProfile} setSheetProfile={setSheetProfile} saveSheetProfile={saveSheetProfile} profileMessage={profileMessage} downloadTemplate={downloadTemplate} />}
+          {currentView === "dashboard" && <DashboardHome credits={credits} storedImages={storedImageCount(scans)} exams={exams} setExamCode={setExamCode} setCurrentView={setCurrentView} handleExport={handleExport} setQuestionsCount={setQuestionsCount} setAnswerKey={setAnswerKey} setNewExamCode={setNewExamCode} handleClearLibrary={handleClearLibrary} sheetProfile={sheetProfile} setSheetProfile={setSheetProfile} saveSheetProfile={saveSheetProfile} profileMessage={profileMessage} downloadTemplate={downloadTemplate} uploadLogo={uploadLogo} removeLogo={removeLogo} />}
           {currentView === "builder" && <ExamBuilder newExamCode={newExamCode} setNewExamCode={setNewExamCode} questionsCount={questionsCount} setQuestionsCount={setQuestionsCount} optionsCount={optionsCount} setOptionsCount={setOptionsCount} answerKey={answerKey} setAnswerKey={setAnswerKey} activeBuilderQ={activeBuilderQ} setActiveBuilderQ={setActiveBuilderQ} examSaving={examSaving} examMsg={examMsg} handleCreateExam={handleCreateExam} setCurrentView={setCurrentView} />}
           {currentView === "upload" && <UploadQueue examCode={examCode} setExamCode={setExamCode} exams={exams} scanMode={scanMode} setScanMode={setScanMode} uploadQueue={uploadQueue} setUploadQueue={setUploadQueue} fileInputRef={fileInputRef} handleFilesAdded={handleFilesAdded} addFiles={addFiles} runBatchProcessing={runBatchProcessing} isUploadingBatch={isUploadingBatch} retryFailed={retryFailed} goToLibrary={goToLibrary} />}
           {currentView === "gallery" && <Gallery scans={visibleLibraryScans(scans)} fetchScans={() => fetchScans(0, false)} loadMoreScans={loadMoreScans} hasMoreScans={hasMoreScans} wipeImage={wipeImage} deleteScan={deleteScan} expiryInfo={expiryInfo} searchQuery={searchQuery} setSearchQuery={setSearchQuery} scansError={scansError} />}

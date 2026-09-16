@@ -98,3 +98,4 @@ def test_render_no_longer_exposes_scheduled_retention():
     assert "/scans/{scan_id}/wipe-image" in paths
     assert "/scans/clear-library" in paths
     assert "/scans/wipe-all-raw" in paths
+    assert "/profile/logo" in paths

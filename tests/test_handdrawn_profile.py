@@ -34,8 +34,8 @@ def test_profile_uses_the_approved_one_centimetre_geometry():
         ],
     }
     assert profile["grids"] == [
-        {"id": "left", "bounds_mm": [30, 50, 90, 250], "questions": [1, 20]},
-        {"id": "right", "bounds_mm": [120, 50, 180, 250], "questions": [21, 40]},
+        {"id": "left", "header_bounds_mm": [30, 50, 90, 60], "bounds_mm": [30, 60, 90, 260], "questions": [1, 20]},
+        {"id": "right", "header_bounds_mm": [120, 50, 180, 60], "bounds_mm": [120, 60, 180, 260], "questions": [21, 40]},
     ]
 
 

@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { Coins, HardDrive, PlusCircle, History, ClipboardList, Download, Eye, FileText } from 'lucide-react';
 
-export default function DashboardHome({ credits, storedImages, exams, setExamCode, setCurrentView, handleExport, setQuestionsCount, setAnswerKey, setNewExamCode, handleClearLibrary, sheetProfile, setSheetProfile, saveSheetProfile, profileMessage, downloadTemplate }) {
+export default function DashboardHome({ credits, storedImages, exams, setExamCode, setCurrentView, handleExport, setQuestionsCount, setAnswerKey, setNewExamCode, handleClearLibrary, sheetProfile, setSheetProfile, saveSheetProfile, profileMessage, downloadTemplate, uploadLogo, removeLogo }) {
   return (
     <motion.div
       key="dashboard-view"
@@ -53,6 +53,16 @@ export default function DashboardHome({ credits, storedImages, exams, setExamCod
         <div><h3 className="font-extrabold text-gray-900 text-sm">Sheet and receipt details</h3><p className="text-xs text-gray-500 mt-1">Save once; MARKA reuses these details.</p></div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {['school_name', 'address', 'phone', 'email'].map((key) => <input key={key} value={sheetProfile[key] || ''} maxLength={key === 'address' ? 240 : 120} onChange={(e) => setSheetProfile({ ...sheetProfile, [key]: e.target.value })} placeholder={{ school_name: 'School or organisation name', address: 'Full address', phone: 'Phone', email: 'Email' }[key]} className="px-3 py-2.5 rounded-xl border border-gray-200 text-sm outline-none focus:border-purple-500" />)}
+        </div>
+        <div className="flex items-center gap-3">
+          <div className="w-16 h-16 rounded-xl border border-dashed border-gray-300 bg-gray-50 flex items-center justify-center overflow-hidden">
+            {sheetProfile.logo_b64 ? <img src={sheetProfile.logo_b64} alt="School logo preview" className="max-w-full max-h-full object-contain" /> : <span className="text-[10px] font-bold text-gray-400">LOGO</span>}
+          </div>
+          <label className="px-4 py-2.5 border border-gray-200 rounded-xl text-xs font-bold cursor-pointer hover:bg-gray-50">
+            {sheetProfile.logo_b64 ? 'Replace logo' : 'Upload logo'}
+            <input type="file" accept="image/png,image/jpeg,image/webp" className="hidden" onChange={(e) => { uploadLogo(e.target.files?.[0]); e.target.value = ''; }} />
+          </label>
+          {sheetProfile.logo_b64 && <button onClick={removeLogo} className="px-3 py-2.5 text-red-600 text-xs font-bold">Remove</button>}
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <button onClick={saveSheetProfile} className="px-4 py-2.5 bg-[#3B0042] text-white rounded-xl text-xs font-bold">Save details</button>

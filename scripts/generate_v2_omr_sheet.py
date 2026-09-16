@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import base64
 import io
 import json
 import os
@@ -279,6 +280,7 @@ def _fitted_text(c, text, x, y, max_width, preferred, minimum=4.0, font="Helveti
 
 def _draw_sheet(c: canvas.Canvas, sheet: Dict[str, object], sheet_profile=None) -> None:
     c.saveState()
+    profile = sheet_profile or {}
     origin_x, origin_y = sheet["origin_on_page_mm"]  # type: ignore[index]
     c.translate(float(origin_x) * mm, float(origin_y) * mm)
 
@@ -321,9 +323,17 @@ def _draw_sheet(c: canvas.Canvas, sheet: Dict[str, object], sheet_profile=None) 
     c.setStrokeColor(colors.white)
     c.setLineWidth(0.45)
     c.roundRect(13 * mm, 119 * mm, 18 * mm, 12 * mm, 0.8 * mm, fill=0, stroke=1)
-    c.setFont("Helvetica-Bold", 6.0)
-    c.drawCentredString(22 * mm, 124.3 * mm, "LOGO")
-    profile = sheet_profile or {}
+    logo_drawn = False
+    try:
+        logo_data = profile.get("logo_b64", "").split(",", 1)[1]
+        c.drawImage(ImageReader(io.BytesIO(base64.b64decode(logo_data, validate=True))), 13 * mm, 119 * mm,
+                    width=18 * mm, height=12 * mm, preserveAspectRatio=True, anchor="c", mask="auto")
+        logo_drawn = True
+    except (IndexError, ValueError, TypeError):
+        pass
+    if not logo_drawn:
+        c.setFont("Helvetica-Bold", 6.0)
+        c.drawCentredString(22 * mm, 124.3 * mm, "LOGO")
     school_name = profile.get("school_name") or "SCHOOL / COMPANY NAME"
     contact = "  •  ".join(filter(None, [profile.get("address"), profile.get("phone"), profile.get("email")])) or "Address  •  Phone  •  Email"
     _fitted_text(c, school_name[:90], 34 * mm, 128 * mm, 100 * mm, 10.0, 5.5, "Helvetica-Bold")

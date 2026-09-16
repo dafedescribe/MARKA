@@ -59,6 +59,16 @@ def render_sheet(
     measured = {}
     for grid in profile["grids"]:
         left, top, right, bottom = grid["bounds_mm"]
+        header_left, header_top, header_right, header_bottom = grid["header_bounds_mm"]
+        header_x = [_mm(header_left + i * 10, px_per_mm) for i in range(7)]
+        header_y = [_mm(header_top, px_per_mm), _mm(header_bottom, px_per_mm)]
+        for x in header_x:
+            cv2.line(image, (x, header_y[0]), (x, header_y[1]), (0, 0, 0), thickness)
+        for y in header_y:
+            cv2.line(image, (header_x[0], y), (header_x[-1], y), (0, 0, 0), thickness)
+        for index, option in enumerate(profile["choices"]):
+            cv2.putText(image, option, (header_x[index + 1] + _mm(3, px_per_mm), header_y[1] - _mm(3, px_per_mm)),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), max(1, thickness // 2))
         nominal_x = np.array([_mm(left + i * 10, px_per_mm) for i in range(7)])
         nominal_y = np.array([_mm(top + i * 10, px_per_mm) for i in range(21)])
         if cell_jitter_px:
