@@ -20,6 +20,10 @@ export default function Auth({ onLogin, initialTab = 'login' }) {
   const MONNIFY_API_KEY = import.meta.env.VITE_MONNIFY_API_KEY || '';
   const MONNIFY_CONTRACT_CODE = import.meta.env.VITE_MONNIFY_CONTRACT_CODE || '';
 
+  const isTestMode = PAYMENT_PROVIDER === 'monnify'
+    ? (MONNIFY_API_KEY.toLowerCase().includes('test') || !MONNIFY_API_KEY)
+    : (PAYSTACK_PUBLIC_KEY.startsWith('pk_test_') || PAYSTACK_PUBLIC_KEY.includes('replace_with_your_key_here'));
+
   useEffect(() => {
     // Dynamically load payment SDK based on provider
     const script = document.createElement('script');
@@ -553,7 +557,7 @@ export default function Auth({ onLogin, initialTab = 'login' }) {
                   </div>
                 </div>
                 
-                {!coupon.trim() && (
+                {!coupon.trim() && isTestMode && (
                   <div className="bg-amber-50 p-3 rounded-xl border border-amber-200 flex flex-col gap-1">
                     <span className="text-[10px] font-bold text-amber-800 uppercase tracking-wider">Sandbox Mode</span>
                     <span className="text-[11px] text-amber-700">
