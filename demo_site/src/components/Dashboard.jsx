@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { supabase, setSupabaseToken } from '../lib/supabase';
-import { LogOut } from 'lucide-react';
+import { LogOut, X } from 'lucide-react';
 import { AnimatePresence } from 'motion/react';
 import DashboardHome from './DashboardHome';
 import ExamBuilder from './ExamBuilder';
@@ -13,16 +13,38 @@ import { authenticatedFetch } from '../lib/session';
 
 export default function Dashboard({ token, onLogout }) {
   const [credits, setCredits] = useState(parseInt(localStorage.getItem('marka_credits') || '0'));
-  const [scans, setScans] = useState([]);
+  const [scans, setScans] = useState(() => {
+    try {
+      const saved = localStorage.getItem('marka_scans_cache');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
   const [scanPage, setScanPage] = useState(0);
   const [hasMoreScans, setHasMoreScans] = useState(true);
-  const [exams, setExams] = useState([]);
+  const [exams, setExams] = useState(() => {
+    try {
+      const saved = localStorage.getItem('marka_exams');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
   const [isOffline, setIsOffline] = useState(false);
   const [scansError, setScansError] = useState(null);
-  const [userEmail, setUserEmail] = useState('');
-  const [markaId, setMarkaId] = useState('');
-  const [sheetProfile, setSheetProfile] = useState({ school_name: '', address: '', phone: '', email: '' });
+  const [userEmail, setUserEmail] = useState(() => localStorage.getItem('marka_email') || '');
+  const [markaId, setMarkaId] = useState(() => localStorage.getItem('marka_id') || '');
+  const [sheetProfile, setSheetProfile] = useState(() => {
+    try {
+      const saved = localStorage.getItem('marka_sheet_profile');
+      if (saved) return JSON.parse(saved);
+    } catch {}
+    return { school_name: '', address: '', phone: '', email: '', logo_b64: '' };
+  });
   const [profileMessage, setProfileMessage] = useState('');
+  const [showTopUpModal, setShowTopUpModal] = useState(false);
+  const [topUpAmount, setTopUpAmount] = useState(500);
   
   // Navigation
   const [currentView, setCurrentView] = useState('dashboard'); // dashboard, builder, upload, gallery
@@ -132,7 +154,11 @@ export default function Dashboard({ token, onLogout }) {
         setCredits(data.credits);
         setUserEmail(data.email);
         setMarkaId(data.marka_id);
-        localStorage.setItem('marka_credits', data.credits);
+        try {
+          localStorage.setItem('marka_credits', data.credits);
+          if (data.email) localStorage.setItem('marka_email', data.email);
+          if (data.marka_id) localStorage.setItem('marka_id', data.marka_id);
+        } catch {}
       }
     } catch (e) {
       console.error(e);
@@ -164,10 +190,19 @@ export default function Dashboard({ token, onLogout }) {
           return scan;
         }));
         if (append) {
-          setScans(prev => [...prev, ...scansWithUrls]);
+          setScans(prev => {
+            const next = [...prev, ...scansWithUrls];
+            try {
+              localStorage.setItem('marka_scans_cache', JSON.stringify(next.slice(0, 50)));
+            } catch {}
+            return next;
+          });
         } else {
           setScans(scansWithUrls);
           setScanPage(0);
+          try {
+            localStorage.setItem('marka_scans_cache', JSON.stringify(scansWithUrls.slice(0, 50)));
+          } catch {}
         }
       }
       setScansError(null);
@@ -185,14 +220,25 @@ export default function Dashboard({ token, onLogout }) {
     fetchScans(nextPage, true);
   };
 
-  const fetchSheetProfile = async () => {
+  const fetchSheetProfile = async (retryCount = 0) => {
     try {
       const res = await apiFetch(`${API_URL}/profile/sheet`);
-      if (res.ok) {
+      if (res && res.ok) {
         const data = await res.json();
-        setSheetProfile(prev => ({ ...prev, ...(data.sheet_profile || {}) }));
+        const profile = data.sheet_profile || {};
+        setSheetProfile(prev => ({ ...prev, ...profile }));
+        try {
+          localStorage.setItem('marka_sheet_profile', JSON.stringify(profile));
+        } catch {}
+      } else if (retryCount < 4) {
+        setTimeout(() => fetchSheetProfile(retryCount + 1), 3000 * (retryCount + 1));
       }
-    } catch (e) { console.error(e); }
+    } catch (e) {
+      console.error(e);
+      if (retryCount < 4) {
+        setTimeout(() => fetchSheetProfile(retryCount + 1), 3000 * (retryCount + 1));
+      }
+    }
   };
 
   const saveSheetProfile = async () => {
@@ -200,6 +246,9 @@ export default function Dashboard({ token, onLogout }) {
     try {
       const res = await apiFetch(`${API_URL}/profile/sheet`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(sheetProfile) });
       if (!res.ok) throw new Error('Could not save details');
+      try {
+        localStorage.setItem('marka_sheet_profile', JSON.stringify(sheetProfile));
+      } catch {}
       setProfileMessage('Saved');
     } catch (e) { setProfileMessage(e.message); }
   };
@@ -213,7 +262,11 @@ export default function Dashboard({ token, onLogout }) {
       const res = await apiFetch(`${API_URL}/profile/logo`, { method: 'POST', body: form });
       const data = await res.json();
       if (!res.ok) throw new Error(data.detail || 'Could not upload logo');
-      setSheetProfile(data.sheet_profile); setProfileMessage('Logo saved');
+      setSheetProfile(data.sheet_profile);
+      try {
+        localStorage.setItem('marka_sheet_profile', JSON.stringify(data.sheet_profile));
+      } catch {}
+      setProfileMessage('Logo saved');
     } catch (e) { setProfileMessage(e.message); }
   };
 
@@ -223,7 +276,11 @@ export default function Dashboard({ token, onLogout }) {
       const res = await apiFetch(`${API_URL}/profile/logo`, { method: 'DELETE' });
       const data = await res.json();
       if (!res.ok) throw new Error(data.detail || 'Could not remove logo');
-      setSheetProfile(data.sheet_profile); setProfileMessage('Logo removed');
+      setSheetProfile(data.sheet_profile);
+      try {
+        localStorage.setItem('marka_sheet_profile', JSON.stringify(data.sheet_profile));
+      } catch {}
+      setProfileMessage('Logo removed');
     } catch (e) { setProfileMessage(e.message); }
   };
 
@@ -237,26 +294,40 @@ export default function Dashboard({ token, onLogout }) {
     } catch (e) { alert(e.message); }
   };
 
-  const fetchExams = async () => {
+  const fetchExams = async (retryCount = 0) => {
     try {
       const res = await apiFetch(`${API_URL}/exams`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
-      if (!res.ok) return;
-      const data = await res.json();
-      setExams(data.exams || []);
-      setIsOffline(false);
+      if (res && res.ok) {
+        const data = await res.json();
+        const examList = data.exams || [];
+        setExams(examList);
+        try {
+          localStorage.setItem('marka_exams', JSON.stringify(examList));
+        } catch {}
+        setIsOffline(false);
+      } else if (retryCount < 4) {
+        setTimeout(() => fetchExams(retryCount + 1), 3000 * (retryCount + 1));
+      }
     } catch (e) {
       console.error("Error fetching exams:", e);
-      if (e.message === 'Failed to fetch' || e.name === 'TypeError') setIsOffline(true);
+      if (retryCount < 4) {
+        setTimeout(() => fetchExams(retryCount + 1), 3000 * (retryCount + 1));
+      }
     }
   };
 
   const handleTopUp = () => {
+    setShowTopUpModal(true);
+  };
+
+  const executeTopUp = (amountToPay) => {
     if (!userEmail || !markaId) {
       alert("User details not fully loaded. Please wait a moment or refresh.");
       return;
     }
+    setShowTopUpModal(false);
 
     const PAYMENT_PROVIDER = import.meta.env.VITE_PAYMENT_PROVIDER || 'paystack';
 
@@ -267,14 +338,14 @@ export default function Dashboard({ token, onLogout }) {
         return;
       }
       MonnifySDK.initialize({
-        amount: 500,
+        amount: amountToPay,
         currency: "NGN",
         reference: `MARKA_TOPUP_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
         customerFullName: markaId,
         customerEmail: userEmail,
         apiKey: import.meta.env.VITE_MONNIFY_API_KEY || '',
         contractCode: import.meta.env.VITE_MONNIFY_CONTRACT_CODE || '',
-        paymentDescription: "MARKA Credits Top Up",
+        paymentDescription: `MARKA Credits Top Up (₦${amountToPay})`,
         metaData: {
           marka_id: markaId
         },
@@ -293,7 +364,7 @@ export default function Dashboard({ token, onLogout }) {
       const handler = PaystackPop.setup({
         key: import.meta.env.VITE_PAYSTACK_PUBLIC_KEY || 'pk_test_replace_with_your_key_here',
         email: userEmail,
-        amount: 500 * 100, // Top up starter pack (50 credits)
+        amount: amountToPay * 100, // Top up in Kobo
         currency: 'NGN',
         metadata: { 
           custom_fields: [
@@ -687,6 +758,82 @@ export default function Dashboard({ token, onLogout }) {
           {currentView === "gallery" && <Gallery scans={visibleLibraryScans(scans)} fetchScans={() => fetchScans(0, false)} loadMoreScans={loadMoreScans} hasMoreScans={hasMoreScans} wipeImage={wipeImage} deleteScan={deleteScan} expiryInfo={expiryInfo} searchQuery={searchQuery} setSearchQuery={setSearchQuery} scansError={scansError} />}
         </AnimatePresence>
       </main>
+
+      {/* Top Up Credits Modal */}
+      <AnimatePresence>
+        {showTopUpModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+            <div
+              className="bg-white w-full max-w-md rounded-2xl shadow-2xl border border-gray-100 p-6 space-y-5"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-lg font-black text-gray-900">Top Up Credits</h3>
+                  <p className="text-xs text-gray-500 mt-0.5">
+                    Account: <span className="font-mono font-bold text-[#3B0042]">{markaId || 'MARKA User'}</span>
+                  </p>
+                </div>
+                <button
+                  onClick={() => setShowTopUpModal(false)}
+                  className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="space-y-2">
+                <label className="block text-xs font-bold text-gray-600 uppercase tracking-wide">
+                  Select Credit Volume
+                </label>
+                <div className="grid grid-cols-2 gap-3">
+                  {[
+                    { price: 500, credits: 50, label: "Starter" },
+                    { price: 5000, credits: 1000, label: "Growth", popular: true },
+                    { price: 12500, credits: 3000, label: "Pro" },
+                    { price: 25000, credits: 10000, label: "Enterprise" }
+                  ].map((pkg) => {
+                    const isSelected = topUpAmount === pkg.price;
+                    return (
+                      <div
+                        key={pkg.price}
+                        onClick={() => setTopUpAmount(pkg.price)}
+                        className={`cursor-pointer border p-3.5 rounded-xl text-center transition-all relative ${
+                          isSelected
+                            ? "border-[#3B0042] bg-purple-50/50 text-[#3B0042] ring-2 ring-[#3B0042]/20 shadow-sm"
+                            : "border-gray-200 hover:border-gray-300 bg-white"
+                        }`}
+                      >
+                        {pkg.popular && (
+                          <span className="absolute -top-2 right-2 bg-[#3B0042] text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wider">
+                            Popular
+                          </span>
+                        )}
+                        <span className="block text-base font-black">₦{pkg.price.toLocaleString()}</span>
+                        <span className="block text-xs font-bold text-purple-900 mt-0.5">
+                          {pkg.credits.toLocaleString()} Credits
+                        </span>
+                        <span className="block text-[10px] text-gray-400 font-semibold uppercase mt-0.5">
+                          {pkg.label}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="pt-2">
+                <button
+                  onClick={() => executeTopUp(topUpAmount)}
+                  className="w-full py-3.5 bg-[#3B0042] hover:bg-[#2c0032] text-white font-extrabold rounded-xl transition-all flex items-center justify-center gap-2 shadow-md active:scale-95 text-sm"
+                >
+                  Pay ₦{topUpAmount.toLocaleString()} via {import.meta.env.VITE_PAYMENT_PROVIDER === 'monnify' ? 'Monnify' : 'Paystack'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
