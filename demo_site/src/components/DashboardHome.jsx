@@ -40,17 +40,17 @@ export default function DashboardHome({ credits, storedImages, exams, setExamCod
         <div className="bg-[#3B0042] text-white p-6 rounded-2xl flex flex-col justify-between shadow-lg relative overflow-hidden">
           <div className="absolute -right-12 -bottom-12 w-32 h-32 bg-white/5 rounded-full"></div>
           <div className="space-y-2">
-            <h2 className="text-lg font-bold">Start Grading Sheet</h2>
-            <p className="text-xs text-purple-200 leading-normal">Establish an Answer Key, upload photo sheets, and see instant grades.</p>
+            <h2 className="text-lg font-bold">Ready to Grade an Exam?</h2>
+            <p className="text-xs text-purple-200 leading-normal">Create an Answer Key, photograph your student sheets, and view instant grades.</p>
           </div>
           <button onClick={() => setCurrentView("builder")} className="w-full py-3 bg-white text-[#3B0042] hover:bg-amber-400 font-extrabold text-xs rounded-xl transition-all shadow mt-4 flex items-center justify-center gap-2">
-            <PlusCircle className="w-4 h-4" /> Start Marking Now
+            <PlusCircle className="w-4 h-4" /> Setup Exam Answer Key
           </button>
         </div>
       </div>
 
       <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm space-y-4">
-        <div><h3 className="font-extrabold text-gray-900 text-sm">Sheet and receipt details</h3><p className="text-xs text-gray-500 mt-1">Save once; MARKA reuses these details.</p></div>
+        <div><h3 className="font-extrabold text-gray-900 text-sm">School Branding & Sheet Details</h3><p className="text-xs text-gray-500 mt-1">Personalise your printed sheets and assessment slips with your school name, address, and logo.</p></div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {['school_name', 'address', 'phone', 'email'].map((key) => <input key={key} value={sheetProfile[key] || ''} maxLength={key === 'address' ? 240 : 120} onChange={(e) => setSheetProfile({ ...sheetProfile, [key]: e.target.value })} placeholder={{ school_name: 'School or organisation name', address: 'Full address', phone: 'Phone', email: 'Email' }[key]} className="px-3 py-2.5 rounded-xl border border-gray-200 text-sm outline-none focus:border-purple-500" />)}
         </div>

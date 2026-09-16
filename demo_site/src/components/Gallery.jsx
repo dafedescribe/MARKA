@@ -44,7 +44,9 @@ export default function Gallery({ scans, fetchScans, loadMoreScans, hasMoreScans
   };
 
   const filteredScans = scans.filter((p) => {
-    return (p.scan_id || '').toLowerCase().includes(searchQuery.toLowerCase());
+    const q = searchQuery.toLowerCase();
+    return (p.scan_id || '').toLowerCase().includes(q) ||
+           (p.student_name || '').toLowerCase().includes(q);
   });
 
   const downloadImage = async (scan) => {
@@ -79,7 +81,7 @@ export default function Gallery({ scans, fetchScans, loadMoreScans, hasMoreScans
         <div className="flex items-center gap-2 flex-1 max-w-sm">
           <div className="relative w-full">
             <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
-            <input type="text" placeholder="Search Scan ID..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:border-[#3B0042] focus:outline-none" />
+            <input type="text" placeholder="Search by student name or scan ID..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:border-[#3B0042] focus:outline-none" />
           </div>
         </div>
         <button onClick={fetchScans} className="p-2 text-gray-400 hover:text-[#3B0042] bg-white border border-gray-200 rounded-lg shadow-sm transition-colors ml-4" title="Refresh">

@@ -55,7 +55,7 @@ export default function Landing({ onGetStarted }) {
               onClick={onGetStarted}
               className="px-5 py-2.5 rounded-xl text-sm font-bold text-white bg-[#3B0042] hover:bg-[#2c0032] shadow-md hover:shadow-lg transition-all active:scale-95"
             >
-              Login / Buy Credits
+              Sign In / Buy Credits
             </button>
           </div>
         </div>

@@ -255,7 +255,7 @@ export default function Auth({ onLogin, initialTab = 'login' }) {
 
             <div className="bg-purple-50/50 p-6 rounded-2xl border border-purple-100 space-y-4">
               <p className="text-xs text-gray-500 font-semibold uppercase">
-                YOUR SECURITY ACCESS KEYWORDS
+                YOUR LOGIN CREDENTIALS
               </p>
 
               <div className="grid grid-cols-2 gap-4">
@@ -282,8 +282,7 @@ export default function Auth({ onLogin, initialTab = 'login' }) {
               </div>
 
               <p className="text-[11px] text-gray-400 leading-normal px-4">
-                Write these down immediately. You will use these
-                anytime to log in and access your balance.
+                Please save these credentials securely. You will need your MARKA ID and PIN every time you sign in to grade exams.
               </p>
             </div>
 
@@ -296,7 +295,7 @@ export default function Auth({ onLogin, initialTab = 'login' }) {
               }}
               className="w-full py-4 bg-[#3B0042] text-white hover:bg-[#2c0032] font-bold rounded-xl transition-all shadow-md active:scale-95"
             >
-              I have saved them, proceed to Login
+              I have saved my PIN — Continue to Sign In
             </button>
           </motion.div>
         ) : (
@@ -319,7 +318,7 @@ export default function Auth({ onLogin, initialTab = 'login' }) {
                     : "text-gray-500 hover:text-gray-900"
                 }`}
               >
-                Login
+                Sign In
               </button>
               <button
                 type="button"
@@ -330,7 +329,7 @@ export default function Auth({ onLogin, initialTab = 'login' }) {
                     : "text-gray-500 hover:text-gray-900"
                 }`}
               >
-                Buy Credits
+                New Account / Buy Credits
               </button>
             </div>
 
@@ -347,9 +346,9 @@ export default function Auth({ onLogin, initialTab = 'login' }) {
                   <div className="w-12 h-12 bg-purple-50 text-[#3B0042] rounded-full flex items-center justify-center mx-auto mb-2">
                     <KeyRound className="w-6 h-6" />
                   </div>
-                  <h2 className="text-2xl font-black text-gray-900">Access Your Credits</h2>
+                  <h2 className="text-2xl font-black text-gray-900">Sign In to MARKA</h2>
                   <p className="text-xs text-gray-500">
-                    No email or password registration is required.
+                    Enter your MARKA ID and 4-digit PIN to continue.
                   </p>
                 </div>
 
@@ -397,10 +396,10 @@ export default function Auth({ onLogin, initialTab = 'login' }) {
                   {loading ? (
                     <>
                       <Loader2 className="w-5 h-5 animate-spin" />
-                      Verifying credits...
+                      Verifying credentials...
                     </>
                   ) : (
-                    "Continue to Dashboard"
+                    "Sign In to Dashboard"
                   )}
                 </button>
               </form>
@@ -431,7 +430,7 @@ export default function Auth({ onLogin, initialTab = 'login' }) {
                     }}
                     className="w-full py-4 bg-[#3B0042] hover:bg-[#2c0032] text-white font-bold rounded-xl transition-all shadow-md active:scale-95"
                   >
-                    Back to Login
+                    Back to Sign In
                   </button>
                 </div>
               ) : (
@@ -440,9 +439,9 @@ export default function Auth({ onLogin, initialTab = 'login' }) {
                   <div className="w-12 h-12 bg-amber-50 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-2">
                     <ShieldAlert className="w-6 h-6" />
                   </div>
-                  <h2 className="text-2xl font-black text-gray-900">Recover Access</h2>
+                  <h2 className="text-2xl font-black text-gray-900">Recover Your Credentials</h2>
                   <p className="text-xs text-gray-500">
-                    Enter the email you used to purchase credits. We'll reset your PIN and email you the new one.
+                    Enter your registered email address. We will reset your PIN and email you your credentials immediately.
                   </p>
                 </div>
 
@@ -464,7 +463,7 @@ export default function Auth({ onLogin, initialTab = 'login' }) {
 
                 <div className="pt-2 text-center">
                   <button type="button" onClick={() => { setIsForgotPin(false); setRecoveryMessage(''); }} className="text-[11px] font-bold text-gray-500 hover:text-[#3B0042] transition-colors">
-                    Back to Login
+                    Back to Sign In
                   </button>
                 </div>
 
@@ -490,11 +489,13 @@ export default function Auth({ onLogin, initialTab = 'login' }) {
                   <div className="w-12 h-12 bg-purple-50 text-[#3B0042] rounded-full flex items-center justify-center mx-auto mb-2">
                     <Coins className="w-6 h-6" />
                   </div>
-                  <h2 className="text-2xl font-black text-gray-900">Purchase Credits</h2>
+                  <h2 className="text-2xl font-black text-gray-900">
+                    {coupon.trim() ? "Activate Your Account" : "Get Your MARKA Account"}
+                  </h2>
                   <p className="text-xs text-gray-500">
                     {coupon.trim()
                       ? 'Enter your email and coupon to activate promotional credits.'
-                      : `Instant activation via ${PAYMENT_PROVIDER === 'monnify' ? 'Monnify' : 'Paystack'}. Your ID will be generated automatically.`}
+                      : `Instant activation via ${PAYMENT_PROVIDER === 'monnify' ? 'Monnify' : 'Paystack'}. Your MARKA ID and PIN will be generated automatically.`}
                   </p>
                 </div>
 

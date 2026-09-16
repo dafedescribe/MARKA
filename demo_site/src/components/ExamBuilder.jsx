@@ -93,7 +93,7 @@ export default function ExamBuilder({
           {examMsg && <p className="text-xs text-red-600 font-semibold">{examMsg}</p>}
 
           <button onClick={handleCreateExam} disabled={examSaving} className="w-full py-4 bg-[#3B0042] hover:bg-[#2c0032] disabled:bg-gray-400 text-white font-extrabold text-sm rounded-xl transition-all shadow-md active:scale-95 flex items-center justify-center gap-2">
-            {examSaving ? "Saving..." : "Generate Sheet Layout Key"} <ArrowRight className="w-4 h-4" />
+            {examSaving ? "Saving..." : "Save Answer Key & Continue"} <ArrowRight className="w-4 h-4" />
           </button>
         </div>
 
