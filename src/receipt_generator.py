@@ -96,12 +96,6 @@ def _draw_slip(c, ox, oy, d):
     
     # Proud Logo Space (12x12mm)
     logo_size = 12 * mm
-    c.setStrokeColor(DARK_GREY)
-    c.setLineWidth(0.5)
-    c.setDash(1, 1)
-    c.rect(ix, y - logo_size, logo_size, logo_size)
-    c.setDash()
-    
     logo_drawn = False
     try:
         logo_data = d.get("logo_b64", "").split(",", 1)[1]
@@ -111,6 +105,11 @@ def _draw_slip(c, ox, oy, d):
     except (IndexError, ValueError, TypeError):
         pass
     if not logo_drawn:
+        c.setStrokeColor(DARK_GREY)
+        c.setLineWidth(0.5)
+        c.setDash(1, 1)
+        c.rect(ix, y - logo_size, logo_size, logo_size)
+        c.setDash()
         c.setFillColor(DARK_GREY)
         c.setFont("Helvetica", 4)
         c.drawCentredString(ix + logo_size/2, y - logo_size/2 - 1*mm, "[LOGO]")

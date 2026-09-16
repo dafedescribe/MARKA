@@ -319,10 +319,6 @@ def _draw_sheet(c: canvas.Canvas, sheet: Dict[str, object], sheet_profile=None) 
     # Branding block with a real logo box and readable contact line.
     c.setFillColor(BRAND_PLUM)
     c.roundRect(11 * mm, 116 * mm, (SHEET_W_MM - 22) * mm, 16.5 * mm, 1.2 * mm, fill=1, stroke=0)
-    c.setFillColor(colors.white)
-    c.setStrokeColor(colors.white)
-    c.setLineWidth(0.45)
-    c.roundRect(13 * mm, 119 * mm, 18 * mm, 12 * mm, 0.8 * mm, fill=0, stroke=1)
     logo_drawn = False
     try:
         logo_data = profile.get("logo_b64", "").split(",", 1)[1]
@@ -332,6 +328,10 @@ def _draw_sheet(c: canvas.Canvas, sheet: Dict[str, object], sheet_profile=None) 
     except (IndexError, ValueError, TypeError):
         pass
     if not logo_drawn:
+        c.setFillColor(colors.white)
+        c.setStrokeColor(colors.white)
+        c.setLineWidth(0.45)
+        c.roundRect(13 * mm, 119 * mm, 18 * mm, 12 * mm, 0.8 * mm, fill=0, stroke=1)
         c.setFont("Helvetica-Bold", 6.0)
         c.drawCentredString(22 * mm, 124.3 * mm, "LOGO")
     school_name = profile.get("school_name") or "SCHOOL / COMPANY NAME"
@@ -342,8 +342,6 @@ def _draw_sheet(c: canvas.Canvas, sheet: Dict[str, object], sheet_profile=None) 
     c.drawString(34 * mm, 117.6 * mm, "SHADE ONE OPTION FULLY  •  DARK PENCIL OR PEN")
     c.setFont("Helvetica-Bold", 6.3)
     c.drawRightString((SHEET_W_MM - 15) * mm, 128 * mm, "STUDENT ANSWER SHEET")
-    c.setFont("Helvetica", 6.0)
-    c.drawRightString((SHEET_W_MM - 15) * mm, 122.8 * mm, "MARKA ID / EXAM CODE")
 
     for field in sheet["fields_mm"].values():  # type: ignore[union-attr]
         _draw_field(c, field)

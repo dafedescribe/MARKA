@@ -1,109 +1,62 @@
 # MARKA Library, Receipt Fields, and Session Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox syntax for tracking.
 
-**Goal:** Ship retry-safe image-library clearing, persistent handwritten receipt fields, saved school details, answer-sheet downloads, and truthful seven-day browser sessions.
+**Goal:** Ship reliable image clearing, durable handwritten receipt fields, saved school branding, answer-sheet downloads, session expiry, and live Paystack configuration.
 
-**Architecture:** Keep large proof images in the existing Supabase buckets, but persist small field crops inside `raw_marks.fields_b64`. Add a bounded server-side image cleanup helper and account sheet-profile JSON. Keep frontend behavior in small pure helpers so expiry and Library filtering are directly testable.
+**Architecture:** Keep result rows in Supabase, make all Storage deletion retry-safe, and treat the Library as a view of live proof images. Persist small field crops inside each scan result, store one bounded sheet-profile JSON object per user, and generate PDFs on demand. Keep the existing custom seven-day JWT and enforce its expiry in the browser.
 
-**Tech Stack:** FastAPI, Supabase Python/Storage, OpenCV, ReportLab, React/Vite, Node test runner, pytest
+**Tech Stack:** FastAPI, Supabase/Postgres/Storage, OpenCV, ReportLab, React/Vite, pytest, Node test runner, Render, Vercel, Paystack
 
 ---
 
-### Task 1: Fix session and Library presentation
+### Task 1: Repair Library deletion
 
-**Files:**
-- Create: `demo_site/src/lib/session.js`
-- Create: `demo_site/src/lib/session.test.js`
-- Create: `demo_site/src/lib/library.js`
-- Create: `demo_site/src/lib/library.test.js`
-- Modify: `demo_site/src/App.jsx`
-- Modify: `demo_site/src/components/Dashboard.jsx`
-- Modify: `demo_site/src/components/DashboardHome.jsx`
+**Files:** Modify `api/server.py`, `api/test_server.py`, `demo_site/src/components/Dashboard.jsx`, `DashboardHome.jsx`, `Gallery.jsx`; create `demo_site/src/lib/library.js` and test.
 
-- [ ] Write failing tests that `tokenExpiryMs` rejects malformed/expired JWTs and that `visibleLibraryScans` retains only scans with `graded_image_path`.
-- [ ] Run `npm --prefix demo_site test -- --run` and confirm the new tests fail.
-- [ ] Implement the helpers, initialize the token only when unexpired, schedule logout at `exp`, and clear auth on API 401.
-- [ ] Rename the dashboard action to **Clear image library**, show stored-image count, and filter image-less cards before rendering.
-- [ ] Run frontend tests and build.
+- [ ] Add failing API tests proving bulk clear removes both buckets, clears only successful paths, preserves results, and retains failed paths/rows for retry.
+- [ ] Add failing frontend tests proving assetless scans are excluded and stored-image count ignores result-only rows.
+- [ ] Implement a bounded `POST /scans/clear-library` operation and make individual deletion fail retryably instead of orphaning objects.
+- [ ] Replace the misleading raw-only button, update state immediately, and show partial failures.
+- [ ] Run focused Python and Node tests; commit.
 
-### Task 2: Make image clearing retry-safe
+### Task 2: Enforce browser session expiry
 
-**Files:**
-- Create: `api/image_cleanup.py`
-- Create: `tests/test_image_cleanup.py`
-- Modify: `api/server.py`
-- Modify: `api/test_server.py`
+**Files:** Create `demo_site/src/lib/session.js` and test; modify `demo_site/src/App.jsx`, `Dashboard.jsx`.
 
-- [ ] Write failing tests for raw+graded deletion, 100-object batching, partial failure, retained paths on failure, and row retention.
-- [ ] Run the focused pytest files and confirm RED.
-- [ ] Implement `clear_user_image_library(supabase, user_id)` returning aggregate counts only.
-- [ ] Add `POST /scans/clear-library`; keep the old raw-only route as a compatibility alias to the same safe operation.
-- [ ] Make individual scan deletion stop before row deletion when any referenced Storage removal fails.
-- [ ] Run focused tests and confirm GREEN.
+- [ ] Write failing tests for malformed, expired, and live JWT expiry parsing.
+- [ ] Implement `getTokenExpiryMs` and `isTokenUsable`.
+- [ ] Reject expired tokens before dashboard render, schedule logout at `exp`, and log out on API 401.
+- [ ] Run focused tests; commit.
 
-### Task 3: Connect printed identity fields to receipts
+### Task 3: Persist exact student handwriting
 
-**Files:**
-- Modify: `scripts/generate_v2_omr_sheet.py`
-- Modify: `data/MARKA/layout.json`
-- Modify: `src/omr_scanner.py`
-- Modify: `api/server.py`
-- Modify: `src/receipt_generator.py`
-- Modify: `tests/test_v2_prototype_generator.py`
-- Modify: `tests/test_r07_scanner.py`
-- Create: `tests/test_receipt_fields.py`
+**Files:** Modify `scripts/generate_v2_omr_sheet.py`, `data/MARKA/layout.json`, `src/omr_scanner.py`, `src/handdrawn_scanner.py`, `data/handdrawn_profiles/HANDDRAWN_A4_40_V1.json`, `api/server.py`, `src/receipt_generator.py`, and focused tests.
 
-- [ ] Write failing tests for one canonical `fields_mm` contract, border-inset WebP crops, receipt crop passthrough, and scan-ID fallback.
-- [ ] Run focused pytest and confirm RED.
-- [ ] Emit `fields_mm` with keys `name`, `student_id`, `class`, `subject`, and `date`.
-- [ ] Extract bounded grayscale WebP crops during printed grading and store them at `raw_marks.fields_b64`.
-- [ ] Pass `fields_b64` into receipt records and render all available fields.
-- [ ] Regenerate `data/MARKA/layout.json` and run focused tests.
+- [ ] Write failing geometry tests for printed canonical fields and the hand-drawn 15 cm × 2 cm Name/Class/Subject strip.
+- [ ] Write failing tests that field crops are bounded WebP data and receipt payloads receive them.
+- [ ] Normalize printed field coordinates, extract crops during grading, and attach only compressed field data to `raw_marks`.
+- [ ] Detect/crop the hand-drawn identity strip after anchor rectification without making answer grading depend on field success.
+- [ ] Pass field crops into receipt generation with scan-ID fallback.
+- [ ] Regenerate the committed layouts, run focused scanner/receipt tests; commit.
 
-### Task 4: Add the hand-drawn Name/Class/Subject strip
+### Task 4: Save school details and stream sheets
 
-**Files:**
-- Modify: `data/handdrawn_profiles/HANDDRAWN_A4_40_V1.json`
-- Modify: `src/handdrawn_scanner.py`
-- Modify: `scripts/generate_handdrawn_a4_40_guide.py`
-- Modify: `tests/handdrawn_synthetic.py`
-- Modify: `tests/test_handdrawn_profile.py`
-- Modify: `tests/test_handdrawn_registration.py`
+**Files:** Create a Supabase migration; modify `api/server.py`, both PDF generators, `receipt_generator.py`, `DashboardHome.jsx`, and tests.
 
-- [ ] Write failing tests for the 15 cm × 2 cm, 8/3/4 cm strip and three border-inset crops.
-- [ ] Run focused pytest and confirm RED.
-- [ ] Add canonical strip geometry, draw it in the guide/synthetic sheet, and extract Name/Class/Subject from the rectified page.
-- [ ] Attach crops to the existing hand-drawn result without making identity extraction a grading rejection.
-- [ ] Run focused tests and benchmark contracts.
+- [ ] Create a migration adding `users.sheet_profile jsonb not null default '{}'`.
+- [ ] Add failing API tests for authenticated profile read/write, length validation, branded R07-E PDF, and hand-drawn guide PDF.
+- [ ] Implement profile endpoints and bounded two-line school/address fitting.
+- [ ] Add a compact dashboard editor and two download buttons.
+- [ ] Apply and verify the live migration, run advisors and focused tests; commit.
 
-### Task 5: Save school details and deliver PDFs
+### Task 5: Production Paystack and release
 
-**Files:**
-- Create: `migrations/003_add_sheet_profile.sql`
-- Modify: `migrations/001_initial_schema.sql`
-- Modify: `api/server.py`
-- Modify: `scripts/generate_v2_omr_sheet.py`
-- Modify: `src/receipt_generator.py`
-- Modify: `demo_site/src/components/DashboardHome.jsx`
-- Modify: `api/test_server.py`
-- Modify: `tests/test_v2_prototype_generator.py`
+**Files:** Deployment environments only; no credentials in Git.
 
-- [ ] Write failing tests for profile validation, two-line fitting, branded R07-E PDF, generic hand-drawn guide PDF, and receipt branding.
-- [ ] Run focused tests and confirm RED.
-- [ ] Add `users.sheet_profile jsonb not null default '{}'`.
-- [ ] Add authenticated GET/PUT `/profile/sheet-details` with explicit length limits.
-- [ ] Add authenticated GET `/templates/r07e.pdf` and `/templates/handdrawn-a4-40.pdf`.
-- [ ] Add the compact saved-details form and two download buttons.
-- [ ] Run focused backend/frontend tests and production build.
-
-### Task 6: Deploy and reconcile
-
-**Files:**
-- Modify: `docs/supabase_image_retention_runbook.md`
-
-- [ ] Run full Python, Deno, frontend test/build, lint, formatting, and `git diff --check`.
-- [ ] Apply the profile migration to linked Supabase and verify the column/default.
-- [ ] Deploy/push `main`, then verify Render health/routes and matching Vercel assets.
-- [ ] Remove only confirmed orphaned Storage objects through the Storage API and verify aggregate object/path consistency.
-- [ ] Record warnings and exact live outcomes without secrets or user data.
+- [ ] Validate the supplied file contains one live public and one live secret key without printing them.
+- [ ] Set `VITE_PAYSTACK_PUBLIC_KEY` and `VITE_PAYMENT_PROVIDER=paystack` in Vercel Production.
+- [ ] Set `PAYSTACK_SECRET_KEY` and `PAYMENT_PROVIDER=paystack` in Render Production using existing deployment authorization; if unavailable, report the exact single manual action without exposing the value.
+- [ ] Verify server-side transaction amount/status checks and webhook HMAC remain active.
+- [ ] Run the full Python, Deno, and frontend suites plus production build.
+- [ ] Push `main`, observe Render/Vercel Ready, smoke-test APIs/downloads/assets, reconcile the existing orphan through the Storage API, and securely erase rollout temp files.

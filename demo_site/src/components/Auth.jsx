@@ -8,6 +8,7 @@ export default function Auth({ onLogin, initialTab = 'login' }) {
   const [markaId, setMarkaId] = useState('');
   const [pin, setPin] = useState('');
   const [email, setEmail] = useState('');
+  const [coupon, setCoupon] = useState('');
   const [amount, setAmount] = useState(500); // Naira; default credit pack
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -37,6 +38,7 @@ export default function Auth({ onLogin, initialTab = 'login' }) {
   const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
+
     setLoading(true);
     try {
       const res = await fetch(`${API_URL}/auth/login`, {
@@ -71,6 +73,27 @@ export default function Auth({ onLogin, initialTab = 'login' }) {
     }
     
     setError('');
+
+    if (coupon.trim()) {
+      setLoading(true);
+      (async () => {
+        try {
+          const res = await fetch(`${API_URL}/auth/redeem-coupon`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ code: coupon, email }),
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.detail || 'Coupon could not be redeemed');
+          setSuccessData(data);
+        } catch (err) {
+          setError(err.message);
+        } finally {
+          setLoading(false);
+        }
+      })();
+      return;
+    }
 
     if (PAYMENT_PROVIDER === 'monnify') {
       // ── Monnify checkout ───────────────────────────────────────
@@ -223,7 +246,7 @@ export default function Auth({ onLogin, initialTab = 'login' }) {
           >
             <div className="bg-emerald-50 text-emerald-700 p-4 rounded-xl border border-emerald-100 flex items-center gap-3 justify-center text-sm font-bold">
               <CheckCircle2 className="w-5 h-5" />
-              Payment Verified Successfully!
+              Account Activated Successfully!
             </div>
 
             <div className="bg-purple-50/50 p-6 rounded-2xl border border-purple-100 space-y-4">
@@ -465,39 +488,48 @@ export default function Auth({ onLogin, initialTab = 'login' }) {
                   </div>
                   <h2 className="text-2xl font-black text-gray-900">Purchase Credits</h2>
                   <p className="text-xs text-gray-500">
-                    {`Instant activation via ${PAYMENT_PROVIDER === 'monnify' ? 'Monnify' : 'Paystack'}. Your ID will be generated automatically.`}
+                    {coupon.trim()
+                      ? 'Enter your email and coupon to activate promotional credits.'
+                      : `Instant activation via ${PAYMENT_PROVIDER === 'monnify' ? 'Monnify' : 'Paystack'}. Your ID will be generated automatically.`}
                   </p>
                 </div>
 
                 <div className="space-y-4">
-                  <div className="space-y-2">
-                    <label className="block text-xs font-bold text-gray-600 uppercase tracking-wide">
-                      Select Credits Volume
-                    </label>
-                    <div className="grid grid-cols-2 gap-3">
-                      {[
-                        { price: 500, credits: 50 },
-                        { price: 5000, credits: 1000 },
-                        { price: 12500, credits: 3000 },
-                        { price: 25000, credits: 10000 }
-                      ].map((pkg) => (
-                        <div
-                          key={pkg.price}
-                          onClick={() => setAmount(pkg.price)}
-                          className={`cursor-pointer border p-3 rounded-xl text-center transition-all ${
-                            amount === pkg.price
-                              ? "border-[#3B0042] bg-purple-50/40 text-[#3B0042] ring-2 ring-[#3B0042]/10"
-                              : "border-gray-200 hover:border-gray-300"
-                          }`}
-                        >
-                          <span className="block text-base font-black">₦{pkg.price.toLocaleString()}</span>
-                          <span className="block text-[10px] text-gray-400 font-bold uppercase mt-0.5">
-                            {pkg.credits.toLocaleString()} Credits
-                          </span>
-                        </div>
-                      ))}
+                  {!coupon.trim() ? (
+                    <div className="space-y-2">
+                      <label className="block text-xs font-bold text-gray-600 uppercase tracking-wide">
+                        Select Credits Volume
+                      </label>
+                      <div className="grid grid-cols-2 gap-3">
+                        {[
+                          { price: 500, credits: 50 },
+                          { price: 5000, credits: 1000 },
+                          { price: 12500, credits: 3000 },
+                          { price: 25000, credits: 10000 }
+                        ].map((pkg) => (
+                          <div
+                            key={pkg.price}
+                            onClick={() => setAmount(pkg.price)}
+                            className={`cursor-pointer border p-3 rounded-xl text-center transition-all ${
+                              amount === pkg.price
+                                ? "border-[#3B0042] bg-purple-50/40 text-[#3B0042] ring-2 ring-[#3B0042]/10"
+                                : "border-gray-200 hover:border-gray-300"
+                            }`}
+                          >
+                            <span className="block text-base font-black">₦{pkg.price.toLocaleString()}</span>
+                            <span className="block text-[10px] text-gray-400 font-bold uppercase mt-0.5">
+                              {pkg.credits.toLocaleString()} Credits
+                            </span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                  </div>
+                  ) : (
+                    <div className="p-3.5 bg-purple-50/70 border border-purple-200/80 rounded-xl text-xs text-[#3B0042] flex items-center gap-2.5">
+                      <CheckCircle2 className="w-4 h-4 text-[#3B0042] flex-shrink-0" />
+                      <span>Promotional coupon applied. Payment checkout is bypassed.</span>
+                    </div>
+                  )}
 
                   <div className="space-y-2 pt-2">
                     <label className="block text-xs font-bold text-gray-600 uppercase tracking-wide">
@@ -513,16 +545,24 @@ export default function Auth({ onLogin, initialTab = 'login' }) {
                     />
                     <p className="text-[10px] text-gray-400">Used strictly for payment receipt and PIN recovery.</p>
                   </div>
+                  <div className="space-y-2">
+                    <label className="block text-xs font-bold text-gray-600 uppercase tracking-wide">Marketing coupon <span className="normal-case text-gray-400">(optional)</span></label>
+                    <input type="text" placeholder="e.g. MARKA-LAUNCH50" value={coupon} onChange={(e) => setCoupon(e.target.value.toUpperCase())} maxLength={40}
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:border-[#3B0042] text-sm font-mono uppercase transition-colors" />
+                    <p className="text-[10px] text-gray-400">A valid coupon activates your account without checkout.</p>
+                  </div>
                 </div>
                 
-                <div className="bg-amber-50 p-3 rounded-xl border border-amber-200 flex flex-col gap-1">
-                  <span className="text-[10px] font-bold text-amber-800 uppercase tracking-wider">Sandbox Mode</span>
-                  <span className="text-[11px] text-amber-700">
-                    {PAYMENT_PROVIDER === 'monnify'
-                      ? 'Monnify sandbox — use the test card provided in the checkout modal.'
-                      : <>Use card number <span className="font-mono bg-amber-100 px-1 rounded">4084084084084081</span> with any CVV.</>}
-                  </span>
-                </div>
+                {!coupon.trim() && (
+                  <div className="bg-amber-50 p-3 rounded-xl border border-amber-200 flex flex-col gap-1">
+                    <span className="text-[10px] font-bold text-amber-800 uppercase tracking-wider">Sandbox Mode</span>
+                    <span className="text-[11px] text-amber-700">
+                      {PAYMENT_PROVIDER === 'monnify'
+                        ? 'Monnify sandbox — use the test card provided in the checkout modal.'
+                        : <>Use card number <span className="font-mono bg-amber-100 px-1 rounded">4084084084084081</span> with any CVV.</>}
+                    </span>
+                  </div>
+                )}
 
                 <button
                   type="submit"
@@ -532,11 +572,11 @@ export default function Auth({ onLogin, initialTab = 'login' }) {
                   {loading ? (
                     <>
                       <Loader2 className="w-5 h-5 animate-spin" />
-                      Initiating Checkout...
+                      {coupon.trim() ? 'Activating Account...' : 'Initiating Checkout...'}
                     </>
                   ) : (
                     <>
-                      Pay ₦{amount.toLocaleString()} via {PAYMENT_PROVIDER === 'monnify' ? 'Monnify' : 'Paystack'}
+                      {coupon.trim() ? 'Activate with coupon' : `Pay ₦${amount.toLocaleString()} via ${PAYMENT_PROVIDER === 'monnify' ? 'Monnify' : 'Paystack'}`}
                       <ArrowRight className="w-5 h-5" />
                     </>
                   )}

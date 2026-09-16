@@ -160,6 +160,9 @@ class V2PrototypeGeneratorTests(unittest.TestCase):
             self.assertEqual(saved["page_size_mm"], [210.0, 297.0])
             self.assertEqual(saved["sheets"][0]["sheet_size_mm"], [198.0, 140.0])
 
+    def test_printed_sheet_omits_valueless_marka_exam_label(self):
+        self.assertNotIn("MARKA ID / EXAM CODE", Path(generator.__file__).read_text())
+
 
 if __name__ == "__main__":
     unittest.main()

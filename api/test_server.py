@@ -30,6 +30,11 @@ def test_unauthorized_upload():
     assert response.status_code == 401
 
 
+def test_coupon_signup_requires_a_code_and_email():
+    response = client.post("/auth/redeem-coupon", json={"code": "", "email": ""})
+    assert response.status_code == 422
+
+
 def test_marka_uses_r07_layout():
     path = find_layout_json("MARKA")
     with open(path) as handle:

@@ -61,6 +61,7 @@ from database import supabase
 from auth import generate_marka_id, generate_pin, get_password_hash, verify_password, create_access_token
 from image_cleanup import clear_user_image_library
 from logo_profile import normalize_logo
+from coupons import coupon_hash
 from paystack import validate_verified_transaction, valid_webhook_signature
 from pydantic import BaseModel, constr
 
@@ -301,6 +302,46 @@ def download_template(template_kind: Literal["printed", "handdrawn"], user_id: s
 class PurchaseIdRequest(BaseModel):
     reference: str
     email: str
+
+class CouponSignupRequest(BaseModel):
+    code: constr(max_length=40)  # type: ignore
+    email: constr(strip_whitespace=True, min_length=3, max_length=254)  # type: ignore
+
+
+@app.post("/auth/redeem-coupon")
+@limiter.limit("5/minute")
+def redeem_signup_coupon(request: Request, req: CouponSignupRequest):
+    if not supabase:
+        raise HTTPException(500, "Supabase not configured")
+    try:
+        code_digest = coupon_hash(req.code)
+    except ValueError:
+        raise HTTPException(400, "Coupon is invalid, expired, or fully used.")
+
+    marka_id = generate_marka_id()
+    pin = generate_pin()
+    try:
+        result = supabase.rpc("redeem_signup_coupon", {
+            "p_code_hash": code_digest,
+            "p_email": req.email,
+            "p_marka_id": marka_id,
+            "p_pin_hash": get_password_hash(pin),
+        }).execute()
+    except Exception as exc:
+        message = str(exc).lower()
+        if "23505" in message or "users_email_key" in message or "email" in message and "duplicate" in message:
+            raise HTTPException(400, "Email is already registered. Please login or use Forgot PIN.")
+        raise HTTPException(400, "Coupon is invalid, expired, or fully used.")
+
+    payload = result.data or {}
+    if isinstance(payload, list):
+        payload = payload[0] if payload else {}
+    return {
+        "marka_id": marka_id,
+        "pin": pin,
+        "credits": int(payload.get("credits", 0)),
+        "message": "Coupon accepted. Please save your MARKA ID and PIN securely!",
+    }
 
 @app.post("/auth/purchase-id")
 def purchase_id(req: PurchaseIdRequest):
